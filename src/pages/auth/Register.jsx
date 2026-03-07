@@ -1,8 +1,6 @@
-import React from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { useGoogleLogin } from "@react-oauth/google";
 import axios from "axios";
-
+import GoogleAuthButton from "../../components/ui/GoogleAuthButton";
 import { useState } from "react";
 
 const roleMeta = {
@@ -15,6 +13,7 @@ const Register = () => {
   const [searchParams] = useSearchParams();
   const role = searchParams.get("role") || "student";
   const roleLabel = roleMeta[role] || "Student";
+  const isCounselor = role === "counselor";
 
   const [formData, setFormData] = useState({
     first_name: "",
@@ -22,9 +21,13 @@ const Register = () => {
     email: "",
     password: "",
     confirm_password: "",
+    qualification: "",
+    experience_years: "",
+    specialization: "",
+    certificate: null, // ← null not empty string
   });
 
-  navigate = useNavigate();
+  const navigate = useNavigate();
 
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
@@ -37,42 +40,50 @@ const Register = () => {
     e.preventDefault();
     setError(null);
 
-    // Basic frontend validation
     if (formData.password !== formData.confirm_password) {
       setError({ confirm_password: "Passwords do not match" });
       return;
     }
 
     try {
-      const payload = { ...formData, role }; // attach role from URL
-      console.log(payload);
+      // Use FormData to support file upload
+      const data = new FormData();
+
+      // Base fields — all roles
+      data.append("first_name", formData.first_name);
+      data.append("last_name", formData.last_name);
+      data.append("email", formData.email);
+      data.append("password", formData.password);
+      data.append("confirm_password", formData.confirm_password);
+      data.append("role", role);
+
+      // Counselor-only fields
+      if (role === "counselor") {
+        data.append("qualification", formData.qualification);
+        data.append("experience_years", formData.experience_years);
+        data.append("specialization", formData.specialization);
+        if (formData.certificate) {
+          data.append("certificate", formData.certificate);
+        }
+      }
 
       const response = await axios.post(
         "http://127.0.0.1:8000/api/auth/register/",
-        payload,
+        data,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        },
       );
+
       console.log("Registered:", response.data);
-      // In your Register component after successful OTP send:
-      navigate("/verify-otp", { state: { email: payload.email } });
-      setSuccess(true);
+
+      navigate("/auth/verify-otp", {
+        state: { email: formData.email, role },
+      });
     } catch (err) {
       setError(err.response?.data || "Something went wrong");
     }
   };
-
-  // const handleGoogleLogin = useGoogleLogin({
-  //   onSuccess: async (tokenResponse) => {
-  //     const res = await fetch("http://localhost:8000/api/auth/google/", {
-  //       method: "POST",
-  //       headers: { "Content-Type": "application/json" },
-  //       body: JSON.stringify({ token: tokenResponse.access_token }),
-  //     });
-  //     const data = await res.json();
-  //     localStorage.setItem("access_token", data.access);
-  //     // navigate('/dashboard')  ← add this if you use react-router
-  //   },
-  //   onError: () => console.log("Login Failed"),
-  // });
 
   return (
     <div className="font-lexend bg-[#f8f7f5] text-slate-900 overflow-x-hidden">
@@ -214,7 +225,7 @@ const Register = () => {
                 </p>
               </div>
 
-              <button
+              {/* <button
                 className="flex w-full items-center justify-center gap-3 rounded-xl border-[1.5px] border-slate-200 bg-white py-4 text-sm font-bold shadow-sm transition-all hover:bg-slate-50 hover:shadow-md active:scale-[0.98]"
                 type="button"
                 // onClick={handleGoogleLogin}
@@ -225,7 +236,9 @@ const Register = () => {
                   src="https://lh3.googleusercontent.com/aida-public/AB6AXuBWhYdoBMx0FuNomV5ECH4uFsy9hXbhV7lz_p7tv84DIcEQgFJWxGRKwPfvKNgo1R2nsCIzWxFoiiih4xLt2pcJj4yO3cCvODBBq9QagCnjkTeI5E9ns95OrdXqjhUeSPn14Y3kFCpVtiCGqmkOLQ0agnU31UbdxwY3_Aud0E7-McQsoHSPi1CMAq4yPlN7j6zEsVM9bjH9Pl__h-Pfav6dgLr8BIQb6WsfCq2vaHxyff9FaKBzabc6-J6hd6NCK2YW6iIRQZ0r_A"
                 />
                 Continue with Google
-              </button>
+              </button> */}
+
+              <GoogleAuthButton />
 
               <div className="my-8 relative flex items-center">
                 <div className="flex-grow border-t border-slate-100"></div>
@@ -276,6 +289,69 @@ const Register = () => {
                     onChange={handleChange}
                   />
                 </div>
+
+                {isCounselor && (
+                  <>
+                    <div className="space-y-2">
+                      <label className="text-sm font-semibold text-slate-700">
+                        Qualification
+                      </label>
+                      <input
+                        className="w-full rounded-xl border-[1.5px] border-slate-200 bg-[#F8FAFC] px-4 py-3 text-sm transition-colors focus:border-amber-500 focus:ring-0"
+                        placeholder="M.Sc Psychology"
+                        required={isCounselor}
+                        type="text"
+                        name="qualification"
+                        onChange={handleChange}
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-sm font-semibold text-slate-700">
+                        Experience Years
+                      </label>
+                      <input
+                        className="w-full rounded-xl border-[1.5px] border-slate-200 bg-[#F8FAFC] px-4 py-3 text-sm transition-colors focus:border-amber-500 focus:ring-0"
+                        placeholder="5"
+                        required={isCounselor}
+                        type="number"
+                        min="0"
+                        name="experience_years"
+                        onChange={handleChange}
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-sm font-semibold text-slate-700">
+                        Specialization
+                      </label>
+                      <input
+                        className="w-full rounded-xl border-[1.5px] border-slate-200 bg-[#F8FAFC] px-4 py-3 text-sm transition-colors focus:border-amber-500 focus:ring-0"
+                        placeholder="Career Counseling"
+                        required={isCounselor}
+                        type="text"
+                        name="specialization"
+                        onChange={handleChange}
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-sm font-semibold text-slate-700">
+                        Certificate
+                      </label>
+                      <input
+                        type="file"
+                        name="certificate"
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            certificate: e.target.files[0],
+                          })
+                        }
+                      />
+                    </div>
+                  </>
+                )}
 
                 <div className="space-y-2">
                   <label className="text-sm font-semibold text-slate-700">
@@ -356,12 +432,12 @@ const Register = () => {
               <div className="mt-8 text-center">
                 <p className="text-sm font-medium text-slate-500">
                   Already have an account?{" "}
-                  <a
+                  <Link
+                    to={"/auth/login/"}
                     className="font-bold text-amber-500 hover:underline"
-                    href="#"
                   >
                     Sign in here
-                  </a>
+                  </Link>
                 </p>
               </div>
             </div>
