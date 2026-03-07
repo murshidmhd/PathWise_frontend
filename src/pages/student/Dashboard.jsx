@@ -1,13 +1,13 @@
-import axios from "axios";
+import api, { setAccessToken } from "../../services/api";
 import { useNavigate } from "react-router-dom";
 
 export default function StudentDashboard() {
   const navigate = useNavigate();
 
   const handleClick = async () => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("access");
     try {
-      await axios.post(
+      await api.post(
         "http://127.0.0.1:8000/api/auth/logout/",
         {},
         token
@@ -18,12 +18,11 @@ export default function StudentDashboard() {
             }
           : {},
       );
+      localStorage.removeItem("role", "student");
     } catch (error) {
       console.error("Logout failed:", error);
     } finally {
-      localStorage.removeItem("token");
-      localStorage.removeItem("access_token");
-      localStorage.removeItem("refresh_token");
+      setAccessToken("");
       navigate("/auth/login", { replace: true });
     }
   };
@@ -45,7 +44,10 @@ export default function StudentDashboard() {
             <button className="w-full rounded-lg px-4 py-2 text-left text-text-secondary hover:bg-page-bg">
               Roadmap
             </button>
-            <button className="w-full rounded-lg px-4 py-2 text-left text-text-secondary hover:bg-page-bg">
+            <button
+              className="w-full rounded-lg px-4 py-2 text-left text-text-secondary hover:bg-page-bg"
+              onClick={() => navigate("/student/profile")}
+            >
               Profile
             </button>
           </nav>

@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "../../services/api";
 
 export default function VerifyOTP() {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
@@ -60,12 +60,12 @@ export default function VerifyOTP() {
     setError(null);
 
     try {
-      await axios.post("http://127.0.0.1:8000/api/auth/verify-otp/", {
+      await api.post("/auth/verify-otp/", {
         email,
         otp: otpCode,
-      });
+      });   
       if (role === "counselor") {
-        navigate("/pending-approval", { replace: true });
+        navigate("/auth/approval", { replace: true });
       } else {
         navigate("/auth/login", { replace: true });
       }
@@ -75,18 +75,6 @@ export default function VerifyOTP() {
       setLoading(false);
     }
   };
-
-  //   const handleResend = async () => {
-  //     try {
-  //       await axios.post("http://127.0.0.1:8000/api/resend-otp/", { email });
-  //       setTimer(45);
-  //       setCanResend(false);
-  //       setOtp(["", "", "", "", "", ""]);
-  //       inputRefs.current[0].focus();
-  //     } catch (err) {
-  //       setError("Failed to resend OTP");
-  //     }
-  //   };
 
   const OtpInputs = (
     <div className="mb-8 flex justify-between gap-2 sm:gap-3">
@@ -135,7 +123,6 @@ export default function VerifyOTP() {
           Didn&apos;t receive code?{" "}
           {canResend ? (
             <button
-              onClick={handleResend}
               className="font-bold text-warning hover:underline"
               type="button"
             >

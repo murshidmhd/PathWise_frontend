@@ -4,6 +4,7 @@ import RoleSelection from "../pages/auth/RoleSelection";
 import Register from "../pages/auth/Register";
 import VerifyOtp from "../pages/auth/VerifyOtp";
 import Login from "../pages/auth/Login";
+import ApprovalPage from "../pages/student/Approval";
 export default function AuthRoutes() {
   return (
     <Routes>
@@ -12,6 +13,7 @@ export default function AuthRoutes() {
       <Route path="register" element={<Register />} />
       <Route path="verify-otp" element={<VerifyOtp />} />
       <Route path="login" element={<Login />} />
+      <Route path="approval" element={<ApprovalPage />} />
     </Routes>
   );
 }

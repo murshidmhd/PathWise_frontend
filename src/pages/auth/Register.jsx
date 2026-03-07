@@ -1,5 +1,5 @@
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import axios from "axios";
+import api from "../../services/api";
 import GoogleAuthButton from "../../components/ui/GoogleAuthButton";
 import { useState } from "react";
 
@@ -30,7 +30,7 @@ const Register = () => {
   const navigate = useNavigate();
 
   const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(false);
+  // const [success, setSuccess] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -67,15 +67,12 @@ const Register = () => {
         }
       }
 
-      const response = await axios.post(
-        "http://127.0.0.1:8000/api/auth/register/",
-        data,
-        {
-          headers: { "Content-Type": "multipart/form-data" },
-        },
-      );
+      const response = await api.post("/auth/register/", data, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
 
       console.log("Registered:", response.data);
+      
 
       navigate("/auth/verify-otp", {
         state: { email: formData.email, role },
@@ -207,9 +204,9 @@ const Register = () => {
           </div>
 
           <div className="flex flex-1 items-center justify-center p-8 lg:p-12">
-            {success && (
+            {/* {success && (
               <p style={{ color: "green" }}>Registration successful!</p>
-            )}
+            )} */}
             {error && <p style={{ color: "red" }}>{JSON.stringify(error)}</p>}
 
             <div className="w-full max-w-[480px]">

@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import GoogleAuthButton from "../../components/ui/GoogleAuthButton";
 import { useState } from "react";
-import axios from "axios";
+import api, { setAccessToken } from "../../services/api";
 export default function Login() {
   const navigate = useNavigate();
   const [error, setError] = useState("");
@@ -19,16 +19,15 @@ export default function Login() {
     e.preventDefault();
 
     try {
-      const response = await axios.post(
-        "http://127.0.0.1:8000/api/auth/login/",
-        form,
-      );
+      const response = await api.post("/auth/login/", form);
 
       //   console.log(response);
 
       const { access, role } = response.data;
 
-      localStorage.setItem("token", access);
+      setAccessToken(access);
+      localStorage.setItem("role", role);
+
 
       if (role === "student") navigate("/student/dashboard");
       if (role === "parent") navigate("/parent/dashboard");
@@ -42,11 +41,14 @@ export default function Login() {
       console.log(code);
 
       if (code === "PENDING_APPROVAL") {
-        navigate("/pending-approval");
+        navigate("/auth/approval");
         return;
       }
       if (code === "REJECTED") {
         setError("Your application was rejected: " + err.response.data.reason);
+        return;
+      }if (code === "APPROVED") {
+        navigate("/counselor/dashboard")
         return;
       }
     }
