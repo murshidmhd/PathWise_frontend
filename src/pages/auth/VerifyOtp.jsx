@@ -1,10 +1,12 @@
 import { useState, useRef, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import api from "../../services/api";
+import toast from "react-hot-toast";
+
+const OTP_LENGTH = 6;
 
 export default function VerifyOTP() {
-  const [otp, setOtp] = useState(["", "", "", "", "", ""]);
-  const [error, setError] = useState(null);
+  const [otp, setOtp] = useState(Array(OTP_LENGTH).fill(""));
   const [loading, setLoading] = useState(false);
   const [timer, setTimer] = useState(45);
   const [canResend, setCanResend] = useState(false);
@@ -26,13 +28,14 @@ export default function VerifyOTP() {
   }, [timer]);
 
   const handleChange = (index, value) => {
-    if (!/^\d*$/.test(value)) return;
+    const cleanValue = value.replace(/\D/g, "");
+    if (!cleanValue && value) return;
 
     const newOtp = [...otp];
-    newOtp[index] = value;
+    newOtp[index] = cleanValue.slice(-1);
     setOtp(newOtp);
 
-    if (value && index < 5) {
+    if (cleanValue && index < OTP_LENGTH - 1) {
       inputRefs.current[index + 1].focus();
     }
   };
@@ -41,6 +44,25 @@ export default function VerifyOTP() {
     if (e.key === "Backspace" && !otp[index] && index > 0) {
       inputRefs.current[index - 1].focus();
     }
+  };
+
+  const handlePaste = (e) => {
+    e.preventDefault();
+    const pasted = e.clipboardData
+      .getData("text")
+      .replace(/\D/g, "")
+      .slice(0, OTP_LENGTH);
+
+    if (!pasted) return;
+
+    const filled = Array(OTP_LENGTH).fill("");
+    pasted.split("").forEach((char, idx) => {
+      filled[idx] = char;
+    });
+    setOtp(filled);
+
+    const nextIndex = Math.min(pasted.length, OTP_LENGTH - 1);
+    inputRefs.current[nextIndex]?.focus();
   };
 
   useEffect(() => {
@@ -52,25 +74,25 @@ export default function VerifyOTP() {
   const handleSubmit = async () => {
     const otpCode = otp.join("");
     if (otpCode.length < 6) {
-      setError("Please enter the complete 6-digit OTP");
+      toast.error("Please enter the complete 6-digit OTP");
       return;
     }
 
     setLoading(true);
-    setError(null);
 
     try {
       await api.post("/auth/verify-otp/", {
         email,
         otp: otpCode,
-      });   
+      });
+      toast.success("Email verified successfully");
       if (role === "counselor") {
         navigate("/auth/approval", { replace: true });
       } else {
         navigate("/auth/login", { replace: true });
       }
     } catch (err) {
-      setError(err.response?.data?.message || "Invalid OTP, please try again");
+      toast.error(err.response?.data?.message || "Invalid OTP, please try again");
     } finally {
       setLoading(false);
     }
@@ -85,8 +107,12 @@ export default function VerifyOTP() {
           type="text"
           maxLength={1}
           value={digit}
+          inputMode="numeric"
+          autoComplete="one-time-code"
           onChange={(e) => handleChange(index, e.target.value)}
           onKeyDown={(e) => handleKeyDown(index, e)}
+          onPaste={handlePaste}
+          onFocus={(e) => e.target.select()}
           className="h-14 w-11 rounded-xl border-2 border-slate-200 bg-white text-center text-xl font-bold outline-none transition-all focus:border-warning sm:h-16 sm:w-14 sm:text-2xl"
         />
       ))}
@@ -115,8 +141,6 @@ export default function VerifyOTP() {
       </p>
 
       {OtpInputs}
-
-      {error && <p className="mb-4 text-sm text-danger">{error}</p>}
 
       <div className="mb-10">
         <p className="text-sm text-slate-500">

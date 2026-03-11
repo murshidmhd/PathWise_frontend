@@ -1,6 +1,7 @@
 import { GoogleLogin } from "@react-oauth/google";
 import api, { setAccessToken } from "../../services/api";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
 export default function GoogleAuthButton() {
   const navigate = useNavigate();
@@ -19,10 +20,10 @@ export default function GoogleAuthButton() {
       setAccessToken(access);
       localStorage.setItem("role", "student");
 
+      toast.success("Logged in with Google");
       navigate("/student/dashboard");
-
-      console.log("i am here navigae");
     } catch (err) {
+      toast.error("Google login failed. Please try again.");
       console.error("Google login failed", err);
     }
   };
@@ -30,7 +31,7 @@ export default function GoogleAuthButton() {
   return (
     <GoogleLogin
       onSuccess={handleGoogleSuccess}
-      onError={() => console.log("Google Login Failed")}
+      onError={() => toast.error("Google Login Failed")}
     />
   );
 }

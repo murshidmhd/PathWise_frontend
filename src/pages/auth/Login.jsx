@@ -2,15 +2,19 @@ import { Link, useNavigate } from "react-router-dom";
 import GoogleAuthButton from "../../components/ui/GoogleAuthButton";
 import { useState } from "react";
 import api, { setAccessToken } from "../../services/api";
+import toast from "react-hot-toast";
+import { useDispatch, useSelector } from "react-redux";
+import { setUser } from "../../store/slices/authSlice";
 export default function Login() {
   const navigate = useNavigate();
-  const [error, setError] = useState("");
   const [form, setForm] = useState({
     email: "",
     password: "",
   });
+  const dispatch = useDispatch();
 
-  console.log(form);
+  const { isAuthenticated, role } = useSelector((state) => state.auth);
+  console.log(isAuthenticated, role);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -23,37 +27,40 @@ export default function Login() {
 
       //   console.log(response);
 
+      // const { access, role } = response.data;
       const { access, role } = response.data;
+      dispatch(setUser({ token: access, role: role }))  // 👈 add this
 
-      setAccessToken(access);
-      localStorage.setItem("role", role);
-
+      // setAccessToken(access);
+      // localStorage.setItem("role", role);
 
       if (role === "student") navigate("/student/dashboard");
       if (role === "parent") navigate("/parent/dashboard");
       if (role === "counselor") navigate("/counselor/dashboard");
-
-      console.log("loged:", response.data);
+      toast.success("Logged in successfully");
     } catch (err) {
-      console.log(err);
       const code = err.response?.data?.code;
 
-      console.log(code);
-
       if (code === "PENDING_APPROVAL") {
+        toast("Your account is pending approval");
         navigate("/auth/approval");
         return;
       }
       if (code === "REJECTED") {
-        setError("Your application was rejected: " + err.response.data.reason);
-        return;
-      }if (code === "APPROVED") {
-        navigate("/counselor/dashboard")
+        toast.error(
+          `Your application was rejected: ${err.response?.data?.reason || ""}`,
+        );
         return;
       }
+      if (code === "APPROVED") {
+        toast.success("Account approved. Redirecting to dashboard");
+        navigate("/counselor/dashboard");
+        return;
+      }
+      toast.error(
+        err.response?.data?.detail || "Login failed. Please try again",
+      );
     }
-
-    console.log(error)
   };
 
   return (

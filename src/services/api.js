@@ -1,15 +1,15 @@
 import axios from "axios";
 
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || "http://localhost:8000/api";
+  const API_BASE_URL =
+    import.meta.env.VITE_API_BASE_URL || "http://localhost:8000/api";
 
+console.log(API_BASE_URL);
 const api = axios.create({
   baseURL: API_BASE_URL,
   withCredentials: true, // needed for refresh_token cookie
 });
 
-let accessToken =
-  localStorage.getItem("access") || "";
+let accessToken = localStorage.getItem("access") || "";
 
 export const setAccessToken = (token) => {
   accessToken = token || "";

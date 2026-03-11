@@ -1,14 +1,7 @@
-import { useNavigate } from "react-router-dom";
-import { setAccessToken } from "../../services/api";
+import useLogout from "../../hooks/useLogout";
 
 export default function CounselorDashboard() {
-  const navigate = useNavigate();
-
-  const handleLogout = () => {
-    setAccessToken("");
-    localStorage.removeItem("role");
-    navigate("/auth/login", { replace: true });
-  };
+  const handleLogout = useLogout();
 
   return (
     <div className="min-h-screen bg-page-bg p-6 font-body text-text-primary lg:p-8">

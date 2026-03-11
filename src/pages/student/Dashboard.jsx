@@ -1,31 +1,33 @@
 import api, { setAccessToken } from "../../services/api";
 import { useNavigate } from "react-router-dom";
-
+import useLogout from "../../hooks/useLogout";
 export default function StudentDashboard() {
   const navigate = useNavigate();
 
-  const handleClick = async () => {
-    const token = localStorage.getItem("access");
-    try {
-      await api.post(
-        "http://127.0.0.1:8000/api/auth/logout/",
-        {},
-        token
-          ? {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          : {},
-      );
-      localStorage.removeItem("role", "student");
-    } catch (error) {
-      console.error("Logout failed:", error);
-    } finally {
-      setAccessToken("");
-      navigate("/auth/login", { replace: true });
-    }
-  };
+  const handleLogout = useLogout();
+
+  // const handleClick = async () => {
+  //   const token = localStorage.getItem("access");
+  //   try {
+  //     await api.post(
+  //       "http://127.0.0.1:8000/api/auth/logout/",
+  //       {},
+  //       token
+  //         ? {
+  //             headers: {
+  //               Authorization: `Bearer ${token}`,
+  //             },
+  //           }
+  //         : {},
+  //     );
+  //     localStorage.removeItem("role", "student");
+  //   } catch (error) {
+  //     console.error("Logout failed:", error);
+  //   } finally {
+  //     setAccessToken("");
+  //     navigate("/auth/login", { replace: true });
+  //   }
+  // };
 
   return (
     <div className="min-h-screen bg-page-bg font-body text-text-primary">
@@ -54,7 +56,7 @@ export default function StudentDashboard() {
 
           <button
             className="mt-auto rounded-lg border border-border px-4 py-2 text-left font-medium text-text-secondary hover:bg-page-bg"
-            onClick={handleClick}
+            onClick={handleLogout}
           >
             Logout
           </button>

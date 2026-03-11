@@ -1,4 +1,5 @@
 // src/components/ProtectedRoute.jsx
+import { useSelector } from "react-redux";
 import { Navigate, useLocation } from "react-router-dom";
 
 const roleHome = {
@@ -9,16 +10,15 @@ const roleHome = {
 
 const ProtectedRoute = ({ children, allowedRoles = [] }) => {
   const location = useLocation();
-  const token = localStorage.getItem("access");
-  const role = localStorage.getItem("role");
+  const { token, role } = useSelector((state) => state.auth);
 
   // Allow auth pages without token (login/register/landing/etc.)
   if (location.pathname.startsWith("/auth")) {
     return children;
   }
 
-  if (!token) { 
-    return <Navigate to="/auth/landing" replace />;
+  if (!token) {
+    return <Navigate to="/auth/login" replace />;
   }
 
   if (allowedRoles.length && !allowedRoles.includes(role)) {
