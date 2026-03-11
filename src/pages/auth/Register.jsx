@@ -1,6 +1,9 @@
-import React from "react";
-import { Link, useSearchParams } from "react-router-dom";
-
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import api from "../../services/api";
+import GoogleAuthButton from "../../components/ui/GoogleAuthButton";
+import { useState } from "react";
+import ReCAPTCHA from "react-google-recaptcha";
+import toast from "react-hot-toast";
 const roleMeta = {
   student: "Student",
   counselor: "Mentor",
@@ -11,9 +14,79 @@ const Register = () => {
   const [searchParams] = useSearchParams();
   const role = searchParams.get("role") || "student";
   const roleLabel = roleMeta[role] || "Student";
+  const isCounselor = role === "counselor";
+  const [captchaToken, setCaptchaToken] = useState(null);
 
-  const handleSubmit = (e) => {
+  const [formData, setFormData] = useState({
+    first_name: "",
+    last_name: "",
+    email: "",
+    password: "",
+    confirm_password: "",
+    qualification: "",
+    experience_years: "",
+    specialization: "",
+    certificate: null, // ← null not empty string
+  });
+
+  const navigate = useNavigate();
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (formData.password !== formData.confirm_password) {
+      toast.error("Passwords do not match");
+      return;
+    }
+
+    // if (!captchaToken) {
+    //   toast.error("Please complete the reCAPTCHA");
+    //   return;
+    // }
+
+    try {
+      // Use FormData to support file upload
+      const data = new FormData();
+
+      // Base fields — all roles
+      data.append("first_name", formData.first_name);
+      data.append("last_name", formData.last_name);
+      data.append("email", formData.email);
+      data.append("password", formData.password);
+      data.append("confirm_password", formData.confirm_password);
+      data.append("role", role);
+
+      // Counselor-only fields
+      if (role === "counselor") {
+        data.append("qualification", formData.qualification);
+        data.append("experience_years", formData.experience_years);
+        data.append("specialization", formData.specialization);
+        if (formData.certificate) {
+          data.append("certificate", formData.certificate);
+        }
+      }
+      // data.append("recaptcha_token", captchaToken);
+      console.log("beforeresponse")
+
+      const response = await api.post("/auth/register/", data, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      console.log("after response")
+      toast.success("Registration successful. Please verify OTP.");
+
+      navigate("/auth/verify-otp", {
+        state: { email: formData.email, role },
+      });
+    } catch (err) {
+      const message =
+        err.response?.data?.detail || "Registration failed. Please try again.";
+      toast.error(message);
+    }
   };
 
   return (
@@ -28,7 +101,9 @@ const Register = () => {
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-500 text-[#0A0F1E]">
               <span className="material-symbols-outlined font-bold">route</span>
             </div>
-            <h1 className="font-sora text-2xl font-extrabold tracking-tight text-white">PathWise</h1>
+            <h1 className="font-sora text-2xl font-extrabold tracking-tight text-white">
+              PathWise
+            </h1>
           </div>
 
           <div className="relative z-10 mt-12 space-y-10">
@@ -43,8 +118,12 @@ const Register = () => {
                   <span className="material-symbols-outlined">target</span>
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-white">AI Career Assessment</h3>
-                  <p className="text-sm text-slate-400">Discover your true potential with data</p>
+                  <h3 className="text-lg font-bold text-white">
+                    AI Career Assessment
+                  </h3>
+                  <p className="text-sm text-slate-400">
+                    Discover your true potential with data
+                  </p>
                 </div>
               </div>
 
@@ -53,8 +132,12 @@ const Register = () => {
                   <span className="material-symbols-outlined">map</span>
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-white">Personalized Roadmap</h3>
-                  <p className="text-sm text-slate-400">Tailored steps for your specific goals</p>
+                  <h3 className="text-lg font-bold text-white">
+                    Personalized Roadmap
+                  </h3>
+                  <p className="text-sm text-slate-400">
+                    Tailored steps for your specific goals
+                  </p>
                 </div>
               </div>
 
@@ -63,8 +146,12 @@ const Register = () => {
                   <span className="material-symbols-outlined">school</span>
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-white">College Finder</h3>
-                  <p className="text-sm text-slate-400">Access top-tier institutions globally</p>
+                  <h3 className="text-lg font-bold text-white">
+                    College Finder
+                  </h3>
+                  <p className="text-sm text-slate-400">
+                    Access top-tier institutions globally
+                  </p>
                 </div>
               </div>
             </div>
@@ -97,7 +184,9 @@ const Register = () => {
                 +10k
               </div>
             </div>
-            <p className="text-sm text-slate-400">Joined by 10,000+ Indian students this month</p>
+            <p className="text-sm text-slate-400">
+              Joined by 10,000+ Indian students this month
+            </p>
           </div>
         </div>
 
@@ -105,11 +194,18 @@ const Register = () => {
           <div className="flex items-center justify-between p-6 lg:hidden">
             <div className="flex items-center gap-2">
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-500 text-[#0A0F1E]">
-                <span className="material-symbols-outlined text-sm font-bold">route</span>
+                <span className="material-symbols-outlined text-sm font-bold">
+                  route
+                </span>
               </div>
-              <h1 className="font-sora text-xl font-extrabold text-[#0A0F1E]">PathWise</h1>
+              <h1 className="font-sora text-xl font-extrabold text-[#0A0F1E]">
+                PathWise
+              </h1>
             </div>
-            <Link className="text-sm font-bold text-amber-500" to="/auth/landing">
+            <Link
+              className="text-sm font-bold text-amber-500"
+              to="/auth/landing"
+            >
               Back
             </Link>
           </div>
@@ -120,18 +216,32 @@ const Register = () => {
                 <span className="inline-flex items-center rounded-full bg-teal-400/10 px-3 py-1 text-xs font-bold text-teal-500 uppercase tracking-wider">
                   Registering as {roleLabel}
                 </span>
-                <h2 className="mt-4 font-sora text-3xl font-bold text-slate-900">Create your account</h2>
-                <p className="mt-2 text-slate-500">Simplify your future with AI-guided paths</p>
+                <h2 className="mt-4 font-sora text-3xl font-bold text-slate-900">
+                  Create your account
+                </h2>
+                <p className="mt-2 text-slate-500">
+                  Simplify your future with AI-guided paths
+                </p>
               </div>
 
-              <button className="flex w-full items-center justify-center gap-3 rounded-xl border-[1.5px] border-slate-200 bg-white py-4 text-sm font-bold shadow-sm transition-all hover:bg-slate-50 hover:shadow-md active:scale-[0.98]" type="button">
+              {/* <button
+                className="flex w-full items-center justify-center gap-3 rounded-xl border-[1.5px] border-slate-200 bg-white py-4 text-sm font-bold shadow-sm transition-all hover:bg-slate-50 hover:shadow-md active:scale-[0.98]"
+                type="button"
+                // onClick={handleGoogleLogin}
+              >
                 <img
                   alt="Google Logo"
                   className="h-5 w-5"
                   src="https://lh3.googleusercontent.com/aida-public/AB6AXuBWhYdoBMx0FuNomV5ECH4uFsy9hXbhV7lz_p7tv84DIcEQgFJWxGRKwPfvKNgo1R2nsCIzWxFoiiih4xLt2pcJj4yO3cCvODBBq9QagCnjkTeI5E9ns95OrdXqjhUeSPn14Y3kFCpVtiCGqmkOLQ0agnU31UbdxwY3_Aud0E7-McQsoHSPi1CMAq4yPlN7j6zEsVM9bjH9Pl__h-Pfav6dgLr8BIQb6WsfCq2vaHxyff9FaKBzabc6-J6hd6NCK2YW6iIRQZ0r_A"
                 />
                 Continue with Google
-              </button>
+              </button> */}
+
+              <GoogleAuthButton />
+              {/* <ReCAPTCHA
+                sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY}
+                onChange={(token) => setCaptchaToken(token)}
+              /> */}
 
               <div className="my-8 relative flex items-center">
                 <div className="flex-grow border-t border-slate-100"></div>
@@ -143,32 +253,139 @@ const Register = () => {
 
               <form className="space-y-4" onSubmit={handleSubmit}>
                 <div className="space-y-2">
-                  <label className="text-sm font-semibold text-slate-700">Full Name</label>
+                  <label className="text-sm font-semibold text-slate-700">
+                    First Name
+                  </label>
                   <input
                     className="w-full rounded-xl border-[1.5px] border-slate-200 bg-[#F8FAFC] px-4 py-3 text-sm transition-colors focus:border-amber-500 focus:ring-0"
                     placeholder="John Doe"
                     required
                     type="text"
+                    name="first_name"
+                    onChange={handleChange}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-semibold text-slate-700">
+                    Last Name
+                  </label>
+                  <input
+                    className="w-full rounded-xl border-[1.5px] border-slate-200 bg-[#F8FAFC] px-4 py-3 text-sm transition-colors focus:border-amber-500 focus:ring-0"
+                    placeholder="John Doe"
+                    required
+                    type="text"
+                    name="last_name"
+                    onChange={handleChange}
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm font-semibold text-slate-700">Email Address</label>
+                  <label className="text-sm font-semibold text-slate-700">
+                    Email Address
+                  </label>
                   <input
                     className="w-full rounded-xl border-[1.5px] border-slate-200 bg-[#F8FAFC] px-4 py-3 text-sm transition-colors focus:border-amber-500 focus:ring-0"
                     placeholder="example@email.com"
                     required
                     type="email"
+                    name="email"
+                    onChange={handleChange}
                   />
                 </div>
 
+                {isCounselor && (
+                  <>
+                    <div className="space-y-2">
+                      <label className="text-sm font-semibold text-slate-700">
+                        Qualification
+                      </label>
+                      <input
+                        className="w-full rounded-xl border-[1.5px] border-slate-200 bg-[#F8FAFC] px-4 py-3 text-sm transition-colors focus:border-amber-500 focus:ring-0"
+                        placeholder="M.Sc Psychology"
+                        required={isCounselor}
+                        type="text"
+                        name="qualification"
+                        onChange={handleChange}
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-sm font-semibold text-slate-700">
+                        Experience Years
+                      </label>
+                      <input
+                        className="w-full rounded-xl border-[1.5px] border-slate-200 bg-[#F8FAFC] px-4 py-3 text-sm transition-colors focus:border-amber-500 focus:ring-0"
+                        placeholder="5"
+                        required={isCounselor}
+                        type="number"
+                        min="0"
+                        name="experience_years"
+                        onChange={handleChange}
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-sm font-semibold text-slate-700">
+                        Specialization
+                      </label>
+                      <input
+                        className="w-full rounded-xl border-[1.5px] border-slate-200 bg-[#F8FAFC] px-4 py-3 text-sm transition-colors focus:border-amber-500 focus:ring-0"
+                        placeholder="Career Counseling"
+                        required={isCounselor}
+                        type="text"
+                        name="specialization"
+                        onChange={handleChange}
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-sm font-semibold text-slate-700">
+                        Certificate
+                      </label>
+                      <input
+                        type="file"
+                        name="certificate"
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            certificate: e.target.files[0],
+                          })
+                        }
+                      />
+                    </div>
+                  </>
+                )}
+
                 <div className="space-y-2">
-                  <label className="text-sm font-semibold text-slate-700">Password</label>
+                  <label className="text-sm font-semibold text-slate-700">
+                    Password
+                  </label>
                   <input
                     className="w-full rounded-xl border-[1.5px] border-slate-200 bg-[#F8FAFC] px-4 py-3 text-sm transition-colors focus:border-amber-500 focus:ring-0"
                     placeholder="••••••••"
                     required
                     type="password"
+                    name="password"
+                    onChange={handleChange}
+                  />
+                  <div className="flex gap-1 pt-1">
+                    <div className="h-1.5 flex-1 rounded-full bg-amber-500"></div>
+                    <div className="h-1.5 flex-1 rounded-full bg-amber-500"></div>
+                    <div className="h-1.5 flex-1 rounded-full bg-slate-200"></div>
+                    <div className="h-1.5 flex-1 rounded-full bg-slate-200"></div>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-semibold text-slate-700">
+                    Confirm Password
+                  </label>
+                  <input
+                    className="w-full rounded-xl border-[1.5px] border-slate-200 bg-[#F8FAFC] px-4 py-3 text-sm transition-colors focus:border-amber-500 focus:ring-0"
+                    placeholder="••••••••"
+                    required
+                    type="password"
+                    name="confirm_password"
+                    onChange={handleChange}
                   />
                   <div className="flex gap-1 pt-1">
                     <div className="h-1.5 flex-1 rounded-full bg-amber-500"></div>
@@ -178,37 +395,6 @@ const Register = () => {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <label className="text-sm font-semibold text-slate-700">Class</label>
-                    <select className="w-full rounded-xl border-[1.5px] border-slate-200 bg-[#F8FAFC] px-4 py-3 text-sm transition-colors focus:border-amber-500 focus:ring-0">
-                      <option>Class 10</option>
-                      <option>Class 11</option>
-                      <option>Class 12</option>
-                      <option>Graduate</option>
-                    </select>
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-semibold text-slate-700">Stream</label>
-                    <select className="w-full rounded-xl border-[1.5px] border-slate-200 bg-[#F8FAFC] px-4 py-3 text-sm transition-colors focus:border-amber-500 focus:ring-0">
-                      <option>Science (PCM)</option>
-                      <option>Science (PCB)</option>
-                      <option>Commerce</option>
-                      <option>Arts/Humanities</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-sm font-semibold text-slate-700">City</label>
-                  <input
-                    className="w-full rounded-xl border-[1.5px] border-slate-200 bg-[#F8FAFC] px-4 py-3 text-sm transition-colors focus:border-amber-500 focus:ring-0"
-                    placeholder="Enter your city"
-                    required
-                    type="text"
-                  />
-                </div>
-
                 <div className="flex items-start gap-3 pt-2">
                   <input
                     className="mt-1 h-4 w-4 cursor-pointer rounded border-slate-300 text-amber-500 focus:ring-amber-500/20"
@@ -216,13 +402,22 @@ const Register = () => {
                     required
                     type="checkbox"
                   />
-                  <label className="cursor-pointer text-xs leading-relaxed text-slate-500" htmlFor="terms">
-                    I agree to the {" "}
-                    <a className="font-semibold text-amber-500 hover:underline" href="#">
+                  <label
+                    className="cursor-pointer text-xs leading-relaxed text-slate-500"
+                    htmlFor="terms"
+                  >
+                    I agree to the{" "}
+                    <a
+                      className="font-semibold text-amber-500 hover:underline"
+                      href="#"
+                    >
                       Terms of Service
                     </a>{" "}
-                    and {" "}
-                    <a className="font-semibold text-amber-500 hover:underline" href="#">
+                    and{" "}
+                    <a
+                      className="font-semibold text-amber-500 hover:underline"
+                      href="#"
+                    >
                       Privacy Policy
                     </a>
                     .
@@ -240,9 +435,12 @@ const Register = () => {
               <div className="mt-8 text-center">
                 <p className="text-sm font-medium text-slate-500">
                   Already have an account?{" "}
-                  <a className="font-bold text-amber-500 hover:underline" href="#">
+                  <Link
+                    to={"/auth/login/"}
+                    className="font-bold text-amber-500 hover:underline"
+                  >
                     Sign in here
-                  </a>
+                  </Link>
                 </p>
               </div>
             </div>
