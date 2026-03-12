@@ -13,7 +13,7 @@ function Icon({ name, className = "", filled = false }) {
   );
 }
 
-export default function StudentProfile() {
+export default function CounselorProfile() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState({});
   const [me, setMe] = useState(null);
@@ -21,7 +21,7 @@ export default function StudentProfile() {
   useEffect(() => {
     const load = async () => {
       try {
-        const res = await api.get("/students/profile/");
+        const res = await api.get("/counselors/profile/");
         setMe(res.data || {});
         setFormData(res.data);
       } catch {
@@ -34,26 +34,33 @@ export default function StudentProfile() {
 
   const handleSave = async () => {
     try {
-      const res = await api.patch("/students/profile/", formData);
+      const { certificate_url, ...dataToSend } = formData;
 
+      const res = await api.patch("/counselors/profile/", dataToSend, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
       setMe(res.data);
       setIsModalOpen(false);
     } catch {
-      console.error("Faile to save  profile");
+      console.error("Failed to save counselor profile");
     }
   };
 
   const fullName =
     me?.full_name ||
     [me?.first_name, me?.last_name].filter(Boolean).join(" ") ||
-    "Alex Johnson";
-  const dob = me?.dob || me?.date_of_birth || "May 15, 2006";
-  const gender = me?.gender || "Male";
-  const phone = me?.phone || me?.phone_number || "+91 98765 43210";
+    "Dr. Priya Iyer";
+  const dob = me?.dob || me?.date_of_birth || "November 03, 1992";
+  const gender = me?.gender || "Female";
+  const phone = me?.phone || me?.phone_number || "+91 91234 56789";
   const city = me?.city || "Mumbai";
   const state = me?.state || "Maharashtra";
-  const grade = me?.grade || me?.class_name || "Class 12";
-  const stream = me?.stream || "Science";
+  const qualification = me?.qualification || "M.A. Psychology";
+  const specialization = me?.specialization || "Career Counseling";
+  const experience =
+    me?.years_experience || me?.experience_years || "8 Years Experience";
 
   return (
     <div className="flex min-h-screen bg-[#F8FAFC] text-slate-900 dark:bg-[#0F172A] dark:text-slate-100">
@@ -66,7 +73,7 @@ export default function StudentProfile() {
                   className="h-full w-full overflow-hidden rounded-full bg-cover bg-center"
                   style={{
                     backgroundImage:
-                      "url('https://lh3.googleusercontent.com/aida-public/AB6AXuCkhebJndRKDMzD_TKK2fTTgRM0M0YhKleAr2BHirVGtRg388qDmE3rqRhnJ8CtEsznUlqAc_FxFkB8UQYDpgWUwB1kqZfwtA_XBC2D6O8lc0kvjJI0HXH0fdGcHD-Aa5OmEJ1NYPQ_b6DN7UjItIKaCc_y2h3upuMOnpn8Cn_3uOvT1czfyFxCbSzsEq9J43F58MudAd5EksByuwiIWCMLYKD2FMmcIsylfsRkYxea51GaEtgibCESOa5vxNl55L2Mt4Dc25Kigw')",
+                      "url('https://lh3.googleusercontent.com/aida-public/AB6AXuCIYOUm2gZr9EMAaXdWVFbhhaPrWWzC0BHgnzXuoM24S3dfe22aURHOY7XWDAMEQHtpqXv--GckRWrNoNaUeSfHa5S0acWPiUssS1sfiU-MimaMKem6f2yQR63k3CM67NxBGMUYQa8VVwf1iIyrn2KMPvn2BKhujYbVNbsRuciAFr3Qo7xgrLGAxup3YdF9bRdubA1zZTBL9S6nTJrlAtvSPL52rVpxXnvw5cQ6nDIwCsACA5NAPdKP5u2G36Xv4Z8emLAvlLDw-Q')",
                   }}
                 />
               </div>
@@ -83,8 +90,8 @@ export default function StudentProfile() {
                 {fullName}
               </h2>
               <p className="mb-4 flex items-center justify-center gap-2 font-medium text-slate-500 md:justify-start dark:text-slate-400">
-                <Icon name="school" className="text-base" />
-                Class 12 Science Student
+                <Icon name="workspace_premium" className="text-base" />
+                Senior Counselor
               </p>
               <div className="max-w-md">
                 <div className="mb-2 flex items-end justify-between">
@@ -187,27 +194,38 @@ export default function StudentProfile() {
                 <div className="border-b border-slate-100 px-8 py-6 dark:border-slate-700">
                   <h3 className="flex items-center gap-2 text-lg font-bold">
                     <Icon name="school" className="text-[#0B818D]" />
-                    Academic Details
+                    Professional Details
                   </h3>
                 </div>
 
                 <div className="grid grid-cols-1 gap-x-12 gap-y-6 p-8 md:grid-cols-2">
                   <div>
                     <p className="mb-1 text-xs font-bold tracking-wider text-slate-400 uppercase">
-                      Education Level
+                      Qualification
                     </p>
                     <div className="mt-2 inline-flex items-center gap-2 rounded-lg bg-[#0B818D]/10 px-3 py-1 text-[#0B818D]">
                       <Icon name="auto_awesome" className="text-sm" />
-                      <span className="text-sm font-bold">{grade}</span>
+                      <span className="text-sm font-bold">{qualification}</span>
                     </div>
                   </div>
                   <div>
                     <p className="mb-1 text-xs font-bold tracking-wider text-slate-400 uppercase">
-                      Current Stream
+                      Specialization
                     </p>
                     <div className="mt-2 inline-flex items-center gap-2 rounded-lg bg-[#0B818D]/10 px-3 py-1 text-[#0B818D]">
-                      <Icon name="biotech" className="text-sm" />
-                      <span className="text-sm font-bold">{stream}</span>
+                      <Icon name="psychology" className="text-sm" />
+                      <span className="text-sm font-bold">
+                        {specialization}
+                      </span>
+                    </div>
+                  </div>
+                  <div>
+                    <p className="mb-1 text-xs font-bold tracking-wider text-slate-400 uppercase">
+                      Experience
+                    </p>
+                    <div className="mt-2 inline-flex items-center gap-2 rounded-lg bg-[#0B818D]/10 px-3 py-1 text-[#0B818D]">
+                      <Icon name="work_history" className="text-sm" />
+                      <span className="text-sm font-bold">{experience}</span>
                     </div>
                   </div>
                 </div>
@@ -237,9 +255,11 @@ export default function StudentProfile() {
                   <div className="flex items-center justify-between rounded-2xl bg-slate-50 p-3 dark:bg-slate-700/30">
                     <div className="flex items-center gap-3">
                       <div className="flex h-10 w-10 items-center justify-center rounded-full bg-green-500/10 text-green-500">
-                        <Icon name="quiz" />
+                        <Icon name="groups" />
                       </div>
-                      <span className="text-sm font-bold">Assessment</span>
+                      <span className="text-sm font-bold">
+                        Students Assigned
+                      </span>
                     </div>
                     <Icon
                       name="check_circle"
@@ -251,10 +271,10 @@ export default function StudentProfile() {
                   <div className="flex items-center justify-between rounded-2xl bg-slate-50 p-3 dark:bg-slate-700/30">
                     <div className="flex items-center gap-3">
                       <div className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-200/50 text-slate-400 dark:bg-slate-600">
-                        <Icon name="alt_route" />
+                        <Icon name="event_available" />
                       </div>
                       <span className="text-sm font-bold text-slate-500">
-                        Roadmap Created
+                        Weekly Plan Ready
                       </span>
                     </div>
                     <Icon
@@ -269,8 +289,8 @@ export default function StudentProfile() {
                 <div className="relative z-10">
                   <h3 className="mb-2 text-xl font-bold">Need a Boost?</h3>
                   <p className="mb-6 text-sm text-white/80">
-                    Complete your profile to unlock personalized career
-                    recommendations.
+                    Complete your profile to unlock improved matching with
+                    students.
                   </p>
                   <button
                     type="button"

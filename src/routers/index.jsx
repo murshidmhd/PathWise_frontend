@@ -5,21 +5,26 @@ import StudentProfile from "../pages/student/Profile";
 import ApprovalPage from "../pages/student/Approval";
 import ParentDashboard from "../pages/parent/Dashboard";
 import CounselorDashboard from "../pages/counselor/Dashboard";
+import CounselorProfile from "../pages/counselor/Profile";
 import ProtectedRoute from "../components/ProtectedRoute";
-
+import StudentLayout from "../components/layot/StudentLayout";
+import CounselorLayout from "../components/layot/CounselorLayout";
 export default function AppRoutes() {
   return (
     <Routes>
       <Route path="/" element={<Navigate to="/auth/landing" replace />} />
       <Route path="/auth/*" element={<AuthRoutes />} />
       <Route
-        path="/student/dashboard"
+        path="/student"
         element={
           <ProtectedRoute allowedRoles={["student"]}>
-            <StudentDashboard />
+            <StudentLayout />
           </ProtectedRoute>
         }
-      />
+      >
+        <Route path="dashboard" element={<StudentDashboard />} />
+        <Route path="profile" element={<StudentProfile />} />
+      </Route>
 
       <Route
         path="/parent/dashboard"
@@ -30,22 +35,16 @@ export default function AppRoutes() {
         }
       />
       <Route
-        path="/student/profile"
-        element={
-          <ProtectedRoute allowedRoles={["student"]}>
-            <StudentProfile />
-          </ProtectedRoute>
-        }
-      />
-
-      <Route
-        path="/counselor/dashboard"
+        path="/counselor"
         element={
           <ProtectedRoute allowedRoles={["counselor"]}>
-            <CounselorDashboard />
+            <CounselorLayout />
           </ProtectedRoute>
         }
-      />
+      >
+        <Route path="dashboard" element={<CounselorDashboard />} />
+        <Route path="profile" element={<CounselorProfile />} />
+      </Route>
 
       <Route path="/student/approval" element={<ApprovalPage />} />
       <Route
