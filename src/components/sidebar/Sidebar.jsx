@@ -1,5 +1,6 @@
-import { Link } from "react-router-dom";
-import useLogout from "../../hooks/useLogout";
+import { useDispatch } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import { logout } from "../../store/slices/authSlice";
 
 function Icon({ name, className = "" }) {
   return (
@@ -8,7 +9,13 @@ function Icon({ name, className = "" }) {
 }
 
 export const Sidebar = () => {
-  const handleLogout = useLogout();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    dispatch(logout());
+    navigate("/auth/landing");
+  };  
   const sidebarLinks = [
     {
       icon: "dashboard",

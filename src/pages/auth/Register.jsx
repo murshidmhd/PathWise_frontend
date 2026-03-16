@@ -4,6 +4,7 @@ import GoogleAuthButton from "../../components/ui/GoogleAuthButton";
 import { useState } from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import toast from "react-hot-toast";
+import { isValidEmail, validatePassword } from "../../utils/validation";
 const roleMeta = {
   student: "Student",
   counselor: "Mentor",
@@ -38,15 +39,74 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (!formData.first_name.trim()) {
+      toast.error("First name is required");
+      return;
+    }
+
+    if (!formData.last_name.trim()) {
+      toast.error("Last name is required");
+      return;
+    }
+
+    if (!formData.email.trim()) {
+      toast.error("Email is required");
+      return;
+    }
+
+    if (!isValidEmail(formData.email)) {
+      toast.error("Enter a valid email address");
+      return;
+    }
+
+    const passwordError = validatePassword(formData.password);
+    if (passwordError) {
+      toast.error(passwordError);
+      return;
+    }
+
+    if (!formData.confirm_password) {
+      toast.error("Please confirm your password");
+      return;
+    }
+
     if (formData.password !== formData.confirm_password) {
       toast.error("Passwords do not match");
       return;
     }
 
-    // if (!captchaToken) {
-    //   toast.error("Please complete the reCAPTCHA");
-    //   return;
-    // }
+    if (role === "counselor") {
+      if (!formData.qualification.trim()) {
+        toast.error("Qualification is required for counselors");
+        return;
+      }
+
+      if (!formData.experience_years.toString().trim()) {
+        toast.error("Experience is required for counselors");
+        return;
+      }
+
+      const experience = Number(formData.experience_years);
+      if (Number.isNaN(experience) || experience < 0) {
+        toast.error("Experience must be a valid number");
+        return;
+      }
+
+      if (!formData.specialization.trim()) {
+        toast.error("Specialization is required for counselors");
+        return;
+      }
+
+      if (!formData.certificate) {
+        toast.error("Certificate upload is required for counselors");
+        return;
+      }
+    }
+
+    if (!captchaToken) {
+      toast.error("Please complete the reCAPTCHA");
+      return;
+    }
 
     try {
       // Use FormData to support file upload
@@ -70,13 +130,13 @@ const Register = () => {
         }
       }
       // data.append("recaptcha_token", captchaToken);
-      console.log("beforeresponse")
+      console.log("beforeresponse");
 
-      const response = await api.post("/auth/register/", data, {
+      await api.post("/auth/register/", data, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
-      console.log("after response")
+      console.log("after response");
       toast.success("Registration successful. Please verify OTP.");
 
       navigate("/auth/verify-otp", {
@@ -84,7 +144,9 @@ const Register = () => {
       });
     } catch (err) {
       const message =
-        err.response?.data?.detail || "Registration failed. Please try again.";
+        err.response?.data?.email?.[0] ||
+        err.response?.data?.detail ||
+        "Registration failed. Please try again.";
       toast.error(message);
     }
   };
@@ -238,10 +300,10 @@ const Register = () => {
               </button> */}
 
               <GoogleAuthButton />
-              {/* <ReCAPTCHA
+              <ReCAPTCHA
                 sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY}
                 onChange={(token) => setCaptchaToken(token)}
-              /> */}
+              />
 
               <div className="my-8 relative flex items-center">
                 <div className="flex-grow border-t border-slate-100"></div>

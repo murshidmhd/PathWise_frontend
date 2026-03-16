@@ -83,6 +83,7 @@ export default function StudentDashboard() {
 
   return (
     <div className="flex min-h-screen bg-[#F8FAFC] font-body text-slate-900 antialiased">
+
       <main className="flex-1 p-4 sm:p-6 lg:p-8">
         <header className="mb-8 flex flex-col justify-between gap-4 xl:flex-row xl:items-center">
           <div>
@@ -282,6 +283,71 @@ export default function StudentDashboard() {
         </section>
 
         <section className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+          <div className="rounded-[12px] border border-slate-100 bg-white p-6 shadow-sm">
+            <h3 className="mb-6 text-lg font-bold text-slate-900">
+              Skill Analysis
+            </h3>
+            <div className="relative flex aspect-square w-full items-center justify-center">
+              <div className="h-full w-full p-8">
+                <svg
+                  className="h-full w-full overflow-visible"
+                  viewBox="0 0 200 200"
+                >
+                  <polygon
+                    fill="none"
+                    points="100,20 180,100 100,180 20,100"
+                    stroke="#f1f5f9"
+                    strokeWidth="1"
+                  />
+                  <polygon
+                    fill="none"
+                    points="100,50 150,100 100,150 50,100"
+                    stroke="#f1f5f9"
+                    strokeWidth="1"
+                  />
+                  <polygon
+                    fill="rgba(11, 129, 141, 0.1)"
+                    points="100,35 170,100 100,165 40,100"
+                    stroke="#0B818D"
+                    strokeWidth="2"
+                  />
+                  <text
+                    className="fill-slate-400 text-[10px] font-bold uppercase"
+                    textAnchor="middle"
+                    x="100"
+                    y="10"
+                  >
+                    Logical
+                  </text>
+                  <text
+                    className="fill-slate-400 text-[10px] font-bold uppercase"
+                    textAnchor="start"
+                    x="195"
+                    y="105"
+                  >
+                    Creative
+                  </text>
+                  <text
+                    className="fill-slate-400 text-[10px] font-bold uppercase"
+                    textAnchor="middle"
+                    x="100"
+                    y="195"
+                  >
+                    Technical
+                  </text>
+                  <text
+                    className="fill-slate-400 text-[10px] font-bold uppercase"
+                    textAnchor="end"
+                    x="5"
+                    y="105"
+                  >
+                    Social
+                  </text>
+                </svg>
+              </div>
+            </div>
+          </div>
+
           <div className="rounded-[12px] border border-slate-100 bg-white p-6 shadow-sm">
             <h3 className="mb-6 text-lg font-bold text-slate-900">
               Upcoming Activity

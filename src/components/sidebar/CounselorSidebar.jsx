@@ -1,5 +1,6 @@
-import { Link } from "react-router-dom";
-import useLogout from "../../hooks/useLogout";
+import { useDispatch } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import { logout } from "../../store/slices/authSlice";
 export const CounselorSidebar = () => {
   function Icon({ name, className = "" }) {
     return (
@@ -7,7 +8,13 @@ export const CounselorSidebar = () => {
     );
   }
 
-  const handleLogout = useLogout();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    dispatch(logout());
+    navigate("/auth/landing");
+  };
   const sidebarLinks = [
     { icon: "dashboard", label: "Dashboard", to: "/counselor/dashboard" },
     { icon: "person", label: "Profile", to: "/counselor/profile" },
