@@ -6,6 +6,7 @@ const roleHome = {
   student: "/student/dashboard",
   parent: "/parent/dashboard",
   counselor: "/counselor/dashboard",
+  admin: "/admin/dashboard",
 };
 
 const ProtectedRoute = ({ children, allowedRoles = [] }) => {

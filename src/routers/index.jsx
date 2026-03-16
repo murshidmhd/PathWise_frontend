@@ -6,9 +6,11 @@ import ApprovalPage from "../pages/student/Approval";
 import ParentDashboard from "../pages/parent/Dashboard";
 import CounselorDashboard from "../pages/counselor/Dashboard";
 import CounselorProfile from "../pages/counselor/Profile";
+import AdminDashboard from "../pages/admin/Dashboard";
 import ProtectedRoute from "../components/ProtectedRoute";
 import StudentLayout from "../components/layot/StudentLayout";
 import CounselorLayout from "../components/layot/CounselorLayout";
+import AdminLayout from "../components/layot/AdminLayout";
 export default function AppRoutes() {
   return (
     <Routes>
@@ -44,6 +46,16 @@ export default function AppRoutes() {
       >
         <Route path="dashboard" element={<CounselorDashboard />} />
         <Route path="profile" element={<CounselorProfile />} />
+      </Route>
+      <Route
+        path="/admin"
+        element={
+          <ProtectedRoute allowedRoles={["admin"]}>
+            <AdminLayout />
+          </ProtectedRoute>
+        }
+      >
+        <Route path="dashboard" element={<AdminDashboard />} />
       </Route>
 
       <Route path="/student/approval" element={<ApprovalPage />} />
