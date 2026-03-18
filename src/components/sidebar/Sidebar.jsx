@@ -1,5 +1,5 @@
 import { useDispatch } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { logout } from "../../store/slices/authSlice";
 
 function Icon({ name, className = "" }) {
@@ -11,6 +11,7 @@ function Icon({ name, className = "" }) {
 export const Sidebar = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleLogout = () => {
     dispatch(logout());
@@ -21,58 +22,72 @@ export const Sidebar = () => {
       icon: "dashboard",
       label: "Dashboard",
       to: "/student/dashboard",
-      active: true,
     },
-    // { icon: "person", label: "Profile", to: "/student/profile" },
-    { icon: "assignment", label: "Assessments" },
-    { icon: "explore", label: "Career Paths" },
-    { icon: "school", label: "Mentors" },
-    { icon: "menu_book", label: "Resources" },
-    { icon: "settings", label: "Settings" },
+    {
+      icon: "assignment",
+      label: "Assessments",
+      to: "/student/assessments",
+    },
+    { icon: "explore", label: "Career Paths", to: "#" },
+    { icon: "school", label: "Mentors", to: "#" },
+    { icon: "menu_book", label: "Resources", to: "#" },
+    { icon: "settings", label: "Settings", to: "#" },
   ];
 
   return (
-    <aside className="fixed z-20 hidden h-full w-64 flex-col bg-[#1E293B] text-[#94A3B8] lg:flex">
-      <div className="mb-2 p-6">
+    <aside className="fixed z-20 hidden h-full w-64 flex-col bg-[#0F172A] text-slate-400 lg:flex">
+      <div className="border-b border-slate-800/80 p-6">
         <div className="flex items-center gap-3">
-          <div className="rounded-lg bg-[#0B818D] p-1.5">
+          <div className="rounded-xl bg-gradient-to-br from-[#6366F1] to-[#0D9488] p-2 shadow-lg shadow-[#6366F1]/20">
             <Icon name="local_fire_department" className="text-white" />
           </div>
-          <h2 className="font-heading text-xl font-bold tracking-tight text-white">
-            PathWise
-          </h2>
+          <div>
+            <h2 className="font-sora text-xl font-bold tracking-tight text-white">
+              PathWise
+            </h2>
+            <p className="text-[10px] tracking-[0.22em] text-slate-500 uppercase">
+              Student Space
+            </p>
+          </div>
         </div>
       </div>
 
-      <nav className="flex-1 space-y-1">
-        {sidebarLinks.map((item) => (
-          <Link
-            key={item.label}
-            to={item.to || "#"}
-            className={`flex w-full items-center gap-3 px-6 py-3 text-left transition-all ${
-              item.active
-                ? "border-l-[3px] border-[#0B818D] bg-slate-800/50 text-white"
-                : "hover:bg-slate-800/30 hover:text-white"
-            }`}
-          >
-            <Icon name={item.icon} className="text-[22px]" />
-            <span className="text-sm font-medium">{item.label}</span>
-          </Link>
-        ))}
+      <nav className="flex-1 space-y-1 px-4 py-6">
+        {sidebarLinks.map((item) => {
+          const isActive =
+            item.to !== "#" &&
+            (location.pathname === item.to ||
+              location.pathname.startsWith(`${item.to}/`));
+
+          return (
+            <Link
+              key={item.label}
+              to={item.to}
+              className={`flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-left transition-all ${
+                isActive
+                  ? "bg-white text-slate-900 shadow-sm shadow-slate-950/10"
+                  : "hover:bg-slate-800/60 hover:text-white"
+              }`}
+            >
+              <Icon name={item.icon} className="text-[22px]" />
+              <span className="text-sm font-medium">{item.label}</span>
+            </Link>
+          );
+        })}
       </nav>
 
       <button
         onClick={handleLogout}
-        className="flex items-center gap-3 px-6 py-3 text-slate-400 hover:text-white w-full"
+        className="mx-4 flex w-auto items-center gap-3 rounded-2xl border border-slate-800 px-4 py-3 text-slate-400 transition hover:border-slate-600 hover:bg-slate-800/60 hover:text-white"
       >
         <Icon name="logout" className="text-[22px]" />
         <span className="text-sm font-medium">Logout</span>
       </button>
 
       <div className="mt-auto p-4">
-        <div className="rounded-xl border border-slate-700/50 bg-slate-800/40 p-4">
+        <div className="rounded-[24px] border border-slate-800 bg-slate-900/70 p-4">
           <div className="mb-3 flex items-center gap-3">
-            <div className="size-10 overflow-hidden rounded-full border border-[#0B818D]/30 bg-slate-700">
+            <div className="size-10 overflow-hidden rounded-full border border-[#0D9488]/30 bg-slate-700">
               <img
                 alt="Ms. Priya Iyer"
                 className="h-full w-full object-cover"
@@ -80,8 +95,8 @@ export const Sidebar = () => {
               />
             </div>
             <div>
-              <p className="text-xs font-bold text-white">Ms. Priya Iyer</p>
-              <p className="text-[10px] font-bold tracking-wider text-[#0B818D] uppercase">
+              <p className="text-xs font-bold text-white">Ms. Priya Nair</p>
+              <p className="text-[10px] font-bold tracking-wider text-[#0D9488] uppercase">
                 Your Counselor
               </p>
             </div>
@@ -91,9 +106,9 @@ export const Sidebar = () => {
           </p>
           <button
             type="button"
-            className="w-full rounded-lg border border-[#0B818D]/20 bg-[#0B818D] py-2.5 text-xs font-bold text-white transition-colors hover:bg-[#0A7681]"
+            className="w-full rounded-xl border border-[#0D9488]/20 bg-[#0D9488] py-2.5 text-xs font-bold text-white transition-colors hover:bg-[#0b7d73]"
           >
-            Book Session
+            Contact Now
           </button>
         </div>
       </div>

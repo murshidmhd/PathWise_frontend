@@ -1,6 +1,7 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import AuthRoutes from "./auth";
 import StudentDashboard from "../pages/student/Dashboard";
+import StudentAssessments from "../pages/student/Assessments";
 import StudentProfile from "../pages/student/Profile";
 import ApprovalPage from "../pages/student/Approval";
 import ParentDashboard from "../pages/parent/Dashboard";
@@ -25,6 +26,7 @@ export default function AppRoutes() {
         }
       >
         <Route path="dashboard" element={<StudentDashboard />} />
+        <Route path="assessments" element={<StudentAssessments />} />
         <Route path="profile" element={<StudentProfile />} />
       </Route>
 

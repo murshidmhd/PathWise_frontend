@@ -1,15 +1,33 @@
 import { useEffect, useState } from "react";
+import {
+  BadgeCheck,
+  GraduationCap,
+  MapPin,
+  Pencil,
+  Phone,
+  Sparkles,
+  UserRound,
+} from "lucide-react";
 import api from "../../services/api";
 import EditProfileModal from "./EditProfileModal";
 
-function Icon({ name, className = "", filled = false }) {
+function InfoCard({ icon: Icon, label, value }) {
   return (
-    <span
-      className={`material-symbols-outlined ${className}`}
-      style={filled ? { fontVariationSettings: "'FILL' 1" } : undefined}
-    >
-      {name}
-    </span>
+    <div className="rounded-[24px] border border-slate-200 bg-slate-50 p-5">
+      <div className="flex items-center gap-3">
+        <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white text-[#6366F1] shadow-sm">
+          <Icon className="h-4 w-4" />
+        </div>
+        <div>
+          <p className="font-['DM_Sans'] text-xs font-bold tracking-[0.18em] text-slate-400 uppercase">
+            {label}
+          </p>
+          <p className="mt-1 font-['DM_Sans'] text-sm font-medium text-slate-700">
+            {value}
+          </p>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -35,11 +53,10 @@ export default function StudentProfile() {
   const handleSave = async () => {
     try {
       const res = await api.patch("/students/profile/", formData);
-
       setMe(res.data);
       setIsModalOpen(false);
     } catch {
-      console.error("Faile to save  profile");
+      console.error("Failed to save profile");
     }
   };
 
@@ -56,238 +73,150 @@ export default function StudentProfile() {
   const stream = me?.stream || "Science";
 
   return (
-    <div className="flex min-h-screen bg-[#F8FAFC] text-slate-900 dark:bg-[#0F172A] dark:text-slate-100">
-      <main className="flex-1 p-4 sm:p-6 lg:p-8">
-        <div className="mx-auto max-w-5xl">
-          <div className="mb-8 flex flex-col items-center gap-8 rounded-3xl border border-slate-200/60 bg-white p-8 shadow-sm md:flex-row dark:border-slate-700/50 dark:bg-slate-800">
-            <div className="relative">
-              <div className="h-32 w-32 rounded-full border-4 border-[#0B818D]/20 p-1">
+    <div className="min-h-screen bg-[#F8FAFC] px-4 py-6 text-slate-900 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl">
+        <header className="mb-8 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+          <div>
+            <p className="font-['DM_Sans'] text-sm font-semibold tracking-[0.2em] text-[#6366F1] uppercase">
+              Student Profile
+            </p>
+            <h1 className="mt-2 font-sora text-4xl font-bold tracking-tight text-slate-950">
+              Your profile
+            </h1>
+            <p className="mt-2 max-w-2xl font-['DM_Sans'] text-base leading-7 text-slate-500">
+              Keep your academic and personal information updated to sharpen
+              PathWise recommendations.
+            </p>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setIsModalOpen(true)}
+            className="inline-flex items-center gap-2 rounded-2xl bg-[#6366F1] px-5 py-3 font-['DM_Sans'] text-sm font-semibold text-white shadow-[0_18px_30px_rgba(99,102,241,0.22)] transition hover:bg-[#5558e8]"
+          >
+            <Pencil className="h-4 w-4" />
+            <span>Edit Profile</span>
+          </button>
+        </header>
+
+        <section className="rounded-[30px] border border-slate-200 bg-white p-6 shadow-[0_18px_48px_rgba(15,23,42,0.06)] sm:p-8">
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+            <div className="flex items-center gap-5">
+              <div className="h-24 w-24 overflow-hidden rounded-[28px] bg-gradient-to-br from-[#6366F1] to-[#0D9488] p-[2px] shadow-lg">
                 <div
-                  className="h-full w-full overflow-hidden rounded-full bg-cover bg-center"
+                  className="h-full w-full rounded-[26px] bg-cover bg-center"
                   style={{
                     backgroundImage:
                       "url('https://lh3.googleusercontent.com/aida-public/AB6AXuCkhebJndRKDMzD_TKK2fTTgRM0M0YhKleAr2BHirVGtRg388qDmE3rqRhnJ8CtEsznUlqAc_FxFkB8UQYDpgWUwB1kqZfwtA_XBC2D6O8lc0kvjJI0HXH0fdGcHD-Aa5OmEJ1NYPQ_b6DN7UjItIKaCc_y2h3upuMOnpn8Cn_3uOvT1czfyFxCbSzsEq9J43F58MudAd5EksByuwiIWCMLYKD2FMmcIsylfsRkYxea51GaEtgibCESOa5vxNl55L2Mt4Dc25Kigw')",
                   }}
                 />
               </div>
-              <button
-                type="button"
-                className="absolute right-1 bottom-1 rounded-full border-2 border-white bg-[#0B818D] p-2 text-white shadow-lg dark:border-slate-800"
-              >
-                <Icon name="photo_camera" className="text-sm" />
-              </button>
+              <div>
+                <h2 className="font-sora text-3xl font-bold text-slate-950">
+                  {fullName}
+                </h2>
+                <p className="mt-2 font-['DM_Sans'] text-sm font-medium text-slate-500">
+                  {grade} • {stream} Stream
+                </p>
+                <div className="mt-4 inline-flex items-center gap-2 rounded-full bg-[#EEF2FF] px-3 py-1 text-xs font-bold tracking-[0.18em] text-[#6366F1] uppercase">
+                  <Sparkles className="h-4 w-4" />
+                  85% Profile Complete
+                </div>
+              </div>
             </div>
 
-            <div className="flex-1 text-center md:text-left">
-              <h2 className="mb-1 font-heading text-3xl font-bold text-slate-900 dark:text-white">
-                {fullName}
-              </h2>
-              <p className="mb-4 flex items-center justify-center gap-2 font-medium text-slate-500 md:justify-start dark:text-slate-400">
-                <Icon name="school" className="text-base" />
-                Class 12 Science Student
+            <div className="min-w-[220px] rounded-[24px] bg-[linear-gradient(135deg,#312E81_0%,#4338CA_100%)] p-5 text-white">
+              <p className="font-['DM_Sans'] text-xs font-semibold tracking-[0.18em] text-indigo-100 uppercase">
+                Profile progress
               </p>
-              <div className="max-w-md">
-                <div className="mb-2 flex items-end justify-between">
-                  <span className="text-sm font-bold text-slate-700 dark:text-slate-300">
-                    Profile Completion
-                  </span>
-                  <span className="text-sm font-bold text-[#0B818D]">85%</span>
-                </div>
-                <div className="h-3 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-700">
-                  <div className="h-full w-[85%] rounded-full bg-[#0B818D]" />
-                </div>
-              </div>
-            </div>
-
-            <div className="flex min-w-[180px] flex-col gap-2">
-              <button
-                onClick={() => setIsModalOpen(true)}
-                type="button"
-                className="flex items-center justify-center gap-2 rounded-xl bg-[#0B818D] px-6 py-2.5 font-bold text-white transition-opacity hover:opacity-90"
-              >
-                <Icon name="edit" className="text-lg" />
-                Edit Profile
-              </button>
-            </div>
-          </div>
-
-          <EditProfileModal
-            isOpen={isModalOpen}
-            onClose={() => setIsModalOpen(false)}
-            formData={formData}
-            onChange={(e) =>
-              setFormData({ ...formData, [e.target.name]: e.target.value })
-            }
-            onSave={handleSave}
-          />
-
-          <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
-            <div className="space-y-8 lg:col-span-2">
-              <div className="overflow-hidden rounded-3xl border border-slate-200/60 bg-white shadow-sm dark:border-slate-700/50 dark:bg-slate-800">
-                <div className="flex items-center justify-between border-b border-slate-100 px-8 py-6 dark:border-slate-700">
-                  <h3 className="flex items-center gap-2 text-lg font-bold">
-                    <Icon name="person_outline" className="text-[#0B818D]" />
-                    Personal Information
-                  </h3>
-                </div>
-
-                <div className="grid grid-cols-1 gap-x-12 gap-y-6 p-8 md:grid-cols-2">
-                  <div>
-                    <p className="mb-1 text-xs font-bold tracking-wider text-slate-400 uppercase">
-                      Full Name
-                    </p>
-                    <p className="font-medium text-slate-900 dark:text-slate-100">
-                      {fullName}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="mb-1 text-xs font-bold tracking-wider text-slate-400 uppercase">
-                      Date of Birth
-                    </p>
-                    <p className="font-medium text-slate-900 dark:text-slate-100">
-                      {dob}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="mb-1 text-xs font-bold tracking-wider text-slate-400 uppercase">
-                      Gender
-                    </p>
-                    <p className="font-medium text-slate-900 dark:text-slate-100">
-                      {gender}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="mb-1 text-xs font-bold tracking-wider text-slate-400 uppercase">
-                      Phone Number
-                    </p>
-                    <p className="font-medium text-slate-900 dark:text-slate-100">
-                      {phone}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="mb-1 text-xs font-bold tracking-wider text-slate-400 uppercase">
-                      City
-                    </p>
-                    <p className="font-medium text-slate-900 dark:text-slate-100">
-                      {city}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="mb-1 text-xs font-bold tracking-wider text-slate-400 uppercase">
-                      State
-                    </p>
-                    <p className="font-medium text-slate-900 dark:text-slate-100">
-                      {state}
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="overflow-hidden rounded-3xl border border-slate-200/60 bg-white shadow-sm dark:border-slate-700/50 dark:bg-slate-800">
-                <div className="border-b border-slate-100 px-8 py-6 dark:border-slate-700">
-                  <h3 className="flex items-center gap-2 text-lg font-bold">
-                    <Icon name="school" className="text-[#0B818D]" />
-                    Academic Details
-                  </h3>
-                </div>
-
-                <div className="grid grid-cols-1 gap-x-12 gap-y-6 p-8 md:grid-cols-2">
-                  <div>
-                    <p className="mb-1 text-xs font-bold tracking-wider text-slate-400 uppercase">
-                      Education Level
-                    </p>
-                    <div className="mt-2 inline-flex items-center gap-2 rounded-lg bg-[#0B818D]/10 px-3 py-1 text-[#0B818D]">
-                      <Icon name="auto_awesome" className="text-sm" />
-                      <span className="text-sm font-bold">{grade}</span>
-                    </div>
-                  </div>
-                  <div>
-                    <p className="mb-1 text-xs font-bold tracking-wider text-slate-400 uppercase">
-                      Current Stream
-                    </p>
-                    <div className="mt-2 inline-flex items-center gap-2 rounded-lg bg-[#0B818D]/10 px-3 py-1 text-[#0B818D]">
-                      <Icon name="biotech" className="text-sm" />
-                      <span className="text-sm font-bold">{stream}</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="space-y-8">
-              <div className="overflow-hidden rounded-3xl border border-slate-200/60 bg-white shadow-sm dark:border-slate-700/50 dark:bg-slate-800">
-                <div className="border-b border-slate-100 px-6 py-4 dark:border-slate-700">
-                  <h3 className="text-base font-bold">Milestones</h3>
-                </div>
-                <div className="space-y-4 p-6">
-                  <div className="flex items-center justify-between rounded-2xl bg-slate-50 p-3 dark:bg-slate-700/30">
-                    <div className="flex items-center gap-3">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-green-500/10 text-green-500">
-                        <Icon name="verified" />
-                      </div>
-                      <span className="text-sm font-bold">Onboarded</span>
-                    </div>
-                    <Icon
-                      name="check_circle"
-                      filled
-                      className="text-green-500"
-                    />
-                  </div>
-
-                  <div className="flex items-center justify-between rounded-2xl bg-slate-50 p-3 dark:bg-slate-700/30">
-                    <div className="flex items-center gap-3">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-green-500/10 text-green-500">
-                        <Icon name="quiz" />
-                      </div>
-                      <span className="text-sm font-bold">Assessment</span>
-                    </div>
-                    <Icon
-                      name="check_circle"
-                      filled
-                      className="text-green-500"
-                    />
-                  </div>
-
-                  <div className="flex items-center justify-between rounded-2xl bg-slate-50 p-3 dark:bg-slate-700/30">
-                    <div className="flex items-center gap-3">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-200/50 text-slate-400 dark:bg-slate-600">
-                        <Icon name="alt_route" />
-                      </div>
-                      <span className="text-sm font-bold text-slate-500">
-                        Roadmap Created
-                      </span>
-                    </div>
-                    <Icon
-                      name="radio_button_unchecked"
-                      className="text-slate-300"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div className="group relative overflow-hidden rounded-3xl bg-[#0B818D] p-8 text-white">
-                <div className="relative z-10">
-                  <h3 className="mb-2 text-xl font-bold">Need a Boost?</h3>
-                  <p className="mb-6 text-sm text-white/80">
-                    Complete your profile to unlock personalized career
-                    recommendations.
-                  </p>
-                  <button
-                    type="button"
-                    className="w-full rounded-xl bg-white px-6 py-3 font-bold text-[#0B818D] transition-colors hover:bg-slate-50"
-                  >
-                    Finish Now
-                  </button>
-                </div>
-                <div className="absolute -right-10 -bottom-10 h-32 w-32 rounded-full bg-white/10 transition-transform group-hover:scale-125" />
-                <div className="absolute top-4 right-4 text-white/20">
-                  <Icon name="lightbulb" className="text-6xl" />
-                </div>
+              <p className="mt-3 font-sora text-3xl font-bold">85%</p>
+              <div className="mt-4 h-3 rounded-full bg-white/10">
+                <div className="h-3 w-[85%] rounded-full bg-white" />
               </div>
             </div>
           </div>
-        </div>
-      </main>
+        </section>
+
+        <EditProfileModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          formData={formData}
+          onChange={(e) =>
+            setFormData({ ...formData, [e.target.name]: e.target.value })
+          }
+          onSave={handleSave}
+        />
+
+        <section className="mt-8 grid gap-6 xl:grid-cols-[1.05fr_0.95fr]">
+          <article className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-[0_18px_48px_rgba(15,23,42,0.05)]">
+            <div>
+              <p className="font-['DM_Sans'] text-sm font-semibold text-slate-500">
+                Personal Information
+              </p>
+              <h2 className="mt-1 font-sora text-2xl font-bold text-slate-950">
+                Core details
+              </h2>
+            </div>
+
+            <div className="mt-6 grid gap-4 md:grid-cols-2">
+              <InfoCard icon={UserRound} label="Full Name" value={fullName} />
+              <InfoCard icon={BadgeCheck} label="Gender" value={gender} />
+              <InfoCard icon={Phone} label="Phone Number" value={phone} />
+              <InfoCard icon={MapPin} label="Location" value={`${city}, ${state}`} />
+              <InfoCard icon={BadgeCheck} label="Date of Birth" value={dob} />
+              <InfoCard
+                icon={GraduationCap}
+                label="Current Stream"
+                value={stream}
+              />
+            </div>
+          </article>
+
+          <article className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-[0_18px_48px_rgba(15,23,42,0.05)]">
+            <div>
+              <p className="font-['DM_Sans'] text-sm font-semibold text-slate-500">
+                Student Snapshot
+              </p>
+              <h2 className="mt-1 font-sora text-2xl font-bold text-slate-950">
+                Academic overview
+              </h2>
+            </div>
+
+            <div className="mt-6 space-y-4">
+              <div className="rounded-[24px] border border-slate-200 bg-slate-50 p-5">
+                <p className="font-['DM_Sans'] text-xs font-bold tracking-[0.18em] text-slate-400 uppercase">
+                  Education Level
+                </p>
+                <p className="mt-2 font-sora text-2xl font-bold text-slate-950">
+                  {grade}
+                </p>
+              </div>
+
+              <div className="rounded-[24px] border border-slate-200 bg-slate-50 p-5">
+                <p className="font-['DM_Sans'] text-xs font-bold tracking-[0.18em] text-slate-400 uppercase">
+                  Current Stream
+                </p>
+                <p className="mt-2 font-sora text-2xl font-bold text-slate-950">
+                  {stream}
+                </p>
+              </div>
+
+              <div className="rounded-[24px] bg-[linear-gradient(135deg,#0F766E_0%,#0D9488_100%)] p-5 text-white">
+                <p className="font-['DM_Sans'] text-xs font-bold tracking-[0.18em] uppercase text-teal-100">
+                  Recommendation
+                </p>
+                <p className="mt-2 font-sora text-xl font-bold">
+                  Complete all 5 core assessments to sharpen your career match.
+                </p>
+                <p className="mt-3 font-['DM_Sans'] text-sm leading-6 text-teal-50">
+                  Your profile becomes more accurate as PathWise learns from
+                  your assessment and academic data.
+                </p>
+              </div>
+            </div>
+          </article>
+        </section>
+      </div>
     </div>
   );
 }
