@@ -1,7 +1,38 @@
-import { setAccessToken } from "../services/api";
+import api, { setAccessToken } from "../services/api";
 import { setUser } from "../store/slices/authSlice";
 
-export function handleLoginSuccess(dispatch, token, role) {
+export async function handleLoginSuccess(dispatch, token, role) {
   setAccessToken(token);
-  dispatch(setUser({ token, role }));
+
+  let user = null;
+
+  try {
+    if (role === "student") {
+      const profileRes = await api.get("/students/profile/", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      user = profileRes.data;
+    } else if (role === "counselor") {
+      const profileRes = await api.get("/counselors/profile/", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      user = profileRes.data;
+    }
+  } catch (error) {
+    console.error("Failed to fetch profile after login", error);
+  }
+
+  dispatch(setUser({ token, role, user }));
+}
+
+/**
+ * Validates whether a given string is a properly formatted email address.
+ * 
+ * @param {string} email - The email address to validate.
+ * @returns {boolean} True if the email is valid, false otherwise.
+ */
+export function validateEmail(email) {
+  // Regular expression to check for typical email pattern: string@string.string
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(String(email).toLowerCase());
 }
