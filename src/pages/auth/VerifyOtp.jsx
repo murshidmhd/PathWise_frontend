@@ -1,17 +1,23 @@
 import { useState, useRef, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import api from "../../services/api";
+import toast from "react-hot-toast";
+import { useDispatch } from "react-redux";
+import { handleLoginSuccess } from "../../services/utils/auth";
+
+const OTP_LENGTH = 6;
 
 export default function VerifyOTP() {
-  const [otp, setOtp] = useState(["", "", "", "", "", ""]);
-  const [error, setError] = useState(null);
+  const [otp, setOtp] = useState(Array(OTP_LENGTH).fill(""));
   const [loading, setLoading] = useState(false);
+  const [resending, setResending] = useState(false);
   const [timer, setTimer] = useState(45);
   const [canResend, setCanResend] = useState(false);
 
   const inputRefs = useRef([]);
   const location = useLocation();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const email = location.state?.email;
   const role = location.state?.role;
@@ -26,13 +32,14 @@ export default function VerifyOTP() {
   }, [timer]);
 
   const handleChange = (index, value) => {
-    if (!/^\d*$/.test(value)) return;
+    const cleanValue = value.replace(/\D/g, "");
+    if (!cleanValue && value) return;
 
     const newOtp = [...otp];
-    newOtp[index] = value;
+    newOtp[index] = cleanValue.slice(-1);
     setOtp(newOtp);
 
-    if (value && index < 5) {
+    if (cleanValue && index < OTP_LENGTH - 1) {
       inputRefs.current[index + 1].focus();
     }
   };
@@ -43,41 +50,120 @@ export default function VerifyOTP() {
     }
   };
 
+  const handlePaste = (e) => {
+    e.preventDefault();
+    const pasted = e.clipboardData
+      .getData("text")
+      .replace(/\D/g, "")
+      .slice(0, OTP_LENGTH);
+
+    if (!pasted) return;
+
+    const filled = Array(OTP_LENGTH).fill("");
+    pasted.split("").forEach((char, idx) => {
+      filled[idx] = char;
+    });
+    setOtp(filled);
+
+    const nextIndex = Math.min(pasted.length, OTP_LENGTH - 1);
+    inputRefs.current[nextIndex]?.focus();
+  };
+
   useEffect(() => {
     if (!email) {
       navigate("/auth/register", { replace: true });
     }
   }, [email, navigate]);
 
+  const handleBack = () => {
+    if (window.history.length > 1) {
+      navigate(-1);
+      return;
+    }
+
+    navigate("/auth/register", { replace: true });
+  };
+
   const handleSubmit = async () => {
     const otpCode = otp.join("");
-    if (otpCode.length < 6) {
-      setError("Please enter the complete 6-digit OTP");
+    if (!email) {
+      toast.error("Email is missing. Please register again.");
+      return;
+    }
+
+    if (!role) {
+      toast.error("Role is missing. Please start registration again.");
+      return;
+    }
+
+    if (!/^\d{6}$/.test(otpCode)) {
+      toast.error("Please enter the complete 6-digit OTP");
       return;
     }
 
     setLoading(true);
-    setError(null);
 
     try {
-      await api.post("/auth/verify-otp/", {
+      const res = await api.post("/auth/verify-otp/", {
         email,
         otp: otpCode,
-      });   
+      });
+      toast.success("Email verified successfully");
+
       if (role === "counselor") {
+        handleLoginSuccess(dispatch, res.data.access, role);
         navigate("/auth/approval", { replace: true });
-      } else {
-        navigate("/auth/login", { replace: true });
+      } else if (role === "student") {
+        handleLoginSuccess(dispatch, res.data.access, role);
+        navigate("/student/dashboard");
+      } else if (role === "admin") {
+        handleLoginSuccess(dispatch, res.data.access, role);
+        navigate("/admin/dashboard");
       }
     } catch (err) {
-      setError(err.response?.data?.message || "Invalid OTP, please try again");
+      toast.error(
+        err.response?.data?.message || "Invalid OTP, please try again",
+      );
     } finally {
       setLoading(false);
     }
   };
 
+  const handleResendOtp = async () => {
+    if (!email) {
+      toast.error("Email is missing. Please register again.");
+      return;
+    }
+
+    if (resending) {
+      return;
+    }
+
+    setResending(true);
+
+    try {
+      const response = await api.post("/auth/resend-otp/", { email });
+      setOtp(Array(OTP_LENGTH).fill(""));
+      setTimer(45);
+      setCanResend(false);
+      inputRefs.current[0]?.focus();
+
+      toast.success(
+        response.data?.detail || response.data?.message || "OTP sent again",
+      );
+    } catch (err) {
+      toast.error(
+        err.response?.data?.detail ||
+          err.response?.data?.email?.[0] ||
+          "Failed to resend OTP",
+      );
+    } finally {
+      setResending(false);
+    }
+  };
+
   const OtpInputs = (
-    <div className="mb-8 flex justify-between gap-2 sm:gap-3">
+    <div className="mb-8 flex justify-center gap-2 sm:gap-3">
       {otp.map((digit, index) => (
         <input
           key={index}
@@ -85,48 +171,65 @@ export default function VerifyOTP() {
           type="text"
           maxLength={1}
           value={digit}
+          inputMode="numeric"
+          autoComplete="one-time-code"
           onChange={(e) => handleChange(index, e.target.value)}
           onKeyDown={(e) => handleKeyDown(index, e)}
-          className="h-14 w-11 rounded-xl border-2 border-slate-200 bg-white text-center text-xl font-bold outline-none transition-all focus:border-warning sm:h-16 sm:w-14 sm:text-2xl"
+          onPaste={handlePaste}
+          onFocus={(e) => e.target.select()}
+          className="h-14 w-12 rounded-2xl border border-slate-200 bg-slate-50 text-center text-lg font-semibold text-slate-900 outline-none transition focus:border-amber-400 focus:bg-white focus:ring-4 focus:ring-amber-100 sm:h-16 sm:w-14 sm:text-xl"
         />
       ))}
     </div>
   );
 
   const OtpContent = (
-    <div className="w-full max-w-md text-center">
-      <div className="mb-8 flex justify-center">
-        <div className="flex h-20 w-20 items-center justify-center rounded-full border-4 border-warning/20 bg-warning/10">
-          <span className="material-symbols-outlined text-4xl text-warning">
+    <div className="w-full max-w-md rounded-[28px] border border-slate-200 bg-white p-6 text-center shadow-xl shadow-slate-200/60 sm:p-8">
+      <div className="mb-6 flex justify-start">
+        <button
+          type="button"
+          onClick={handleBack}
+          className="inline-flex items-center gap-2 rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-slate-300 hover:bg-slate-50"
+        >
+          <span className="material-symbols-outlined text-[18px]">
+            arrow_back
+          </span>
+          Back
+        </button>
+      </div>
+
+      <div className="mb-6 flex justify-center">
+        <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-amber-50">
+          <span className="material-symbols-outlined text-3xl text-amber-500">
             mail
           </span>
         </div>
       </div>
 
-      <h2 className="mb-3 font-sora text-3xl font-extrabold text-slate-900">
+      <h2 className="font-sora mb-3 text-3xl font-extrabold text-slate-900">
         Verify your email
       </h2>
-      <p className="mb-2 text-slate-500">
+      <p className="mb-2 text-sm leading-7 text-slate-500 sm:text-base">
         We sent a 6-digit code to{" "}
         <span className="font-bold text-slate-900">{email}</span>
       </p>
-      <p className="mb-10 text-sm italic text-slate-400">
+      <p className="mb-8 text-sm text-slate-400">
         Check your spam folder too
       </p>
 
       {OtpInputs}
 
-      {error && <p className="mb-4 text-sm text-danger">{error}</p>}
-
-      <div className="mb-10">
+      <div className="mb-8 rounded-2xl bg-slate-50 px-4 py-3">
         <p className="text-sm text-slate-500">
           Didn&apos;t receive code?{" "}
           {canResend ? (
             <button
-              className="font-bold text-warning hover:underline"
+              className="font-bold text-amber-600 hover:underline"
               type="button"
+              onClick={handleResendOtp}
+              disabled={resending}
             >
-              Resend OTP
+              {resending ? "Sending..." : "Resend OTP"}
             </button>
           ) : (
             <>
@@ -142,13 +245,13 @@ export default function VerifyOTP() {
       <button
         onClick={handleSubmit}
         disabled={loading}
-        className="w-full rounded-xl bg-gradient-to-r from-warning to-danger py-4 font-bold text-white shadow-lg transition-transform hover:scale-[1.02] active:scale-95 disabled:opacity-50"
+        className="w-full rounded-2xl bg-gradient-to-r from-amber-500 to-orange-500 py-4 font-bold text-white shadow-lg shadow-orange-500/20 transition hover:brightness-105 disabled:opacity-50"
         type="button"
       >
         {loading ? "Verifying..." : "Verify & Continue"}
       </button>
 
-      <p className="mt-8 text-xs text-slate-400">
+      <p className="mt-6 text-xs leading-6 text-slate-400">
         By continuing, you agree to PathWise&apos;s Terms of Service and Privacy
         Policy.
       </p>
@@ -156,64 +259,51 @@ export default function VerifyOTP() {
   );
 
   return (
-    <div className="min-h-screen bg-page-bg font-body text-text-primary">
-      <div className="hidden min-h-screen lg:flex">
-        <div className="flex w-1/2 items-center justify-center border-r border-slate-200 bg-white p-12">
-          <div className="w-full max-w-md">
-            <div className="mb-12 flex items-center gap-3">
-              <div className="rounded-lg bg-secondary/15 p-2">
-                <span className="material-symbols-outlined text-3xl text-secondary">
-                  school
-                </span>
+    <div className="min-h-screen bg-[#f8f7f5] px-6 py-10 text-slate-900">
+      <div className="mx-auto flex min-h-screen max-w-5xl items-center justify-center">
+        <div className="grid w-full gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
+          <div className="hidden lg:block">
+            <div className="mb-6 flex items-center gap-3">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#0A0F1E] text-white">
+                <span className="material-symbols-outlined text-2xl">route</span>
               </div>
-              <h2 className="font-heading text-2xl font-extrabold tracking-tight">
+              <h1 className="font-sora text-2xl font-extrabold tracking-tight text-[#0A0F1E]">
                 PathWise
-              </h2>
+              </h1>
             </div>
-            <h1 className="mb-6 font-heading text-4xl font-bold leading-tight">
-              Complete your journey to excellence.
-            </h1>
-            <p className="mb-8 text-lg text-text-secondary">
-              Join thousands of students with personalized learning paths and
-              expert guidance.
+
+            <h2 className="font-sora max-w-md text-4xl font-extrabold leading-tight text-[#0A0F1E]">
+              Enter the code and finish your signup.
+            </h2>
+            <p className="mt-4 max-w-md text-base leading-8 text-slate-500">
+              A simple verification step to confirm your email and continue to
+              your dashboard.
             </p>
-            <div className="mb-12 space-y-4">
-              <div className="flex items-center gap-4 text-slate-700">
-                <span className="material-symbols-outlined text-secondary">
+
+            <div className="mt-8 space-y-4">
+              <div className="flex items-center gap-3 text-slate-700">
+                <span className="material-symbols-outlined text-amber-500">
                   check_circle
                 </span>
-                <span>Expert-led sessions</span>
+                Fast email verification
               </div>
-              <div className="flex items-center gap-4 text-slate-700">
-                <span className="material-symbols-outlined text-secondary">
+              <div className="flex items-center gap-3 text-slate-700">
+                <span className="material-symbols-outlined text-amber-500">
                   check_circle
                 </span>
-                <span>Personalized roadmap</span>
+                Safe account activation
               </div>
-              <div className="flex items-center gap-4 text-slate-700">
-                <span className="material-symbols-outlined text-secondary">
+              <div className="flex items-center gap-3 text-slate-700">
+                <span className="material-symbols-outlined text-amber-500">
                   check_circle
                 </span>
-                <span>24/7 support</span>
+                Direct entry to your role dashboard
               </div>
-            </div>
-            <div className="relative h-48 w-full overflow-hidden rounded-xl shadow-2xl">
-              <div className="absolute inset-0 bg-gradient-to-tr from-secondary/30 to-transparent"></div>
-              <img
-                alt="Students studying together"
-                className="h-full w-full object-cover"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuBx-BrPliGfJfsKRLQ686xtq3wRhTUvf3vAsoVg-rBFR-Eexo-YzqwpLnPcNbQSbmuyKAYeyERpoUW8D0BRWIz_5iFlNtawaJIhmVGEbt7c9-pTwN2LAPVId8rqY5vDpzWI5sBvsWPEBxyQw4AZ27-g9XDMsVKkcEJMWqqssyERONOmOkAxw8xiweUiT_1lsZIHOsskQsF7FMMz4BwW0kJxBV2_nvKAf2qtL8j8ktR6dJuJUEgu1mh_0QZBLp40Diev0GvzDggxUQ"
-              />
             </div>
           </div>
-        </div>
-        <div className="flex w-1/2 items-center justify-center bg-white p-12">
-          {OtpContent}
-        </div>
-      </div>
 
-      <div className="flex min-h-screen items-center justify-center px-6 py-10 lg:hidden">
-        {OtpContent}
+          <div className="flex items-center justify-center">{OtpContent}</div>
+        </div>
       </div>
     </div>
   );

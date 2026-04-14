@@ -2,7 +2,7 @@ import { useState } from "react";
 import api from "../../services/api";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { handleLoginSuccess } from "../../utils/auth";
+import { handleLoginSuccess } from "../../services/utils/auth";
 import toast from "react-hot-toast";
 
 const roles = [
@@ -11,12 +11,6 @@ const roles = [
     label: "Student",
     icon: "school",
     desc: "I'm looking for career guidance",
-  },
-  {
-    value: "parent",
-    label: "Parent",
-    icon: "family_restroom",
-    desc: "I want to track my child's progress",
   },
   {
     value: "counselor",

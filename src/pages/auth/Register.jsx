@@ -2,11 +2,16 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import api from "../../services/api";
 import GoogleAuthButton from "../../components/ui/GoogleAuthButton";
 import { useState } from "react";
-
+import ReCAPTCHA from "react-google-recaptcha";
+import toast from "react-hot-toast";
+import {
+  isValidEmail,
+  isValidName,
+  validatePassword,
+} from "../../services/utils/validation";
 const roleMeta = {
   student: "Student",
   counselor: "Mentor",
-  parent: "Parent",
 };
 
 const Register = () => {
@@ -14,6 +19,7 @@ const Register = () => {
   const role = searchParams.get("role") || "student";
   const roleLabel = roleMeta[role] || "Student";
   const isCounselor = role === "counselor";
+  const [captchaToken, setCaptchaToken] = useState(null);
 
   const [formData, setFormData] = useState({
     first_name: "",
@@ -29,19 +35,79 @@ const Register = () => {
 
   const navigate = useNavigate();
 
-  const [error, setError] = useState(null);
-  // const [success, setSuccess] = useState(false);
-
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(null);
+
+    if (!isValidName(formData.first_name)) {
+      toast.error("Enter a valid first name (alphabetic, 2-50 characters)");
+      return;
+    }
+
+    if (!isValidName(formData.last_name)) {
+      toast.error("Enter a valid last name (alphabetic, 2-50 characters)");
+      return;
+    }
+
+    if (!formData.email.trim()) {
+      toast.error("Email is required");
+      return;
+    }
+
+    if (!isValidEmail(formData.email)) {
+      toast.error("Enter a valid email address");
+      return;
+    }
+
+    const passwordError = validatePassword(formData.password);
+    if (passwordError) {
+      toast.error(passwordError);
+      return;
+    }
+
+    if (!formData.confirm_password) {
+      toast.error("Please confirm your password");
+      return;
+    }
 
     if (formData.password !== formData.confirm_password) {
-      setError({ confirm_password: "Passwords do not match" });
+      toast.error("Passwords do not match");
+      return;
+    }
+
+    if (role === "counselor") {
+      if (!formData.qualification.trim()) {
+        toast.error("Qualification is required for counselors");
+        return;
+      }
+
+      if (!formData.experience_years.toString().trim()) {
+        toast.error("Experience is required for counselors");
+        return;
+      }
+
+      const experience = Number(formData.experience_years);
+      if (Number.isNaN(experience) || experience < 0 || experience > 60) {
+        toast.error("Experience must be a valid number between 0 and 60");
+        return;
+      }
+
+      if (!formData.specialization.trim()) {
+        toast.error("Specialization is required for counselors");
+        return;
+      }
+
+      if (!formData.certificate) {
+        toast.error("Certificate upload is required for counselors");
+        return;
+      }
+    }
+
+    if (!captchaToken) {
+      toast.error("Please complete the reCAPTCHA");
       return;
     }
 
@@ -66,19 +132,25 @@ const Register = () => {
           data.append("certificate", formData.certificate);
         }
       }
+      // data.append("recaptcha_token", captchaToken);
+      console.log("beforeresponse");
 
-      const response = await api.post("/auth/register/", data, {
+      await api.post("/auth/register/", data, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
-      console.log("Registered:", response.data);
-      
+      console.log("after response");
+      toast.success("Registration successful. Please verify OTP.");
 
       navigate("/auth/verify-otp", {
         state: { email: formData.email, role },
       });
     } catch (err) {
-      setError(err.response?.data || "Something went wrong");
+      const message =
+        err.response?.data?.email?.[0] ||
+        err.response?.data?.detail ||
+        "Registration failed. Please try again.";
+      toast.error(message);
     }
   };
 
@@ -204,11 +276,6 @@ const Register = () => {
           </div>
 
           <div className="flex flex-1 items-center justify-center p-8 lg:p-12">
-            {/* {success && (
-              <p style={{ color: "green" }}>Registration successful!</p>
-            )} */}
-            {error && <p style={{ color: "red" }}>{JSON.stringify(error)}</p>}
-
             <div className="w-full max-w-[480px]">
               <div className="mb-8">
                 <span className="inline-flex items-center rounded-full bg-teal-400/10 px-3 py-1 text-xs font-bold text-teal-500 uppercase tracking-wider">
@@ -236,6 +303,10 @@ const Register = () => {
               </button> */}
 
               <GoogleAuthButton />
+              <ReCAPTCHA
+                sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY}
+                onChange={(token) => setCaptchaToken(token)}
+              />
 
               <div className="my-8 relative flex items-center">
                 <div className="flex-grow border-t border-slate-100"></div>

@@ -15,7 +15,7 @@ export default function PathWiseLanding() {
     {
       icon: "groups",
       title: "Mentor support",
-      text: "Get advice that helps students and parents make better decisions together.",
+      text: "Get advice from experienced mentors who can help students make better decisions.",
     },
   ];
 
@@ -85,12 +85,6 @@ export default function PathWiseLanding() {
                 <span className="material-symbols-outlined text-teal-300">
                   check_circle
                 </span>
-                Parent visibility
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined text-teal-300">
-                  check_circle
-                </span>
                 Mentor-led direction
               </div>
             </div>
@@ -136,8 +130,8 @@ export default function PathWiseLanding() {
 
             <div className="mt-6 rounded-2xl border border-amber-400/10 bg-amber-400/8 p-4">
               <p className="text-sm leading-6 text-slate-200">
-                Start as a student, parent, or counselor and enter the platform
-                with the role that matches your journey.
+                Start as a student or counselor and enter the platform with the
+                role that matches your journey.
               </p>
             </div>
           </section>

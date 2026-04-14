@@ -1,6 +1,6 @@
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
-import { handleLoginSuccess } from "../../utils/auth";
+import { handleLoginSuccess } from "../../services/utils/auth";
 import { useNavigate } from "react-router-dom";
 import api from "../../services/api";
 import { GoogleLogin } from "@react-oauth/google";
