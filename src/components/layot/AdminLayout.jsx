@@ -5,7 +5,7 @@ const AdminLayout = () => {
   return (
     <div className="min-h-screen bg-[#f8fafc]">
       <AdminSidebar />
-      <main className="min-h-screen lg:ml-72">
+      <main className="min-h-screen pt-[140px] lg:ml-72 lg:pt-0">
         <Outlet />
       </main>
     </div>

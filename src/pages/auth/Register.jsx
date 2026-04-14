@@ -4,11 +4,14 @@ import GoogleAuthButton from "../../components/ui/GoogleAuthButton";
 import { useState } from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import toast from "react-hot-toast";
-import { isValidEmail, validatePassword } from "../../utils/validation";
+import {
+  isValidEmail,
+  isValidName,
+  validatePassword,
+} from "../../services/utils/validation";
 const roleMeta = {
   student: "Student",
   counselor: "Mentor",
-  parent: "Parent",
 };
 
 const Register = () => {
@@ -39,13 +42,13 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!formData.first_name.trim()) {
-      toast.error("First name is required");
+    if (!isValidName(formData.first_name)) {
+      toast.error("Enter a valid first name (alphabetic, 2-50 characters)");
       return;
     }
 
-    if (!formData.last_name.trim()) {
-      toast.error("Last name is required");
+    if (!isValidName(formData.last_name)) {
+      toast.error("Enter a valid last name (alphabetic, 2-50 characters)");
       return;
     }
 
@@ -87,8 +90,8 @@ const Register = () => {
       }
 
       const experience = Number(formData.experience_years);
-      if (Number.isNaN(experience) || experience < 0) {
-        toast.error("Experience must be a valid number");
+      if (Number.isNaN(experience) || experience < 0 || experience > 60) {
+        toast.error("Experience must be a valid number between 0 and 60");
         return;
       }
 

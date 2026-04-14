@@ -4,8 +4,8 @@ import { useState } from "react";
 import api from "../../services/api";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
-import { handleLoginSuccess } from "../../utils/auth";
-import { isValidEmail, validatePassword } from "../../utils/validation";
+import { handleLoginSuccess } from "../../services/utils/auth";
+import { isValidEmail, validatePassword } from "../../services/utils/validation";
 export default function Login() {
   const navigate = useNavigate();
   const [form, setForm] = useState({
@@ -44,7 +44,6 @@ export default function Login() {
       handleLoginSuccess(dispatch, access, role);
 
       if (role === "student") navigate("/student/dashboard");
-      if (role === "parent") navigate("/parent/dashboard");
       if (role === "counselor") navigate("/counselor/dashboard");
       if (role === "admin") navigate("/admin/dashboard");
       toast.success("Logged in successfully");
@@ -68,9 +67,10 @@ export default function Login() {
         return;
       }
       toast.error(
+        err.response?.data?.message ||
         err.response?.data?.non_field_errors?.[0] ||
-          err.response?.data?.detail ||
-          "Login failed. Please try again",
+        err.response?.data?.detail ||
+        "Login failed. Please try again",
       );
     }
   };
@@ -188,6 +188,12 @@ export default function Login() {
                   <label className="text-sm font-semibold text-slate-700">
                     Password
                   </label>
+                  <Link
+                    className="text-xs font-bold text-amber-500 hover:underline"
+                    to="/auth/forgot-password"
+                  >
+                    Forgot Password?
+                  </Link>
                 </div>
                 <div className="relative">
                   <span className="material-symbols-outlined absolute top-1/2 left-4 -translate-y-1/2 text-slate-400">

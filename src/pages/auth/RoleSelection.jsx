@@ -12,9 +12,6 @@ const RoleSelection = () => {
       case "mentor":
         navigate("/auth/register?role=counselor");
         break;
-      case "parent":
-        navigate("/auth/register?role=parent");
-        break;
     }
   };
 
@@ -53,7 +50,7 @@ const RoleSelection = () => {
 
         {/* Cards Grid */}
         <main className="w-full max-w-6xl">
-          <div className="grid lg:grid-cols-3 gap-8">
+          <div className="grid gap-8 lg:grid-cols-2">
             {/* Student Card - EXACT COPY */}
             <div
               className="glass-card rounded-[24px] p-10 flex flex-col items-center text-center group cursor-pointer"
@@ -102,29 +99,6 @@ const RoleSelection = () => {
               </div>
             </div>
 
-            {/* Parent Card - EXACT COPY */}
-            <div
-              className="glass-card rounded-[24px] p-10 flex flex-col items-center text-center group cursor-pointer"
-              onClick={() => handleRoleSelect("parent")}
-            >
-              <div className="w-14 h-14 icon-badge rounded-2xl flex items-center justify-center mb-8 shadow-lg shadow-cyan-500/20 group-hover:scale-110 transition-transform duration-300">
-                <span className="material-symbols-outlined text-white text-3xl">
-                  family_restroom
-                </span>
-              </div>
-              <h2 className="font-sora text-2xl text-white mb-4">
-                Join as a Parent
-              </h2>
-              <p className="text-slate-400 mb-10 leading-relaxed text-sm">
-                Guide your child's career journey with expert reports and ROI
-                insights.
-              </p>
-              <div className="mt-auto w-full">
-                <button className="shimmer-button w-full text-white font-bold py-4 px-8 rounded-full shadow-lg shadow-orange-500/20 hover:shadow-orange-500/40 transition-all">
-                  Get Started as Parent
-                </button>
-              </div>
-            </div>
           </div>
         </main>
 
