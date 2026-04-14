@@ -1,12 +1,12 @@
 import "./App.css";
 import AppRoutes from "./routers";
-import ProtectedRoute from "./components/ProtectedRoute";
-
 import { Toaster } from "react-hot-toast";
+import RagChatWidget from "./components/rag-chat/RagChatWidget";
+import NotificationListener from "./components/notifications/NotificationListener";
 
 function App() {
   return (
-    <ProtectedRoute>
+    <>
       <Toaster
         position="top-right"
         gutter={10}
@@ -43,7 +43,9 @@ function App() {
         }}
       />
       <AppRoutes />
-    </ProtectedRoute>
+      <RagChatWidget />
+      <NotificationListener />
+    </>
   );
 }
 
