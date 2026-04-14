@@ -2,8 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import api from "../../services/api";
-import { handleLoginSuccess } from "../../utils/auth";
-
+import { handleLoginSuccess } from "../../services/utils/auth";
 export default function CompleteRegistration() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -17,7 +16,7 @@ export default function CompleteRegistration() {
   const tempToken = localStorage.getItem("temp_token");
 
   useEffect(() => {
-    if (role === "student" || role === "parent") {
+    if (role === "student") {
       const complete = async () => {
         const res = await api.post("auth/complete-google-registration/", {
           temp_token: tempToken,
@@ -116,6 +115,6 @@ export default function CompleteRegistration() {
     );
   }
 
-  // for student/parent show loading while API call happens
+  // for student show loading while API call happens
   return <div>Setting up your account...</div>;
 }

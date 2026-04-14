@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import api from "../../services/api";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
-import { handleLoginSuccess } from "../../utils/auth";
+import { handleLoginSuccess } from "../../services/utils/auth";
 
 const OTP_LENGTH = 6;
 
@@ -116,9 +116,6 @@ export default function VerifyOTP() {
       } else if (role === "student") {
         handleLoginSuccess(dispatch, res.data.access, role);
         navigate("/student/dashboard");
-      } else if (role === "parent") {
-        handleLoginSuccess(dispatch, res.data.access, role);
-        navigate("/parent/dashboard");
       } else if (role === "admin") {
         handleLoginSuccess(dispatch, res.data.access, role);
         navigate("/admin/dashboard");
