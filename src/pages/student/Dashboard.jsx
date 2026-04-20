@@ -5,6 +5,8 @@ import api from "../../services/api";
 // import { normalizeStudentTracking } from "../../utils/studentTracking";
 import { normalizeStudentTracking } from "../../services/utils/studentTracking";
 import CounselorRatingModal from "./CounselorRatingModal";
+import { handlePayment } from "../../services/utils/payment";
+import PricingModal from "../../components/payment/PricingModal";
 
 const CAREER_ICONS = [
   "web",
@@ -113,14 +115,50 @@ export default function StudentDashboard() {
 
   const [counselor, setCounselor] = useState(null);
   const [isRatingModalOpen, setIsRatingModalOpen] = useState(false);
+  const [isPricingModalOpen, setIsPricingModalOpen] = useState(false);
+  const [walletBalance, setWalletBalance] = useState(0);
+
+  const fetchWallet = () => {
+    api.get("/payments/wallet/").then((res) => {
+      setWalletBalance(res.data.balance_credits || 0);
+    }).catch(() => null);
+  };
 
   useEffect(() => {
     api.get("/students/profile/").then(res => {
       if (res.data.counselor_details) {
         setCounselor(res.data.counselor_details);
       }
+      // If wallet is inside profile, set it here
+      if (res.data.wallet) {
+        setWalletBalance(res.data.wallet.balance_credits);
+      } else {
+        fetchWallet();
+      }
     });
   }, []);
+
+  const onPurchaseSuccess = () => {
+    // Refresh balance after successful payment
+    fetchWallet();
+  };
+
+  const handleSelectPlan = (amount, credits) => {
+    if (amount === 0) {
+      alert("Free plan selected. Enjoy your roadmap!");
+      setIsPricingModalOpen(false);
+      return;
+    }
+    handlePayment({
+      amount,
+      description: `${credits} Career Credit${credits > 1 ? 's' : ''}`,
+      user,
+      onSuccess: () => {
+        onPurchaseSuccess();
+        setIsPricingModalOpen(false);
+      }
+    });
+  };
 
   // ── Next action ────────────────────────────────────────────────
   const nextAction = !assessmentTaken
@@ -219,13 +257,35 @@ export default function StudentDashboard() {
             </div>
 
             <div className="flex items-center gap-4">
-              <button
-                type="button"
+              <Link
+                to="/student/notifications"
                 className="relative flex size-10 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 shadow-sm transition-colors hover:bg-slate-50"
               >
                 <Icon name="notifications" />
                 <span className="absolute top-2.5 right-2.5 size-2 rounded-full border-2 border-white bg-red-500" />
-              </button>
+              </Link>
+
+              {/* Wallet / Credits display */}
+              <div className="flex items-center gap-2 rounded-xl border border-indigo-100 bg-indigo-50/50 px-3 py-1.5 shadow-sm">
+                <div className="flex flex-col items-end">
+                  <span className="text-[10px] font-black uppercase tracking-wider text-indigo-400">Balance</span>
+                  <span className="text-sm font-black text-indigo-700 leading-none">{walletBalance} Credits</span>
+                </div>
+                <button
+                  onClick={() => setIsPricingModalOpen(true)}
+                  className="flex size-8 items-center justify-center rounded-lg bg-indigo-600 text-white shadow-lg shadow-indigo-200 transition-all hover:bg-indigo-700 hover:scale-105 active:scale-95"
+                  title="Purchase Career Credits"
+                >
+                  <Icon name="add" className="text-lg" />
+                </button>
+              </div>
+
+              <PricingModal
+                isOpen={isPricingModalOpen}
+                onClose={() => setIsPricingModalOpen(false)}
+                onSelectPlan={handleSelectPlan}
+                user={user}
+              />
 
               <Link to="/student/profile">
                 <div className="ml-2 flex items-center gap-3">
@@ -545,7 +605,7 @@ export default function StudentDashboard() {
                 <button
                   type="button"
                   className="rounded-lg border border-[#0B818D] px-5 py-2.5 text-sm font-bold text-[#0B818D] transition-colors hover:bg-teal-50"
-                  onClick={() => navigate("/student/chat-hub")}
+                  onClick={() => navigate("/student/counselors")}
                 >
                   Find a Mentor
                 </button>

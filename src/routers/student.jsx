@@ -9,6 +9,9 @@ import AssessmentReportPage from "../pages/student/AssessmentReportPage.jsx";
 import CareerRoadmapPage from "../pages/student/CareerRoadmapPage.jsx";
 import CareerListingsPage from "../pages/student/CareerListingsPage.jsx";
 import StudentChatHub from "../pages/student/StudentChatHub.jsx";
+import StudentCounselors from "../pages/student/Counselors.jsx";
+import NotificationsPage from "../pages/student/Notifications.jsx";
+import SkillPointsPage from "../pages/student/SkillPoints.jsx";
 
 const studentRoutes = (
   <Route
@@ -27,6 +30,9 @@ const studentRoutes = (
     <Route path="careers" element={<CareerListingsPage />} />
     <Route path="roadmap" element={<CareerRoadmapPage />} />
     <Route path="chat" element={<StudentChatHub />} />
+    <Route path="counselors" element={<StudentCounselors />} />
+    <Route path="notifications" element={<NotificationsPage />} />
+    <Route path="skill-points" element={<SkillPointsPage />} />
   </Route>
 );
 
