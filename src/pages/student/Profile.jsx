@@ -15,8 +15,10 @@ import {
 } from "lucide-react";
 import api from "../../services/api";
 import { setUser } from "../../store/slices/authSlice";
+
 import EditProfileModal from "./EditProfileModal";
-import { normalizeStudentTracking } from "../../utils/studentTracking";
+
+import { normalizeStudentTracking } from "../../services/utils/studentTracking";
 
 function InfoCard({ icon, label, value }) {
   const Icon = icon;
@@ -126,14 +128,20 @@ export default function StudentProfile() {
   const state = me?.state || "Not set";
   const educationLevel = formatLabel(me?.education_level, "Not set");
   const stream = formatLabel(me?.stream, "Not set");
-  const profileCompleted = tracking.profileCompleted || Number(me?.profile_completed || 0);
+  const profileCompleted =
+    tracking.profileCompleted || Number(me?.profile_completed || 0);
   const profilePhoto = me?.profile_photo;
-  const userInitial = fullName.charAt(0).toUpperCase();
+  const userInitial = fullName
+    .split(" ")
+    .map((part) => part[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
 
   // ── Counselor ──────────────────────────────────────────────────
   const counselor = me?.counselor_details;
-  const counselorName = counselor?.full_name || "Assigned Counselor";  // ← fixed: full_name not name
-  const counselorInitial = counselorName.charAt(0).toUpperCase();      // ← fixed: was counselor?.name
+  const counselorName = counselor?.full_name || "Assigned Counselor"; // ← fixed: full_name not name
+  const counselorInitial = counselorName.charAt(0).toUpperCase(); // ← fixed: was counselor?.name
 
   if (isLoading) {
     return (
@@ -162,7 +170,8 @@ export default function StudentProfile() {
               Your profile
             </h1>
             <p className="mt-2 max-w-2xl font-body text-base leading-7 text-text-secondary">
-              Keep your academic and personal information updated to sharpen PathWise recommendations.
+              Keep your academic and personal information updated to sharpen
+              PathWise recommendations.
             </p>
           </div>
 
@@ -180,20 +189,24 @@ export default function StudentProfile() {
         <section className="rounded-3xl bg-card-bg p-6 shadow-float sm:p-8">
           <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex items-center gap-5">
-              <div className="h-24 w-24 overflow-hidden rounded-[20px] bg-gradient-to-br from-primary to-primary-container p-[2px] shadow-float">
+              <div className="relative h-24 w-24 rounded-[22px] bg-gradient-to-br from-primary via-primary-container to-secondary p-[2px] shadow-float">
                 {profilePhoto ? (
-                  <div
-                    className="h-full w-full rounded-[18px] bg-cover bg-center"
-                    style={{ backgroundImage: `url('${profilePhoto}')` }}
+                  <img
+                    src={profilePhoto}
+                    alt={fullName}
+                    className="h-full w-full rounded-[20px] border border-white/50 object-cover"
                   />
                 ) : (
-                  <div className="flex h-full w-full items-center justify-center rounded-[18px] bg-white text-3xl font-extrabold text-primary">
+                  <div className="flex h-full w-full items-center justify-center rounded-[20px] border border-white/50 bg-white text-2xl font-extrabold text-primary">
                     {userInitial}
                   </div>
                 )}
+                <span className="absolute -right-1 -bottom-1 h-4 w-4 rounded-full border-2 border-white bg-emerald-500 shadow-sm" />
               </div>
               <div>
-                <h2 className="font-heading text-3xl font-bold text-text-primary">{fullName}</h2>
+                <h2 className="font-heading text-3xl font-bold text-text-primary">
+                  {fullName}
+                </h2>
                 <p className="mt-1 font-body text-sm font-medium text-text-secondary">
                   {educationLevel} • {stream} Stream
                 </p>
@@ -209,7 +222,9 @@ export default function StudentProfile() {
               <p className="font-body text-[10px] font-bold tracking-widest text-slate-300 uppercase">
                 Profile progress
               </p>
-              <p className="mt-3 font-heading text-3xl font-extrabold">{profileCompleted}%</p>
+              <p className="mt-3 font-heading text-3xl font-extrabold">
+                {profileCompleted}%
+              </p>
               <div className="mt-4 h-3 rounded-full bg-white/10">
                 <div
                   className="h-3 rounded-full bg-primary-container transition-all duration-500"
@@ -217,7 +232,9 @@ export default function StudentProfile() {
                 />
               </div>
               <p className="mt-2 font-body text-[11px] text-slate-400">
-                {profileCompleted < 100 ? "Fill in missing details to reach 100%" : "Profile complete 🎉"}
+                {profileCompleted < 100
+                  ? "Fill in missing details to reach 100%"
+                  : "Profile complete 🎉"}
               </p>
             </div>
           </div>
@@ -227,47 +244,68 @@ export default function StudentProfile() {
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
           formData={formData}
-          onChange={(e) => setFormData({ ...formData, [e.target.name]: e.target.value })}
+          onChange={(e) =>
+            setFormData({ ...formData, [e.target.name]: e.target.value })
+          }
           onSave={handleSave}
         />
 
         {/* ── Personal info + Academic overview ── */}
         <section className="mt-8 grid gap-6 xl:grid-cols-[1.05fr_0.95fr]">
-
           {/* Personal info */}
           <article className="rounded-3xl bg-card-bg p-6 shadow-float sm:p-8">
-            <p className="font-body text-[10px] uppercase tracking-widest font-bold text-text-secondary">Personal Information</p>
-            <h2 className="mt-1 font-heading text-2xl font-bold text-text-primary">Core details</h2>
+            <p className="font-body text-[10px] uppercase tracking-widest font-bold text-text-secondary">
+              Personal Information
+            </p>
+            <h2 className="mt-1 font-heading text-2xl font-bold text-text-primary">
+              Core details
+            </h2>
 
             <div className="mt-6 grid gap-4 md:grid-cols-2">
               <InfoCard icon={UserRound} label="Full Name" value={fullName} />
               <InfoCard icon={Mail} label="Email Address" value={email} />
               <InfoCard icon={BadgeCheck} label="Gender" value={gender} />
               <InfoCard icon={Phone} label="Phone Number" value={phone} />
-              <InfoCard icon={MapPin} label="Location" value={`${city}, ${state}`} />
+              <InfoCard
+                icon={MapPin}
+                label="Location"
+                value={`${city}, ${state}`}
+              />
               <InfoCard icon={BadgeCheck} label="Date of Birth" value={dob} />
-              <InfoCard icon={GraduationCap} label="Current Stream" value={stream} />
+              <InfoCard
+                icon={GraduationCap}
+                label="Current Stream"
+                value={stream}
+              />
             </div>
           </article>
 
           {/* Academic overview */}
           <article className="rounded-3xl bg-card-bg p-6 shadow-float sm:p-8">
-            <p className="font-body text-[10px] uppercase tracking-widest font-bold text-text-secondary">Student Snapshot</p>
-            <h2 className="mt-1 font-heading text-2xl font-bold text-text-primary">Academic overview</h2>
+            <p className="font-body text-[10px] uppercase tracking-widest font-bold text-text-secondary">
+              Student Snapshot
+            </p>
+            <h2 className="mt-1 font-heading text-2xl font-bold text-text-primary">
+              Academic overview
+            </h2>
 
             <div className="mt-6 space-y-4">
               <div className="rounded-2xl bg-surface-low p-5">
                 <p className="font-body text-[10px] font-bold tracking-widest text-text-secondary uppercase">
                   Education Level
                 </p>
-                <p className="mt-2 font-heading text-2xl font-bold text-text-primary">{educationLevel}</p>
+                <p className="mt-2 font-heading text-2xl font-bold text-text-primary">
+                  {educationLevel}
+                </p>
               </div>
 
               <div className="rounded-2xl bg-surface-low p-5">
                 <p className="font-body text-[10px] font-bold tracking-widest text-text-secondary uppercase">
                   Current Stream
                 </p>
-                <p className="mt-2 font-heading text-2xl font-bold text-text-primary">{stream}</p>
+                <p className="mt-2 font-heading text-2xl font-bold text-text-primary">
+                  {stream}
+                </p>
               </div>
 
               <div className="rounded-2xl bg-gradient-to-br from-primary to-primary-container p-6 text-white shadow-float">
@@ -278,7 +316,8 @@ export default function StudentProfile() {
                   Complete all assessments to sharpen your career match.
                 </p>
                 <p className="mt-3 font-body text-sm leading-6 text-teal-50 opacity-90">
-                  Your profile becomes more accurate as PathWise learns from your assessment and academic data.
+                  Your profile becomes more accurate as PathWise learns from
+                  your assessment and academic data.
                 </p>
               </div>
             </div>
@@ -292,9 +331,13 @@ export default function StudentProfile() {
               <Users className="h-6 w-6" />
             </div>
             <div>
-              <p className="font-body text-[10px] font-bold uppercase tracking-widest text-text-secondary">Assigned Counselor</p>
+              <p className="font-body text-[10px] font-bold uppercase tracking-widest text-text-secondary">
+                Assigned Counselor
+              </p>
               <h2 className="mt-1 font-heading text-2xl font-bold text-text-primary">
-                {counselor ? "Your counselor details" : "No counselor assigned yet"}
+                {counselor
+                  ? "Your counselor details"
+                  : "No counselor assigned yet"}
               </h2>
             </div>
           </div>
@@ -302,14 +345,15 @@ export default function StudentProfile() {
           {counselor ? (
             <div className="mt-6 rounded-2xl bg-surface-low p-6">
               <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
-
                 {/* Avatar + name */}
                 <div className="flex items-center gap-4">
                   <div className="h-20 w-20 overflow-hidden rounded-2xl bg-gradient-to-br from-primary to-primary-container p-[2px] shadow-float">
                     {counselor.profile_photo ? (
                       <div
                         className="h-full w-full rounded-[18px] bg-cover bg-center"
-                        style={{ backgroundImage: `url('${counselor.profile_photo}')` }}
+                        style={{
+                          backgroundImage: `url('${counselor.profile_photo}')`,
+                        }}
                       />
                     ) : (
                       <div className="flex h-full w-full items-center justify-center rounded-[18px] bg-white text-2xl font-bold text-primary">
@@ -322,11 +366,15 @@ export default function StudentProfile() {
                       {counselorName}
                     </h3>
                     {counselor.specialization && (
-                      <p className="mt-0.5 font-body text-sm text-text-secondary">{counselor.specialization}</p>
+                      <p className="mt-0.5 font-body text-sm text-text-secondary">
+                        {counselor.specialization}
+                      </p>
                     )}
                     <div className="mt-3 flex items-center gap-1.5">
                       <Star className="h-4 w-4 fill-tertiary text-tertiary" />
-                      <span className="font-body text-xs font-bold text-text-primary">{counselor.rating}</span>
+                      <span className="font-body text-xs font-bold text-text-primary">
+                        {counselor.rating}
+                      </span>
                       {counselor.is_available && (
                         <span className="ml-3 rounded-full bg-surface-highest px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-text-primary">
                           Available
@@ -339,16 +387,32 @@ export default function StudentProfile() {
                 {/* Counselor details grid */}
                 <div className="grid gap-4 md:min-w-[320px] md:grid-cols-2">
                   {counselor.phone && (
-                    <InfoCard icon={Phone} label="Phone" value={counselor.phone} />
+                    <InfoCard
+                      icon={Phone}
+                      label="Phone"
+                      value={counselor.phone}
+                    />
                   )}
                   {counselor.qualification && (
-                    <InfoCard icon={GraduationCap} label="Qualification" value={counselor.qualification} />
+                    <InfoCard
+                      icon={GraduationCap}
+                      label="Qualification"
+                      value={counselor.qualification}
+                    />
                   )}
                   {counselor.experience_years && (
-                    <InfoCard icon={Briefcase} label="Experience" value={`${counselor.experience_years} years`} />
+                    <InfoCard
+                      icon={Briefcase}
+                      label="Experience"
+                      value={`${counselor.experience_years} years`}
+                    />
                   )}
                   {counselor.city && (
-                    <InfoCard icon={MapPin} label="Location" value={`${counselor.city}${counselor.state ? `, ${counselor.state}` : ""}`} />
+                    <InfoCard
+                      icon={MapPin}
+                      label="Location"
+                      value={`${counselor.city}${counselor.state ? `, ${counselor.state}` : ""}`}
+                    />
                   )}
                 </div>
               </div>
@@ -359,17 +423,19 @@ export default function StudentProfile() {
                   <p className="font-body text-[10px] font-bold tracking-widest text-text-secondary uppercase mb-2">
                     About
                   </p>
-                  <p className="font-body text-sm leading-6 text-text-primary">{counselor.bio}</p>
+                  <p className="font-body text-sm leading-6 text-text-primary">
+                    {counselor.bio}
+                  </p>
                 </div>
               )}
             </div>
           ) : (
             <div className="mt-6 rounded-2xl bg-surface-low px-5 py-8 text-center text-sm leading-7 text-text-secondary">
-              An admin has not assigned a counselor to your account yet. Once assigned, their details will appear here.
+              An admin has not assigned a counselor to your account yet. Once
+              assigned, their details will appear here.
             </div>
           )}
         </section>
-
       </div>
     </div>
   );
