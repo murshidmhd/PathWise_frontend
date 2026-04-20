@@ -7,6 +7,7 @@ import {
   ArrowUpRight,
   Search,
   Filter,
+  Star,
 } from "lucide-react";
 import api from "../../services/api";
 import toast from "react-hot-toast";
@@ -47,9 +48,9 @@ const statusVariant = {
 };
 
 function getAssignedCounselorId(student, fallback = "") {
-  const counselorData = 
-    student.assigned_counselor_detail || 
-    student.assigned_counselor || 
+  const counselorData =
+    student.assigned_counselor_detail ||
+    student.assigned_counselor ||
     student.counselor;
 
   // If it's an object with an ID, return the ID as a string
@@ -168,8 +169,8 @@ export default function AdminUsers() {
     } catch (error) {
       toast.error(
         error.response?.data?.detail ||
-          error.response?.data?.assigned_counselor?.[0] ||
-          "Unable to save counselor assignment.",
+        error.response?.data?.assigned_counselor?.[0] ||
+        "Unable to save counselor assignment.",
       );
     } finally {
       setSavingStudentId(null);
@@ -219,7 +220,7 @@ export default function AdminUsers() {
               className="group relative overflow-hidden rounded-[32px] border border-slate-200 bg-white p-6 transition-all hover:shadow-xl hover:shadow-slate-200/50"
             >
               <div className="flex items-start justify-between">
-                <div 
+                <div
                   className="flex size-12 items-center justify-center rounded-2xl bg-surface-low text-primary transition-colors group-hover:bg-primary group-hover:text-white"
                 >
                   <Icon className="size-6" />
@@ -303,6 +304,7 @@ export default function AdminUsers() {
                 <tr className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-400">
                   <th className="px-6 py-4">User Details</th>
                   <th className="px-6 py-4">Role</th>
+                  {activeTab === "counselors" && <th className="px-6 py-4">Rating</th>}
                   <th className="px-6 py-4">
                     {activeTab === "students" ? "Assigned Counselor" : "Details"}
                   </th>
@@ -325,6 +327,14 @@ export default function AdminUsers() {
                         {item.role}
                       </span>
                     </td>
+                    {activeTab === "counselors" && (
+                      <td className="px-6 py-5">
+                        <div className="flex items-center gap-1.5">
+                          <Star className="size-3.5 text-amber-500 fill-amber-500" />
+                          <span className="font-bold text-slate-700">{item.rating || "0.0"}</span>
+                        </div>
+                      </td>
+                    )}
                     <td className="px-6 py-5 text-sm text-slate-500">
                       {activeTab === "students" ? (
                         <div className="flex items-center gap-2">
