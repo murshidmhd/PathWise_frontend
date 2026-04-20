@@ -107,12 +107,7 @@ const ChatContainer = ({
               <span className={`size-2 rounded-full ${connectionTone}`} />
               {connectionLabel}
             </span>
-            <button className="rounded-xl p-2.5 text-slate-400 transition-colors hover:bg-slate-100 hover:text-[#0B818D]">
-              <span className="material-symbols-outlined text-xl">call</span>
-            </button>
-            <button className="rounded-xl p-2.5 text-slate-400 transition-colors hover:bg-slate-100 hover:text-[#0B818D]">
-              <span className="material-symbols-outlined text-xl">videocam</span>
-            </button>
+
           </div>
         </div>
 
