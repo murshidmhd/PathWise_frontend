@@ -2,9 +2,9 @@ import { useSelector } from "react-redux";
 import { Navigate, useLocation } from "react-router-dom";
 
 const roleHome = {
-  student: "/student/dashboard",
+  student: "/student",
   counselor: "/counselor/dashboard",
-  admin: "/admin/dashboard",
+  admin: "/admin",
 };
 
 const ProtectedRoute = ({ children, allowedRoles = [], allowGuests = false }) => {

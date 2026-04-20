@@ -13,15 +13,17 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     setUser: (state, action) => {
-      const { access, user, role } = action.payload;
-      state.token = access;
+      const { token, user, role } = action.payload;
+      state.token = token;
       state.user = user;
       state.role = role;
       state.isAuthenticated = true;
-      state.approvalStatus = user.is_approved ? "approved" : "pending";
+      
+      // Default to approved unless it's a counselor who isn't approved
+      state.approvalStatus = (role === 'counselor' && user?.is_approved === false) ? "pending" : "approved";
 
-      localStorage.setItem("token", access);
-      localStorage.setItem("user", JSON.stringify(user));
+      localStorage.setItem("token", token);
+      if (user) localStorage.setItem("user", JSON.stringify(user));
       localStorage.setItem("role", role);
       localStorage.setItem("approvalStatus", state.approvalStatus);
     },

@@ -43,9 +43,9 @@ export default function Login() {
       const { access, role } = response.data;
       handleLoginSuccess(dispatch, access, role);
 
-      if (role === "student") navigate("/student/dashboard");
+      if (role === "student") navigate("/student");
       if (role === "counselor") navigate("/counselor/dashboard");
-      if (role === "admin") navigate("/admin/dashboard");
+      if (role === "admin") navigate("/admin");
       toast.success("Logged in successfully");
     } catch (err) {
       const code = err.response?.data?.code;
