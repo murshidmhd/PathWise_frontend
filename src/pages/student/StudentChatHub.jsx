@@ -5,16 +5,32 @@ import { chatApi as api } from "../../services/api";
 import ChatContainer from "../../components/chat/ChatContainer";
 import { messaging, getToken, onMessage } from "../../firebase";
 
+function Icon({ name, className = "" }) {
+  return (
+    <span className={`material-symbols-outlined ${className}`}>
+      {name}
+    </span>
+  );
+}
+
 const StudentChatHub = () => {
   const [messages, setMessages] = useState([]);
-  const [contact] = useState({
-    name: "Dr. Sarah Wilson",
-    role: "Senior Career Counselor",
-    initials: "SW",
-    bgColor: "bg-indigo-100 text-indigo-700",
-  });
-
   const user = useSelector((state) => state.auth.user);
+
+  const counselorName = user?.counselor_details?.full_name || "Assigned Counselor";
+  const counselorInitials = counselorName
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+
+  const contact = {
+    name: counselorName,
+    role: "PathWise Career Counselor",
+    initials: counselorInitials,
+    bgColor: "bg-indigo-100 text-indigo-700",
+  };
   const currentUserId = useSelector(
     (state) => state.auth.user?.user_id || state.auth.user?.id || 1,
   );
@@ -109,27 +125,58 @@ const StudentChatHub = () => {
   }, [roomId, currentUserId]);
 
   return (
-    <div className="h-[calc(100vh-64px)] overflow-hidden bg-slate-50 p-4 lg:p-6">
-      <div className="mx-auto flex h-full min-h-0 max-w-7xl overflow-hidden rounded-3xl border border-white/20 shadow-2xl">
+    <div className="h-[calc(100vh-64px)] overflow-hidden bg-[#F8FAFC] p-4 lg:p-8">
+      <div className="mx-auto flex h-full max-w-6xl overflow-hidden rounded-[40px] border border-white bg-white/70 shadow-2xl shadow-slate-200/50 backdrop-blur-xl">
         {!roomId ? (
-          <div className="flex-1 flex items-center justify-center bg-white">
-            <div className="text-center p-8 bg-indigo-50 rounded-2xl border border-indigo-100 max-w-md">
-              <div className="text-4xl mb-4 text-indigo-500">⏳</div>
-              <h2 className="text-xl font-semibold text-slate-800 mb-2">Almost Ready!</h2>
-              <p className="text-slate-600">
-                The Admin is assigning your specialized counselor. You'll be able to chat as soon as as you're paired up.
+          <div className="flex-1 flex flex-col items-center justify-center p-12 text-center bg-[radial-gradient(circle_at_center,white,transparent)]">
+            <div className="relative">
+              <div className="absolute inset-0 animate-pulse rounded-full bg-[#0B818D]/10 text-transparent">.</div>
+              <div className="relative flex size-28 items-center justify-center rounded-[48px] bg-white text-[#0B818D] shadow-2xl shadow-slate-200/50">
+                <span className="material-symbols-outlined text-5xl">person_search</span>
+              </div>
+              <div className="absolute -bottom-2 -right-2 flex size-10 items-center justify-center rounded-2xl bg-emerald-500 text-white shadow-lg shadow-emerald-200">
+                <span className="material-symbols-outlined text-xl animate-spin-slow">sync</span>
+              </div>
+            </div>
+
+            <div className="mt-10 max-w-sm">
+              <div className="inline-flex items-center gap-2 rounded-full bg-[#0B818D]/10 px-4 py-1.5 text-[10px] font-black uppercase tracking-[0.2em] text-[#0B818D]">
+                System Protocol: Pairing In Progress
+              </div>
+              <h2 className="mt-4 text-3xl font-black tracking-tight text-slate-950">Almost Ready!</h2>
+              <p className="mt-4 text-base font-medium leading-relaxed text-slate-500">
+                Our admin team is currently assigning your dedicated career architect. Real-time counseling will be unlocked shortly.
               </p>
+            </div>
+
+            <div className="mt-12 flex items-center gap-8">
+              <div className="flex flex-col items-center gap-1">
+                <div className="text-xl font-black text-slate-950">100%</div>
+                <div className="text-[10px] font-black uppercase tracking-widest text-slate-400">Secure</div>
+              </div>
+              <div className="h-8 w-px bg-slate-100" />
+              <div className="flex flex-col items-center gap-1">
+                <div className="text-xl font-black text-slate-950">AI</div>
+                <div className="text-[10px] font-black uppercase tracking-widest text-slate-400">Assisted</div>
+              </div>
+              <div className="h-8 w-px bg-slate-100" />
+              <div className="flex flex-col items-center gap-1">
+                <div className="text-xl font-black text-slate-950">24/7</div>
+                <div className="text-[10px] font-black uppercase tracking-widest text-slate-400">Support</div>
+              </div>
             </div>
           </div>
         ) : (
-          <ChatContainer
-            messages={messages}
-            contact={contact}
-            currentUserId={currentUserId}
-            currentUserName={currentUserName}
-            currentUserInitials={currentUserInitials}
-            roomId={roomId}
-          />
+          <div className="flex-1 flex flex-col overflow-hidden bg-white">
+            <ChatContainer
+              messages={messages}
+              contact={contact}
+              currentUserId={currentUserId}
+              currentUserName={currentUserName}
+              currentUserInitials={currentUserInitials}
+              roomId={roomId}
+            />
+          </div>
         )}
       </div>
     </div>
