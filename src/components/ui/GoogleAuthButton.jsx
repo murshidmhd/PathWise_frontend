@@ -14,7 +14,7 @@ export default function GoogleAuthButton() {
   const handleGoogleSuccess = async (credentialResponse) => {
     try {
       const response = await api.post(
-        "http://127.0.0.1:8000/api/auth/google/",
+        "http://pathwise.duckdns.org/api/auth/google/",
         { token: credentialResponse.credential },
         { withCredentials: true },
       );
