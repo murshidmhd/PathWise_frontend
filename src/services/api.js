@@ -2,8 +2,8 @@ import axios from "axios";
 
 // const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000/api";
 // const CHAT_API_URL = import.meta.env.VITE_CHAT_API_URL || "http://localhost:8001/api/chat";
-const API_BASE_URL = "http://pathwise.duckdns.org/api";
-const CHAT_API_URL = "http://pathwise.duckdns.org/api/chat";
+const API_BASE_URL = "https://pathwise.duckdns.org/api";
+const CHAT_API_URL = "https://pathwise.duckdns.org/api/chat";
 
 
 // Main API instance (Port 8000)
