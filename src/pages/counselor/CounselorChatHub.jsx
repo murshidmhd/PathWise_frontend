@@ -38,7 +38,9 @@ const CounselorChatHub = () => {
           withCredentials: true,
           headers: { Authorization: `Bearer ${localStorage.getItem("access")}` }
         });
-        setStudents(response.data);
+
+        console.log("this is the response data in counselor hub", response.data)
+        setStudents(response.data.students);
         if (response.data.length > 0) {
           setSelectedStudent(response.data[0]);
         }
