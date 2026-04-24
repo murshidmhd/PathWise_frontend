@@ -34,7 +34,7 @@ const CounselorChatHub = () => {
   useEffect(() => {
     const fetchStudents = async () => {
       try {
-        const response = await axios.get("http://pathwise.duckdns.org/api/counselors/students/", {
+        const response = await axios.get("https://pathwise.duckdns.org/api/counselors/students/", {
           withCredentials: true,
           headers: { Authorization: `Bearer ${localStorage.getItem("access")}` }
         });
