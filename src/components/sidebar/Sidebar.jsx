@@ -45,6 +45,18 @@ const sidebarLinks = [
     caption: "Talk with support",
     to: "/student/chat",
   },
+  {
+    icon: "supervised_user_circle",
+    label: "Counselors",
+    caption: "Find your mentor",
+    to: "/student/counselors",
+  },
+  {
+    icon: "database",
+    label: "SkillPoints",
+    caption: "Wallet & History",
+    to: "/student/skill-points",
+  },
 ];
 
 export const Sidebar = () => {
@@ -67,12 +79,12 @@ export const Sidebar = () => {
   };
 
   return (
-    <aside className="fixed z-20 hidden h-full w-[292px] overflow-hidden border-r border-white/10 bg-[#0B1220] text-slate-300 lg:flex lg:flex-col">
+    <aside className="fixed inset-y-0 left-0 z-20 hidden h-screen w-[292px] overflow-hidden border-r border-white/10 bg-[#0B1220] text-slate-300 lg:flex lg:flex-col">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(11,129,141,0.26),transparent_34%),radial-gradient(circle_at_bottom_right,rgba(59,130,246,0.14),transparent_28%)]" />
       <div className="absolute inset-y-0 right-0 w-px bg-gradient-to-b from-transparent via-white/10 to-transparent" />
 
-      <div className="relative flex h-full flex-col">
-        <div className="border-b border-white/8 px-6 pt-6 pb-5">
+      <div className="relative flex h-full min-h-0 flex-col">
+        <div className="shrink-0 border-b border-white/8 px-6 pt-6 pb-5">
           <div className="flex items-center gap-4">
             <div className="flex size-12 items-center justify-center rounded-2xl bg-gradient-to-br from-[#11B6C5] via-[#0B818D] to-[#005C67] text-white shadow-[0_14px_32px_rgba(11,129,141,0.35)]">
               <Icon name="auto_awesome" className="text-[24px]" />
@@ -111,17 +123,24 @@ export const Sidebar = () => {
             </div>
 
             <div className="mt-4 rounded-2xl bg-white/6 px-3 py-3">
-              <p className="text-[11px] font-bold tracking-[0.18em] text-slate-400 uppercase">
-                Welcome back
-              </p>
-              <p className="mt-2 text-sm leading-6 text-slate-200">
-                {firstName}, keep moving toward your next career milestone.
-              </p>
+              <div className="flex items-center justify-between">
+                <p className="text-[11px] font-bold tracking-[0.18em] text-slate-400 uppercase">
+                  SkillPoints
+                </p>
+                <div className="flex items-center gap-1 rounded-lg bg-teal-400/10 px-2 py-0.5 text-[11px] font-bold text-teal-400 ring-1 ring-inset ring-teal-400/20">
+                  <span className="material-symbols-outlined text-[14px]">stars</span>
+                  <span>PREMIUM</span>
+                </div>
+              </div>
+              <div className="mt-2 flex items-baseline gap-2">
+                <span className="text-2xl font-bold text-white leading-none">{user?.wallet?.balance || 0}</span>
+                <span className="text-[11px] font-medium text-slate-500 uppercase tracking-wider">Available</span>
+              </div>
             </div>
           </div>
         </div>
 
-        <nav className="relative flex-1 px-4 py-5">
+        <nav className="relative min-h-0 flex-1 overflow-y-auto px-4 py-5">
           <div className="space-y-2">
             {sidebarLinks.map((item) => {
               const isActive =
@@ -133,18 +152,16 @@ export const Sidebar = () => {
                 <Link
                   key={item.label}
                   to={item.to}
-                  className={`group relative flex items-center gap-4 overflow-hidden rounded-[22px] px-4 py-4 transition-all ${
-                    isActive
-                      ? "bg-gradient-to-r from-[#0B818D]/28 via-[#0B818D]/18 to-white/8 text-white shadow-[0_16px_40px_rgba(11,129,141,0.18)] ring-1 ring-white/10"
-                      : "text-slate-400 hover:bg-white/6 hover:text-white"
-                  }`}
+                  className={`group relative flex items-center gap-4 overflow-hidden rounded-[22px] px-4 py-4 transition-all ${isActive
+                    ? "bg-gradient-to-r from-[#0B818D]/28 via-[#0B818D]/18 to-white/8 text-white shadow-[0_16px_40px_rgba(11,129,141,0.18)] ring-1 ring-white/10"
+                    : "text-slate-400 hover:bg-white/6 hover:text-white"
+                    }`}
                 >
                   <div
-                    className={`flex size-11 shrink-0 items-center justify-center rounded-2xl transition-all ${
-                      isActive
-                        ? "bg-white text-[#0B818D] shadow-sm"
-                        : "bg-white/6 text-slate-300 group-hover:bg-white/10 group-hover:text-white"
-                    }`}
+                    className={`flex size-11 shrink-0 items-center justify-center rounded-2xl transition-all ${isActive
+                      ? "bg-white text-[#0B818D] shadow-sm"
+                      : "bg-white/6 text-slate-300 group-hover:bg-white/10 group-hover:text-white"
+                      }`}
                   >
                     <Icon name={item.icon} className="text-[21px]" />
                   </div>
@@ -152,9 +169,8 @@ export const Sidebar = () => {
                   <div className="min-w-0 flex-1">
                     <p className="text-sm font-semibold">{item.label}</p>
                     <p
-                      className={`mt-1 truncate text-[11px] ${
-                        isActive ? "text-teal-100/80" : "text-slate-500"
-                      }`}
+                      className={`mt-1 truncate text-[11px] ${isActive ? "text-teal-100/80" : "text-slate-500"
+                        }`}
                     >
                       {item.caption}
                     </p>
@@ -169,7 +185,7 @@ export const Sidebar = () => {
           </div>
         </nav>
 
-        <div className="relative border-t border-white/8 p-4">
+        <div className="relative shrink-0 border-t border-white/8 p-4">
           <div className="rounded-[26px] border border-white/10 bg-gradient-to-br from-white/8 to-white/4 p-4 shadow-[0_16px_36px_rgba(2,6,23,0.2)]">
             <div className="flex items-start gap-3">
               <div className="flex size-11 items-center justify-center rounded-2xl bg-teal-400/14 text-teal-300">

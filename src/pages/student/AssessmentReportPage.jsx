@@ -14,15 +14,17 @@ import {
   History,
   Users,
 } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import SkillWheel from "../../components/ui/SkillWheel";
 import api from "../../services/api";
 import { useDispatch } from "react-redux";
 import { setReport as setReportRedux } from "../../store/slices/reportSlice";
 const formatDate = (v) =>
   v
     ? new Intl.DateTimeFormat("en-IN", {
-        dateStyle: "medium",
-        timeStyle: "short",
-      }).format(new Date(v))
+      dateStyle: "medium",
+      timeStyle: "short",
+    }).format(new Date(v))
     : "N/A";
 
 const Badge = ({ label, color = "primary" }) => (
@@ -33,11 +35,16 @@ const Badge = ({ label, color = "primary" }) => (
   </span>
 );
 
-const StatCard = ({ icon: Icon, label, value, color }) => (
-  <div className="rounded-2xl bg-card-bg p-5 shadow-float">
+const StatCard = ({ icon: Icon, label, value, color, delay = 0 }) => (
+  <motion.div
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ delay }}
+    className="rounded-2xl border border-white/10 bg-card-bg/50 p-5 shadow-float backdrop-blur-sm"
+  >
     <div className="flex items-center gap-4">
       <div
-        className={`flex size-10 items-center justify-center rounded-xl bg-surface-low text-${color}`}
+        className={`flex size-10 items-center justify-center rounded-xl bg-${color}/10 text-${color}`}
       >
         <Icon className="size-5" />
       </div>
@@ -50,13 +57,19 @@ const StatCard = ({ icon: Icon, label, value, color }) => (
         </p>
       </div>
     </div>
-  </div>
+  </motion.div>
 );
 
-const SectionCard = ({ title, subtitle, icon: Icon, children }) => (
-  <section className="rounded-3xl bg-card-bg p-6 shadow-float sm:p-8">
+const SectionCard = ({ title, subtitle, icon: Icon, children, delay = 0 }) => (
+  <motion.section
+    initial={{ opacity: 0, y: 20 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true }}
+    transition={{ delay }}
+    className="rounded-3xl border border-white/5 bg-card-bg/40 p-6 shadow-float sm:p-8 backdrop-blur-md"
+  >
     <div className="mb-6 flex items-start gap-4">
-      <div className="flex size-12 items-center justify-center rounded-2xl bg-surface-low text-primary shadow-sm">
+      <div className="flex size-12 items-center justify-center rounded-2xl bg-primary/10 text-primary shadow-sm">
         <Icon className="size-6" />
       </div>
       <div>
@@ -64,14 +77,14 @@ const SectionCard = ({ title, subtitle, icon: Icon, children }) => (
           {title}
         </h2>
         {subtitle && (
-          <p className="mt-1 font-body text-sm text-text-secondary">
+          <p className="mt-1 font-body text-sm text-text-secondary leading-relaxed">
             {subtitle}
           </p>
         )}
       </div>
     </div>
     {children}
-  </section>
+  </motion.section>
 );
 
 const EmptyState = ({ message }) => (
@@ -172,40 +185,50 @@ export default function AssessmentReportPage() {
           </SectionCard>
         ) : (
           <>
-            <section className="relative overflow-hidden rounded-[40px] bg-secondary p-8 text-white shadow-float md:p-12">
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-transparent opacity-50" />
-              <div className="relative z-10 flex flex-col lg:flex-row justify-between gap-10">
-                <div className="max-w-2xl">
+            <motion.section
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="relative overflow-hidden rounded-[40px] bg-secondary p-8 text-white shadow-float md:p-12"
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-transparent to-transparent opacity-50" />
+              <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-12">
+                <div className="max-w-xl text-center lg:text-left">
                   <Badge label="Career Insights" color="teal-100" />
-                  <h1 className="mt-6 font-heading text-4xl font-extrabold tracking-tight md:text-5xl">
+                  <motion.h1
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 0.2 }}
+                    className="mt-6 font-heading text-5xl font-extrabold tracking-tight md:text-7xl"
+                  >
                     {personality !== "N/A"
-                      ? `You are ${personality}`
-                      : "Analysis Complete"}
-                  </h1>
-                  <p className="mt-6 text-lg leading-relaxed text-slate-300">
+                      ? personality
+                      : "Analysis"}
+                  </motion.h1>
+                  <p className="mt-6 text-xl leading-relaxed text-slate-300 font-medium">
                     {report?.report_text ||
                       "Your career DNA is ready. Explore your strengths and recommended paths below."}
                   </p>
-                </div>
-                <div className="rounded-3xl bg-white/5 p-6 backdrop-blur-md border border-white/10 min-w-[280px]">
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
-                    Metadata
-                  </p>
-                  <div className="mt-4 space-y-3 font-body text-sm text-slate-200">
-                    <p className="flex justify-between">
-                      <span>Generated</span>{" "}
-                      <span>{formatDate(report?.created_at)}</span>
-                    </p>
-                    <p className="flex justify-between">
-                      <span>ID</span>{" "}
-                      <span className="text-[10px] opacity-60 font-mono">
-                        {String(report?.id || "").slice(0, 8)}
-                      </span>
-                    </p>
+
+                  <div className="mt-8 flex flex-wrap justify-center lg:justify-start gap-4">
+                    <div className="flex items-center gap-2 rounded-xl bg-white/10 backdrop-blur-md px-4 py-2 text-xs font-bold uppercase tracking-widest border border-white/5 shadow-sm">
+                      <History className="size-4 opacity-70" /> {formatDate(report?.created_at)}
+                    </div>
+                    <div className="flex items-center gap-2 rounded-xl bg-white/10 backdrop-blur-md px-4 py-2 text-xs font-bold uppercase tracking-widest font-mono border border-white/5 shadow-sm opacity-60">
+                      ID: {String(report?.id || "").slice(0, 8)}
+                    </div>
                   </div>
                 </div>
+
+                <motion.div
+                  initial={{ opacity: 0, rotate: -15, scale: 0.8 }}
+                  animate={{ opacity: 1, rotate: 0, scale: 1 }}
+                  transition={{ delay: 0.4, type: "spring", damping: 12 }}
+                  className="flex justify-center items-center drop-shadow-[0_0_50px_rgba(255,255,255,0.1)]"
+                >
+                  <SkillWheel size={380} profileImage={report?.user_image} />
+                </motion.div>
               </div>
-            </section>
+            </motion.section>
 
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
               <StatCard
@@ -213,29 +236,33 @@ export default function AssessmentReportPage() {
                 label="Personality"
                 value={personality}
                 color="primary"
+                delay={0.5}
               />
               <StatCard
                 icon={Compass}
                 label="Interests"
                 value={`${interests.length} Areas`}
                 color="teal-600"
+                delay={0.6}
               />
               <StatCard
                 icon={TrendingUp}
                 label="Strengths"
                 value={`${strengths.length} Identified`}
                 color="success"
+                delay={0.7}
               />
               <StatCard
                 icon={Target}
                 label="Careers"
                 value={`${careers.length} Matches`}
                 color="warning"
+                delay={0.8}
               />
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              <SectionCard title="Key Strengths" icon={TrendingUp}>
+              <SectionCard title="Key Strengths" icon={TrendingUp} delay={0.9}>
                 <div className="flex flex-wrap gap-2">
                   {strengths.length ? (
                     strengths.map((s, i) => (
@@ -247,7 +274,7 @@ export default function AssessmentReportPage() {
                 </div>
               </SectionCard>
 
-              <SectionCard title="Interest Alignment" icon={Compass}>
+              <SectionCard title="Interest Alignment" icon={Compass} delay={1.0}>
                 <div className="flex flex-wrap gap-2">
                   {interests.length ? (
                     interests.map((s, i) => (
@@ -263,21 +290,26 @@ export default function AssessmentReportPage() {
                 title="Recommended Careers"
                 icon={Sparkles}
                 subtitle="The paths most aligned with your profile"
+                delay={1.1}
               >
                 <div className="space-y-3">
                   {careers.length ? (
                     careers.map((c, i) => (
-                      <div
+                      <motion.div
                         key={i}
-                        className="flex items-center gap-4 rounded-2xl bg-surface-low p-4"
+                        initial={{ opacity: 0, x: -10 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: 1.2 + (i * 0.1) }}
+                        className="flex items-center gap-4 rounded-2xl bg-surface-low/50 p-4 border border-white/5 hover:bg-surface-low transition-colors cursor-default"
                       >
                         <span className="font-heading text-lg font-bold text-primary opacity-40">
-                          0{i + 1}
+                          {String(i + 1).padStart(2, '0')}
                         </span>
                         <p className="font-body font-bold text-text-primary">
                           {c}
                         </p>
-                      </div>
+                      </motion.div>
                     ))
                   ) : (
                     <EmptyState message="No careers found." />

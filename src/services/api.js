@@ -1,15 +1,16 @@
 import axios from "axios";
 
+// 1. Use environment variables from Vercel, fall back to localhost for local development
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000/api";
 const CHAT_API_URL = import.meta.env.VITE_CHAT_API_URL || "http://localhost:8001/api/chat";
 
-// Main API instance (Port 8000)
+// Main API instance
 const api = axios.create({
   baseURL: API_BASE_URL,
   withCredentials: true,
 });
 
-// Chat API instance (Port 8001)
+// Chat API instance
 const chatApi = axios.create({
   baseURL: CHAT_API_URL,
   withCredentials: true,

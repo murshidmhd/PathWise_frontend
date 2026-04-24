@@ -28,6 +28,12 @@ const sidebarLinks = [
     to: "/admin/users",
   },
   {
+    icon: "assignment_ind",
+    label: "Counselor Requests",
+    caption: "Review assignment requests",
+    to: "/admin/counselor-requests",
+  },
+  {
     icon: "analytics",
     label: "Reports",
     caption: "Track adoption and health",
@@ -61,18 +67,18 @@ export const AdminSidebar = () => {
           key={item.label}
           to={item.to}
           className={`group relative flex items-center gap-4 overflow-hidden rounded-[20px] px-4 py-3 transition-all ${mobile
-              ? isActive
-                ? "bg-amber-100 text-amber-900 shadow"
-                : "bg-white/5 text-slate-300 hover:bg-white/10"
-              : isActive
-                ? "bg-gradient-to-r from-amber-500/20 via-amber-500/10 to-white/5 text-white shadow-[0_16px_40px_rgba(245,158,11,0.15)] ring-1 ring-amber-500/20"
-                : "text-slate-400 hover:bg-white/5 hover:text-white"
+            ? isActive
+              ? "bg-amber-100 text-amber-900 shadow"
+              : "bg-white/5 text-slate-300 hover:bg-white/10"
+            : isActive
+              ? "bg-gradient-to-r from-amber-500/20 via-amber-500/10 to-white/5 text-white shadow-[0_16px_40px_rgba(245,158,11,0.15)] ring-1 ring-amber-500/20"
+              : "text-slate-400 hover:bg-white/5 hover:text-white"
             }`}
         >
           <div
             className={`flex size-10 shrink-0 items-center justify-center rounded-xl transition-all ${isActive
-                ? "bg-amber-500 text-white shadow-lg shadow-amber-500/30"
-                : "bg-white/6 text-slate-300 group-hover:bg-white/10 group-hover:text-white"
+              ? "bg-amber-500 text-white shadow-lg shadow-amber-500/30"
+              : "bg-white/6 text-slate-300 group-hover:bg-white/10 group-hover:text-white"
               }`}
           >
             <Icon name={item.icon} className="text-[20px]" />

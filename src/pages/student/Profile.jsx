@@ -131,7 +131,12 @@ export default function StudentProfile() {
   const profileCompleted =
     tracking.profileCompleted || Number(me?.profile_completed || 0);
   const profilePhoto = me?.profile_photo;
-  const userInitial = fullName.charAt(0).toUpperCase();
+  const userInitial = fullName
+    .split(" ")
+    .map((part) => part[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
 
   // ── Counselor ──────────────────────────────────────────────────
   const counselor = me?.counselor_details;
@@ -184,17 +189,19 @@ export default function StudentProfile() {
         <section className="rounded-3xl bg-card-bg p-6 shadow-float sm:p-8">
           <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex items-center gap-5">
-              <div className="h-24 w-24 overflow-hidden rounded-[20px] bg-gradient-to-br from-primary to-primary-container p-[2px] shadow-float">
+              <div className="relative h-24 w-24 rounded-[22px] bg-gradient-to-br from-primary via-primary-container to-secondary p-[2px] shadow-float">
                 {profilePhoto ? (
-                  <div
-                    className="h-full w-full rounded-[18px] bg-cover bg-center"
-                    style={{ backgroundImage: `url('${profilePhoto}')` }}
+                  <img
+                    src={profilePhoto}
+                    alt={fullName}
+                    className="h-full w-full rounded-[20px] border border-white/50 object-cover"
                   />
                 ) : (
-                  <div className="flex h-full w-full items-center justify-center rounded-[18px] bg-white text-3xl font-extrabold text-primary">
+                  <div className="flex h-full w-full items-center justify-center rounded-[20px] border border-white/50 bg-white text-2xl font-extrabold text-primary">
                     {userInitial}
                   </div>
                 )}
+                <span className="absolute -right-1 -bottom-1 h-4 w-4 rounded-full border-2 border-white bg-emerald-500 shadow-sm" />
               </div>
               <div>
                 <h2 className="font-heading text-3xl font-bold text-text-primary">

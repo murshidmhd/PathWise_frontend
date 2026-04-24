@@ -61,6 +61,13 @@ export default function CounselorProfile() {
   const specialization = me?.specialization || "Career Counseling";
   const experience =
     me?.years_experience || me?.experience_years || "8 Years Experience";
+  const profilePhoto = me?.profile_photo;
+  const userInitial = fullName
+    .split(" ")
+    .map((part) => part[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
 
   return (
     <div className="flex min-h-screen bg-[#F8FAFC] text-slate-900 dark:bg-[#0F172A] dark:text-slate-100">
@@ -68,14 +75,18 @@ export default function CounselorProfile() {
         <div className="mx-auto max-w-5xl">
           <div className="mb-8 flex flex-col items-center gap-8 rounded-3xl border border-slate-200/60 bg-white p-8 shadow-sm md:flex-row dark:border-slate-700/50 dark:bg-slate-800">
             <div className="relative">
-              <div className="h-32 w-32 rounded-full border-4 border-[#0B818D]/20 p-1">
-                <div
-                  className="h-full w-full overflow-hidden rounded-full bg-cover bg-center"
-                  style={{
-                    backgroundImage:
-                      "url('https://lh3.googleusercontent.com/aida-public/AB6AXuCIYOUm2gZr9EMAaXdWVFbhhaPrWWzC0BHgnzXuoM24S3dfe22aURHOY7XWDAMEQHtpqXv--GckRWrNoNaUeSfHa5S0acWPiUssS1sfiU-MimaMKem6f2yQR63k3CM67NxBGMUYQa8VVwf1iIyrn2KMPvn2BKhujYbVNbsRuciAFr3Qo7xgrLGAxup3YdF9bRdubA1zZTBL9S6nTJrlAtvSPL52rVpxXnvw5cQ6nDIwCsACA5NAPdKP5u2G36Xv4Z8emLAvlLDw-Q')",
-                  }}
-                />
+              <div className="h-32 w-32 rounded-full bg-gradient-to-br from-[#0B818D] via-[#006670] to-[#111C2D] p-[3px] shadow-[0_16px_34px_rgba(11,129,141,0.28)]">
+                {profilePhoto ? (
+                  <img
+                    src={profilePhoto}
+                    alt={fullName}
+                    className="h-full w-full rounded-full border-2 border-white/70 object-cover"
+                  />
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center rounded-full border-2 border-white/70 bg-white text-3xl font-bold text-[#0B818D]">
+                    {userInitial}
+                  </div>
+                )}
               </div>
               <button
                 type="button"
@@ -83,6 +94,7 @@ export default function CounselorProfile() {
               >
                 <Icon name="photo_camera" className="text-sm" />
               </button>
+              <span className="absolute right-0 top-1 h-4 w-4 rounded-full border-2 border-white bg-emerald-500 shadow-sm dark:border-slate-800" />
             </div>
 
             <div className="flex-1 text-center md:text-left">

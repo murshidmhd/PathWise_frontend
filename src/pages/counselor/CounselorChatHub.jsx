@@ -4,6 +4,14 @@ import ChatContainer from "../../components/chat/ChatContainer";
 import { chatApi as api } from "../../services/api";
 import axios from "axios";
 
+function Icon({ name, className = "" }) {
+  return (
+    <span className={`material-symbols-outlined ${className}`}>
+      {name}
+    </span>
+  );
+}
+
 const CounselorChatHub = () => {
   const [students, setStudents] = useState([]);
   const [selectedStudent, setSelectedStudent] = useState(null);
@@ -26,7 +34,7 @@ const CounselorChatHub = () => {
   useEffect(() => {
     const fetchStudents = async () => {
       try {
-        const response = await axios.get("http://localhost:8000/api/counselors/students/", {
+        const response = await axios.get("http://pathwise.duckdns.org/api/counselors/students/", {
           withCredentials: true,
           headers: { Authorization: `Bearer ${localStorage.getItem("access")}` }
         });
@@ -93,41 +101,64 @@ const CounselorChatHub = () => {
   } : null;
 
   return (
-    <div className="h-[calc(100vh-64px)] overflow-hidden bg-slate-50 p-4 lg:p-6">
-      <div className="mx-auto flex h-full min-h-0 max-w-7xl overflow-hidden rounded-3xl border border-white/20 shadow-2xl bg-white text-slate-800">
+    <div className="h-[calc(100vh-64px)] overflow-hidden bg-[#F8FAFC] p-4 lg:p-8">
+      <div className="mx-auto flex h-full max-w-7xl overflow-hidden rounded-[40px] border border-white bg-white/70 shadow-2xl shadow-slate-200/50 backdrop-blur-xl">
         {/* Sidebar */}
-        <div className="w-80 border-r border-slate-100 flex flex-col min-w-[320px]">
-          <div className="p-6 border-b border-slate-100">
-            <h2 className="text-xl font-bold text-slate-800">My Students</h2>
-            <p className="text-xs text-slate-500 mt-1">{students.length} Assigned Students</p>
+        <aside className="w-80 flex flex-col min-w-[340px] border-r border-slate-100 bg-white/50">
+          <div className="p-8 border-b border-slate-100">
+            <h2 className="text-2xl font-black text-slate-950 tracking-tight">Messages</h2>
+            <div className="mt-2 flex items-center gap-2">
+              <span className="flex size-2 animate-pulse rounded-full bg-emerald-500" />
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
+                {students.length} Active Connections
+              </p>
+            </div>
           </div>
-          <div className="flex-1 overflow-y-auto p-4 space-y-2">
-            {students.map((student) => (
-              <button
-                key={student.id}
-                onClick={() => setSelectedStudent(student)}
-                className={`w-full flex items-center p-3 rounded-2xl transition-all ${selectedStudent?.id === student.id
-                    ? "bg-indigo-50 border-indigo-100 ring-1 ring-indigo-200"
-                    : "hover:bg-slate-50 border-transparent"
-                  } border`}
-              >
-                <div className="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center font-bold text-slate-600 mr-3">
-                  {student.full_name[0]}
-                </div>
-                <div className="text-left overflow-hidden">
-                  <div className="font-semibold truncate">{student.full_name}</div>
-                  <div className="text-xs text-slate-500 truncate">{student.stream || "No stream"}</div>
-                </div>
-              </button>
-            ))}
+
+          <div className="flex-1 overflow-y-auto p-4 space-y-2 custom-scrollbar">
+            {students.map((student) => {
+              const isActive = selectedStudent?.id === student.id;
+              return (
+                <button
+                  key={student.id}
+                  onClick={() => setSelectedStudent(student)}
+                  className={`group relative w-full flex items-center p-4 rounded-[28px] transition-all duration-300 ${isActive
+                    ? "bg-white shadow-xl shadow-slate-200/50 ring-1 ring-slate-100"
+                    : "hover:bg-white hover:shadow-lg hover:shadow-slate-200/30"
+                    }`}
+                >
+                  {isActive && (
+                    <div className="absolute left-2 h-8 w-1 rounded-full bg-[#0B818D]" />
+                  )}
+                  <div className={`flex size-12 items-center justify-center rounded-2xl text-sm font-black shadow-lg shadow-slate-200 transition-transform group-hover:scale-105 ${isActive ? "bg-gradient-to-br from-[#0B818D] to-[#085a63] text-white" : "bg-slate-100 text-slate-600"
+                    }`}>
+                    {student.full_name[0].toUpperCase()}
+                  </div>
+                  <div className="ml-4 text-left overflow-hidden">
+                    <div className={`font-bold truncate ${isActive ? "text-slate-950" : "text-slate-700"}`}>
+                      {student.full_name}
+                    </div>
+                    <div className="text-[10px] font-black uppercase tracking-wider text-slate-400 truncate">
+                      {student.stream || "General Track"}
+                    </div>
+                  </div>
+                </button>
+              );
+            })}
+
             {students.length === 0 && (
-              <div className="text-center py-10 text-slate-400 italic">No students assigned yet.</div>
+              <div className="flex flex-col items-center justify-center py-20 px-6 text-center">
+                <div className="size-16 rounded-3xl bg-slate-50 flex items-center justify-center text-slate-300">
+                  <span className="material-symbols-outlined text-3xl">inbox</span>
+                </div>
+                <p className="mt-4 text-sm font-bold text-slate-400">No student connections yet</p>
+              </div>
             )}
           </div>
-        </div>
+        </aside>
 
         {/* Chat Area */}
-        <div className="flex-1 flex flex-col min-w-0">
+        <main className="flex-1 flex flex-col min-w-0 bg-white">
           {selectedStudent ? (
             <ChatContainer
               messages={messages}
@@ -138,11 +169,20 @@ const CounselorChatHub = () => {
               roomId={roomId}
             />
           ) : (
-            <div className="flex-1 flex items-center justify-center">
-              <div className="text-slate-400">Select a student to start chatting</div>
+            <div className="flex-1 flex flex-col items-center justify-center p-12 text-center bg-[radial-gradient(circle_at_center,white,transparent)]">
+              <div className="relative">
+                <div className="absolute inset-0 animate-ping rounded-full bg-[#0B818D]/10 text-transparent">.</div>
+                <div className="relative flex size-24 items-center justify-center rounded-[40px] bg-slate-50 text-[#0B818D] shadow-xl shadow-slate-100">
+                  <span className="material-symbols-outlined text-4xl">forum</span>
+                </div>
+              </div>
+              <h3 className="mt-8 text-2xl font-black text-slate-950">Select a Conversation</h3>
+              <p className="mt-2 max-w-xs text-sm font-medium leading-relaxed text-slate-500">
+                Choose a student from the sidebar to start counseling via real-time messaging.
+              </p>
             </div>
           )}
-        </div>
+        </main>
       </div>
     </div>
   );
