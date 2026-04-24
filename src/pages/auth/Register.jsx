@@ -132,7 +132,7 @@ const Register = () => {
           data.append("certificate", formData.certificate);
         }
       }
-      // data.append("recaptcha_token", captchaToken);
+      data.append("recaptcha_token", captchaToken);
       console.log("beforeresponse");
 
       await api.post("/auth/register/", data, {
