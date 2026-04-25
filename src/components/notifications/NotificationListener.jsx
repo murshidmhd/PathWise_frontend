@@ -10,7 +10,8 @@ const NotificationListener = () => {
     useEffect(() => {
         if (!currentUserId) return;
 
-        const wsUrl = `wss://localhost:8001/ws/notifications/${currentUserId}/`;
+        // const wsUrl = `ws://localhost:8001/ws/notifications/${currentUserId}/`;
+        const wsUrl = `ws://pathwise.duckdns.org/ws/notifications/${currentUserId}/`;
         console.log("Connecting to Notification WebSocket:", wsUrl);
 
         const ws = new WebSocket(wsUrl);

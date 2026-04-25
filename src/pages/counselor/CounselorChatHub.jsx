@@ -40,7 +40,7 @@ const CounselorChatHub = () => {
         });
 
         console.log("this is the response data in counselor hub", response.data)
-        setStudents(response.data.students);
+        setStudents(response.data);
         if (response.data.length > 0) {
           setSelectedStudent(response.data[0]);
         }
