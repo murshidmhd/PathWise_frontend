@@ -114,7 +114,8 @@ export default function RagChatWidget() {
   const shouldShow =
     auth?.isAuthenticated && !location.pathname.startsWith("/auth");
 
-  const FASTAPI_URL = "http://localhost:8002";
+  // const FASTAPI_URL = "https://pathwiseai.duckdns.org:8002/ai";
+  const FASTAPI_URL = "https://pathwise.duckdns.org/ai";
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
