@@ -16,8 +16,8 @@ export function useWebSocket(path, onMessage) {
         if (!token || !path) return;
 
         function connect() {
-            const WS_BASE = import.meta.env.VITE_WS_URL || 'ws://localhost:8001';
-            const ws = new WebSocket(`${WS_BASE}/ws/${path}/?token=${token}`);
+            const WS_BASE = import.meta.env.VITE_WS_URL || 'wss://pathwise.duckdns.org/ws';
+            const ws = new WebSocket(`${WS_BASE}/${path}/?token=${token}`);
             wsRef.current = ws;
 
             ws.onopen = () => {

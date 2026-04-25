@@ -1,8 +1,11 @@
 import axios from "axios";
 
 // 1. Use environment variables from Vercel, fall back to localhost for local development
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000/api";
-const CHAT_API_URL = import.meta.env.VITE_CHAT_API_URL || "http://localhost:8001/api/chat";
+// const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+// const CHAT_API_URL = import.meta.env.VITE_CHAT_API_URL;
+
+const API_BASE_URL = "https://pathwise.duckdns.org/api";
+const CHAT_API_URL = "https://pathwise.duckdns.org/api/chat";
 
 // Main API instance
 const api = axios.create({
