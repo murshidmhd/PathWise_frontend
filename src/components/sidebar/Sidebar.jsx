@@ -46,6 +46,12 @@ const sidebarLinks = [
     to: "/student/chat",
   },
   {
+    icon: "psychology",
+    label: "Skill Analyze",
+    caption: "Map your proficiency",
+    to: "/student/skill-analyze",
+  },
+  {
     icon: "supervised_user_circle",
     label: "Counselors",
     caption: "Find your mentor",
