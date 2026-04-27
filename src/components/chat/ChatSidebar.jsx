@@ -108,7 +108,10 @@ const ChatSidebar = ({ contact }) => {
                </div>
             </div>
 
-            <button className="w-full flex items-center justify-center gap-2 rounded-xl bg-[#0B818D] hover:bg-[#096a75] py-2.5 text-[11px] font-black uppercase tracking-widest text-white transition-colors shadow-md shadow-teal-500/20">
+            <button 
+              onClick={() => alert("🚀 We're working on the scheduling system! Soon you'll be able to book 1-on-1 mentorship sessions with SkillPoints.")}
+              className="w-full flex items-center justify-center gap-2 rounded-xl bg-[#0B818D] hover:bg-[#096a75] py-2.5 text-[11px] font-black uppercase tracking-widest text-white transition-colors shadow-md shadow-teal-500/20"
+            >
               View Calendar
             </button>
           </section>

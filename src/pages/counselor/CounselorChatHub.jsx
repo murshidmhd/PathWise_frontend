@@ -296,7 +296,10 @@ const CounselorChatHub = () => {
                         <p className="text-[10px] font-bold text-slate-400">10 SkillPoints / 30 mins</p>
                       </div>
                     </div>
-                    <button className="w-full group flex items-center justify-center gap-2 rounded-2xl bg-[#0B818D] hover:bg-[#0d99a6] text-white font-black py-3.5 px-4 transition-all hover:scale-[1.02] active:scale-[0.98]">
+                    <button 
+                      onClick={() => alert("🚀 We're working on this feature! Soon you'll be able to host 1v1 video mentorship sessions directly from this panel.")}
+                      className="w-full group flex items-center justify-center gap-2 rounded-2xl bg-[#0B818D] hover:bg-[#0d99a6] text-white font-black py-3.5 px-4 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                    >
                       <Icon name="videocam" className="text-lg group-hover:animate-bounce" />
                       Book Video Call
                     </button>
