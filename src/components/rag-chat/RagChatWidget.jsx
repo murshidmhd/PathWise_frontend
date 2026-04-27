@@ -111,10 +111,20 @@ export default function RagChatWidget() {
   const [error, setError] = useState("");
   const messagesEndRef = useRef(null);
 
-  const shouldShow =
-    auth?.isAuthenticated && !location.pathname.startsWith("/auth");
+  const excludedPaths = [
+    "/auth",
+    "/student/assessment_question",
+    "/student/assessment_report",
+    "/student/chat",
+    "/counselor/chat",
+  ];
 
-  const FASTAPI_URL = "http://localhost:8002";
+  const shouldShow =
+    auth?.isAuthenticated &&
+    !excludedPaths.some((path) => location.pathname.startsWith(path));
+
+  // const FASTAPI_URL = "https://pathwiseai.duckdns.org:8002/ai";
+  const FASTAPI_URL = "https://pathwise.duckdns.org/ai";
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
