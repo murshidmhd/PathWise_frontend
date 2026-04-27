@@ -111,8 +111,15 @@ export default function RagChatWidget() {
   const [error, setError] = useState("");
   const messagesEndRef = useRef(null);
 
+  const excludedPaths = [
+    "/auth",
+    "/student/assessment_question",
+    "/student/assessment_report",
+  ];
+
   const shouldShow =
-    auth?.isAuthenticated && !location.pathname.startsWith("/auth");
+    auth?.isAuthenticated &&
+    !excludedPaths.some((path) => location.pathname.startsWith(path));
 
   // const FASTAPI_URL = "https://pathwiseai.duckdns.org:8002/ai";
   const FASTAPI_URL = "https://pathwise.duckdns.org/ai";
