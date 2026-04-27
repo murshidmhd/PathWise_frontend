@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 import ChatContainer from "../../components/chat/ChatContainer";
 import { chatApi as api } from "../../services/api";
 import axios from "axios";
+import { messaging, getToken, onMessage } from "../../firebase";
 
 function Icon({ name, className = "" }) {
   return (
@@ -50,6 +51,43 @@ const CounselorChatHub = () => {
     };
     fetchStudents();
   }, []);
+
+  useEffect(() => {
+    const setupFCM = async () => {
+      try {
+        if (typeof window === "undefined" || !window.Notification) {
+          return;
+        }
+
+        const permission = await window.Notification.requestPermission();
+        if (permission !== "granted") {
+          return;
+        }
+
+        const token = await getToken(messaging, {
+          vapidKey: "BJsL5ch2QeVsC2PWX4ecvLlAkjDg2-qUjqIdgRSKQFAKB9SLxXKh408tplbasQxFj2Bh0Qxyx0yTcSFMxDhuQRk",
+        });
+
+        if (token) {
+          await axios.post("https://pathwise.duckdns.org/register-fcm/", {
+            user_id: currentUserId,
+            token,
+          });
+        }
+      } catch (error) {
+        console.error("FCM setup failed for counselor:", error);
+      }
+    };
+
+    setupFCM();
+
+    const unsubscribe = onMessage(messaging, (payload) => {
+      console.log("Counselor received foreground message:", payload);
+      // Optional: you could trigger a local fetch here if needed
+    });
+
+    return () => unsubscribe();
+  }, [currentUserId]);
 
   useEffect(() => {
     const fetchMessages = async () => {
@@ -169,7 +207,7 @@ const CounselorChatHub = () => {
                 currentUserId={currentUserId}
                 currentUserName={currentUserName}
                 currentUserInitials={currentUserInitials}
-                roomId={roomId}
+                roomId={roomId} 
               />
             ) : (
               <div className="flex-1 flex flex-col items-center justify-center p-12 text-center bg-[radial-gradient(circle_at_center,white,transparent)]">
@@ -245,6 +283,7 @@ const CounselorChatHub = () => {
             </aside>
           )}
         </div>
+      </div>
     </div>
   );
 };

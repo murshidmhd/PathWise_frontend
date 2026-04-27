@@ -53,14 +53,6 @@ const ChatContainer = ({
         sender_id: currentUserId,
         sender_name: currentUserName || "User",
       })
-      .then(() => {
-        sendMessage({
-          message: text,
-          sender_id: currentUserId,
-          sender_initials: currentUserInitials || "??",
-          timestamp: new Date().toISOString(),
-        });
-      })
       .catch((error) => {
         console.error("Error sending message:", error);
       });
