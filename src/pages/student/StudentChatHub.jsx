@@ -103,7 +103,7 @@ const StudentChatHub = () => {
         });
 
         if (token) {
-          await axios.post("http://localhost:8001/register-fcm/", {
+          await axios.post("https://pathwise.duckdns.org/register-fcm/", {
             user_id: currentUserId,
             token,
           });
