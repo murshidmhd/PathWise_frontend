@@ -209,6 +209,13 @@ const CounselorChatHub = () => {
                 currentUserInitials={currentUserInitials}
                 roomId={roomId} 
                 hideSidebar={true}
+                quickReplies={[
+                  "Great job on your latest assessment! 🌟",
+                  "Let's schedule a call to discuss your roadmap.",
+                  "Check the new resources I shared with you.",
+                  "Have you had a chance to look at the Cloud Computing track?",
+                  "You're making excellent progress! Keep it up."
+                ]}
               />
             ) : (
               <div className="flex-1 flex flex-col items-center justify-center p-12 text-center bg-[radial-gradient(circle_at_center,white,transparent)]">

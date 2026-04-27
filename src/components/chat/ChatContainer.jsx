@@ -13,6 +13,7 @@ const ChatContainer = ({
   currentUserName,
   currentUserInitials,
   hideSidebar = false,
+  quickReplies = [],
 }) => {
   const [localMessages, setLocalMessages] = useState(initialMessages || []);
 
@@ -105,7 +106,21 @@ const ChatContainer = ({
         </div>
 
         <MessageList messages={localMessages} currentUserId={currentUserId} />
-        <div className="shrink-0">
+        
+        <div className="shrink-0 bg-white/80 backdrop-blur-sm border-t border-slate-100">
+          {quickReplies.length > 0 && (
+            <div className="flex gap-2 overflow-x-auto p-4 pb-2 custom-scrollbar">
+              {quickReplies.map((reply, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => handleSendMessage(reply)}
+                  className="whitespace-nowrap rounded-full border border-slate-200 bg-white px-4 py-1.5 text-[11px] font-bold text-slate-600 transition-all hover:border-[#0B818D] hover:bg-[#0B818D]/5 hover:text-[#0B818D]"
+                >
+                  {reply}
+                </button>
+              ))}
+            </div>
+          )}
           <ChatInput onSendMessage={handleSendMessage} />
         </div>
       </div>
