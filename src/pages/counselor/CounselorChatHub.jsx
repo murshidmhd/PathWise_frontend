@@ -208,6 +208,7 @@ const CounselorChatHub = () => {
                 currentUserName={currentUserName}
                 currentUserInitials={currentUserInitials}
                 roomId={roomId} 
+                hideSidebar={true}
               />
             ) : (
               <div className="flex-1 flex flex-col items-center justify-center p-12 text-center bg-[radial-gradient(circle_at_center,white,transparent)]">
@@ -225,59 +226,81 @@ const CounselorChatHub = () => {
             )}
           </main>
 
-          {/* Right Sidebar: AI Insights & Calendar */}
+          {/* Right Sidebar: Unified Student Insight Panel */}
           {selectedStudent && (
-            <aside className="w-[320px] hidden xl:flex flex-col bg-slate-50 overflow-y-auto">
-              <div className="p-6 border-b border-slate-200/60 bg-white">
-                <div className="flex items-center gap-2 text-[#0B818D] mb-2">
-                  <Icon name="auto_awesome" className="text-xl animate-pulse" />
-                  <span className="text-xs font-black uppercase tracking-widest">AI Student Brief</span>
+            <aside className="w-[340px] hidden xl:flex flex-col bg-slate-50 border-l border-slate-100 overflow-hidden">
+              {/* Profile Header */}
+              <div className="p-8 bg-white border-b border-slate-100">
+                <div className="flex flex-col items-center text-center">
+                  <div className="size-20 rounded-[32px] bg-gradient-to-br from-indigo-500 to-purple-600 text-white flex items-center justify-center text-2xl font-black shadow-xl shadow-indigo-100 mb-4">
+                    {selectedStudent.full_name[0].toUpperCase()}
+                  </div>
+                  <h3 className="text-xl font-black text-slate-900 tracking-tight">{selectedStudent.full_name}</h3>
+                  <div className="mt-1 inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-[10px] font-black text-emerald-600 uppercase tracking-wider ring-1 ring-inset ring-emerald-600/10">
+                    <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                    Online
+                  </div>
                 </div>
-                <h3 className="text-lg font-black text-slate-900">{selectedStudent.full_name}</h3>
-                <p className="text-xs font-bold text-slate-500 mt-1">{selectedStudent.stream || "General Track"}</p>
               </div>
 
-              <div className="p-6 space-y-6 flex-1 custom-scrollbar">
-                {/* AI Summary Card */}
-                <div className="rounded-2xl bg-white p-5 shadow-sm border border-slate-200/60">
-                  <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Quick Analysis</h4>
-                  <p className="text-sm font-medium text-slate-600 leading-relaxed">
-                    Student shows high aptitude in <span className="font-bold text-slate-800">Logical Reasoning</span>. 
-                    Currently struggling with mapping clear career goals. Recommend discussing actionable roadmap steps.
-                  </p>
-                </div>
-
-                {/* Skill Gaps */}
-                <div className="rounded-2xl bg-gradient-to-br from-indigo-50 to-white p-5 shadow-sm border border-indigo-100/50">
-                  <h4 className="text-xs font-bold text-indigo-400 uppercase tracking-widest mb-3">Identified Gaps</h4>
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-3">
-                      <div className="flex size-8 rounded-lg bg-indigo-100 text-indigo-600 items-center justify-center">
-                        <Icon name="psychology" className="text-sm" />
+              <div className="flex-1 overflow-y-auto custom-scrollbar">
+                <div className="p-6 space-y-6">
+                  {/* AI Student Brief */}
+                  <div className="rounded-3xl bg-white p-5 shadow-sm border border-slate-200/60">
+                    <div className="flex items-center gap-2 text-[#0B818D] mb-4">
+                      <Icon name="auto_awesome" className="text-lg animate-pulse" />
+                      <span className="text-[10px] font-black uppercase tracking-widest">AI Performance Brief</span>
+                    </div>
+                    <div className="space-y-4">
+                      <div>
+                        <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Quick Analysis</h4>
+                        <p className="text-xs font-medium text-slate-600 leading-relaxed">
+                          Student shows high aptitude in <span className="font-bold text-slate-800">Logical Reasoning</span>. 
+                          Currently mapping clear career goals.
+                        </p>
                       </div>
-                      <div className="flex-1">
-                        <p className="text-xs font-bold text-slate-800">Decision Making</p>
-                        <div className="mt-1 h-1.5 w-full rounded-full bg-indigo-100 overflow-hidden">
-                          <div className="h-full bg-indigo-500 w-[45%]" />
+                      <div className="h-px bg-slate-100" />
+                      <div>
+                        <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Skill Gaps</h4>
+                        <div className="flex items-center justify-between mb-1.5">
+                          <span className="text-[11px] font-bold text-slate-700">Decision Making</span>
+                          <span className="text-[11px] font-bold text-indigo-500">45%</span>
+                        </div>
+                        <div className="h-1.5 w-full rounded-full bg-slate-100 overflow-hidden">
+                          <div className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 w-[45%]" />
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
 
-                {/* Session Booking */}
-                <div className="rounded-3xl bg-[#111C2D] p-6 text-white shadow-xl mt-8">
-                  <div className="flex items-center gap-2 mb-4">
-                    <Icon name="calendar_month" className="text-teal-400" />
-                    <h4 className="text-sm font-bold tracking-tight">Schedule Video Session</h4>
+                  {/* Shared Files Section (New) */}
+                  <div className="rounded-3xl bg-white p-5 shadow-sm border border-slate-200/60">
+                    <div className="flex items-center justify-between mb-4">
+                      <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Shared Files</h4>
+                      <button className="text-[10px] font-black text-[#0B818D] uppercase tracking-wider hover:underline">View All</button>
+                    </div>
+                    <div className="flex flex-col items-center justify-center py-4 text-center border-2 border-dashed border-slate-100 rounded-2xl">
+                      <Icon name="upload_file" className="text-slate-200 text-3xl mb-2" />
+                      <p className="text-[11px] font-bold text-slate-400">No files shared yet</p>
+                    </div>
                   </div>
-                  <p className="text-xs text-slate-400 mb-6 leading-relaxed">
-                    Set up a 1v1 video meeting. The student will be notified and points will be deducted.
-                  </p>
-                  <button className="w-full flex items-center justify-center gap-2 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-900 font-black py-3 px-4 transition-colors">
-                    <Icon name="videocam" className="text-lg" />
-                    Book for 10 SP
-                  </button>
+
+                  {/* Session Booking */}
+                  <div className="rounded-[32px] bg-[#111C2D] p-6 text-white shadow-2xl shadow-slate-900/20">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="size-10 rounded-2xl bg-white/10 flex items-center justify-center text-teal-400">
+                        <Icon name="calendar_month" className="text-xl" />
+                      </div>
+                      <div>
+                        <h4 className="text-sm font-black tracking-tight">Mentorship Session</h4>
+                        <p className="text-[10px] font-bold text-slate-400">10 SkillPoints / 30 mins</p>
+                      </div>
+                    </div>
+                    <button className="w-full group flex items-center justify-center gap-2 rounded-2xl bg-[#0B818D] hover:bg-[#0d99a6] text-white font-black py-3.5 px-4 transition-all hover:scale-[1.02] active:scale-[0.98]">
+                      <Icon name="videocam" className="text-lg group-hover:animate-bounce" />
+                      Book Video Call
+                    </button>
+                  </div>
                 </div>
               </div>
             </aside>

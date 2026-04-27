@@ -12,6 +12,7 @@ const ChatContainer = ({
   roomId,
   currentUserName,
   currentUserInitials,
+  hideSidebar = false,
 }) => {
   const [localMessages, setLocalMessages] = useState(initialMessages || []);
 
@@ -109,7 +110,7 @@ const ChatContainer = ({
         </div>
       </div>
 
-      <ChatSidebar contact={contact} />
+      {!hideSidebar && <ChatSidebar contact={contact} />}
     </div>
   );
 };
