@@ -8,7 +8,7 @@ import { chatApi as api } from "../../services/api";
 const ChatContainer = ({
   messages: initialMessages,
   contact,
-  currentUserId,
+  currentUserId, 
   roomId,
   currentUserName,
   currentUserInitials,
@@ -43,7 +43,7 @@ const ChatContainer = ({
     [currentUserId],
   );
 
-  const { sendMessage, status } = useWebSocket(
+  const { status } = useWebSocket(
     roomId ? `chat/${roomId}` : null,
     onMessage,
   );
