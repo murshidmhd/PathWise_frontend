@@ -115,6 +115,8 @@ export default function RagChatWidget() {
     "/auth",
     "/student/assessment_question",
     "/student/assessment_report",
+    "/student/chat",
+    "/counselor/chat",
   ];
 
   const shouldShow =
