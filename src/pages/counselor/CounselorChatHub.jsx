@@ -159,33 +159,92 @@ const CounselorChatHub = () => {
           </div>
         </aside>
 
-        {/* Chat Area */}
-        <main className="flex-1 flex flex-col min-w-0 bg-white">
-          {selectedStudent ? (
-            <ChatContainer
-              messages={messages}
-              contact={contact}
-              currentUserId={currentUserId}
-              currentUserName={currentUserName}
-              currentUserInitials={currentUserInitials}
-              roomId={roomId}
-            />
-          ) : (
-            <div className="flex-1 flex flex-col items-center justify-center p-12 text-center bg-[radial-gradient(circle_at_center,white,transparent)]">
-              <div className="relative">
-                <div className="absolute inset-0 animate-ping rounded-full bg-[#0B818D]/10 text-transparent">.</div>
-                <div className="relative flex size-24 items-center justify-center rounded-[40px] bg-slate-50 text-[#0B818D] shadow-xl shadow-slate-100">
-                  <span className="material-symbols-outlined text-4xl">forum</span>
+        {/* Main Content Area */}
+        <div className="flex-1 flex flex-row min-w-0 bg-white">
+          <main className="flex-1 flex flex-col min-w-0 border-r border-slate-100">
+            {selectedStudent ? (
+              <ChatContainer
+                messages={messages}
+                contact={contact}
+                currentUserId={currentUserId}
+                currentUserName={currentUserName}
+                currentUserInitials={currentUserInitials}
+                roomId={roomId}
+              />
+            ) : (
+              <div className="flex-1 flex flex-col items-center justify-center p-12 text-center bg-[radial-gradient(circle_at_center,white,transparent)]">
+                <div className="relative">
+                  <div className="absolute inset-0 animate-ping rounded-full bg-[#0B818D]/10 text-transparent">.</div>
+                  <div className="relative flex size-24 items-center justify-center rounded-[40px] bg-slate-50 text-[#0B818D] shadow-xl shadow-slate-100">
+                    <span className="material-symbols-outlined text-4xl">forum</span>
+                  </div>
+                </div>
+                <h3 className="mt-8 text-2xl font-black text-slate-950">Select a Conversation</h3>
+                <p className="mt-2 max-w-xs text-sm font-medium leading-relaxed text-slate-500">
+                  Choose a student from the sidebar to start counseling via real-time messaging.
+                </p>
+              </div>
+            )}
+          </main>
+
+          {/* Right Sidebar: AI Insights & Calendar */}
+          {selectedStudent && (
+            <aside className="w-[320px] hidden xl:flex flex-col bg-slate-50 overflow-y-auto">
+              <div className="p-6 border-b border-slate-200/60 bg-white">
+                <div className="flex items-center gap-2 text-[#0B818D] mb-2">
+                  <Icon name="auto_awesome" className="text-xl animate-pulse" />
+                  <span className="text-xs font-black uppercase tracking-widest">AI Student Brief</span>
+                </div>
+                <h3 className="text-lg font-black text-slate-900">{selectedStudent.full_name}</h3>
+                <p className="text-xs font-bold text-slate-500 mt-1">{selectedStudent.stream || "General Track"}</p>
+              </div>
+
+              <div className="p-6 space-y-6 flex-1 custom-scrollbar">
+                {/* AI Summary Card */}
+                <div className="rounded-2xl bg-white p-5 shadow-sm border border-slate-200/60">
+                  <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Quick Analysis</h4>
+                  <p className="text-sm font-medium text-slate-600 leading-relaxed">
+                    Student shows high aptitude in <span className="font-bold text-slate-800">Logical Reasoning</span>. 
+                    Currently struggling with mapping clear career goals. Recommend discussing actionable roadmap steps.
+                  </p>
+                </div>
+
+                {/* Skill Gaps */}
+                <div className="rounded-2xl bg-gradient-to-br from-indigo-50 to-white p-5 shadow-sm border border-indigo-100/50">
+                  <h4 className="text-xs font-bold text-indigo-400 uppercase tracking-widest mb-3">Identified Gaps</h4>
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3">
+                      <div className="flex size-8 rounded-lg bg-indigo-100 text-indigo-600 items-center justify-center">
+                        <Icon name="psychology" className="text-sm" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-xs font-bold text-slate-800">Decision Making</p>
+                        <div className="mt-1 h-1.5 w-full rounded-full bg-indigo-100 overflow-hidden">
+                          <div className="h-full bg-indigo-500 w-[45%]" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Session Booking */}
+                <div className="rounded-3xl bg-[#111C2D] p-6 text-white shadow-xl mt-8">
+                  <div className="flex items-center gap-2 mb-4">
+                    <Icon name="calendar_month" className="text-teal-400" />
+                    <h4 className="text-sm font-bold tracking-tight">Schedule Video Session</h4>
+                  </div>
+                  <p className="text-xs text-slate-400 mb-6 leading-relaxed">
+                    Set up a 1v1 video meeting. The student will be notified and points will be deducted.
+                  </p>
+                  <button className="w-full flex items-center justify-center gap-2 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-900 font-black py-3 px-4 transition-colors">
+                    <Icon name="videocam" className="text-lg" />
+                    Book for 10 SP
+                  </button>
                 </div>
               </div>
-              <h3 className="mt-8 text-2xl font-black text-slate-950">Select a Conversation</h3>
-              <p className="mt-2 max-w-xs text-sm font-medium leading-relaxed text-slate-500">
-                Choose a student from the sidebar to start counseling via real-time messaging.
-              </p>
-            </div>
+            </aside>
           )}
-        </main>
-      </div>
+        </div>
     </div>
   );
 };

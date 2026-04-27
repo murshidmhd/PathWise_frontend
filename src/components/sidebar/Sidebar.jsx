@@ -33,12 +33,7 @@ const sidebarLinks = [
     caption: "Plan your next steps",
     to: "/student/roadmap",
   },
-  {
-    icon: "person",
-    label: "Profile",
-    caption: "Manage your details",
-    to: "/student/profile",
-  },
+
   {
     icon: "chat",
     label: "Chat",
@@ -119,8 +114,12 @@ export const Sidebar = ({ isOpen, onClose }) => {
           </div>
 
           <div className="mt-6 rounded-[28px] border border-white/10 bg-white/6 p-4 shadow-[0_18px_50px_rgba(2,6,23,0.22)] backdrop-blur-md">
-            <div className="flex items-center gap-3">
-              <div className="flex size-12 items-center justify-center overflow-hidden rounded-2xl border border-white/10 bg-slate-800 text-sm font-bold text-white">
+            <Link 
+              to="/student/profile" 
+              onClick={() => { if (window.innerWidth < 1024) onClose(); }}
+              className="flex items-center gap-3 group transition-transform hover:-translate-y-0.5 cursor-pointer"
+            >
+              <div className="flex size-12 items-center justify-center overflow-hidden rounded-2xl border border-white/10 bg-slate-800 text-sm font-bold text-white group-hover:ring-2 group-hover:ring-teal-400/50 transition-all">
                 {profilePhoto ? (
                   <img
                     src={profilePhoto}
@@ -132,14 +131,14 @@ export const Sidebar = ({ isOpen, onClose }) => {
                 )}
               </div>
               <div className="min-w-0">
-                <p className="truncate text-sm font-semibold text-white">
+                <p className="truncate text-sm font-semibold text-white group-hover:text-teal-200 transition-colors">
                   {fullName}
                 </p>
                 <p className="mt-1 truncate text-xs text-slate-400 capitalize">
                   {educationLevel}
                 </p>
               </div>
-            </div>
+            </Link>
 
             <div className="mt-4 rounded-2xl bg-white/6 px-3 py-3">
               <div className="flex items-center justify-between">
