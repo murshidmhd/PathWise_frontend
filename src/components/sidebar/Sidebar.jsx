@@ -117,26 +117,31 @@ export const Sidebar = ({ isOpen, onClose }) => {
             <Link 
               to="/student/profile" 
               onClick={() => { if (window.innerWidth < 1024) onClose(); }}
-              className="flex items-center gap-3 group transition-transform hover:-translate-y-0.5 cursor-pointer"
+              className="flex items-center justify-between group transition-transform hover:-translate-y-0.5 cursor-pointer"
             >
-              <div className="flex size-12 items-center justify-center overflow-hidden rounded-2xl border border-white/10 bg-slate-800 text-sm font-bold text-white group-hover:ring-2 group-hover:ring-teal-400/50 transition-all">
-                {profilePhoto ? (
-                  <img
-                    src={profilePhoto}
-                    alt={fullName}
-                    className="h-full w-full object-cover"
-                  />
-                ) : (
-                  userInitial
-                )}
+              <div className="flex items-center gap-3">
+                <div className="flex size-12 items-center justify-center overflow-hidden rounded-2xl border border-white/10 bg-slate-800 text-sm font-bold text-white group-hover:ring-2 group-hover:ring-teal-400/50 transition-all">
+                  {profilePhoto ? (
+                    <img
+                      src={profilePhoto}
+                      alt={fullName}
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    userInitial
+                  )}
+                </div>
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-semibold text-white group-hover:text-teal-200 transition-colors">
+                    {fullName}
+                  </p>
+                  <p className="mt-1 truncate text-xs text-slate-400 capitalize">
+                    {educationLevel}
+                  </p>
+                </div>
               </div>
-              <div className="min-w-0">
-                <p className="truncate text-sm font-semibold text-white group-hover:text-teal-200 transition-colors">
-                  {fullName}
-                </p>
-                <p className="mt-1 truncate text-xs text-slate-400 capitalize">
-                  {educationLevel}
-                </p>
+              <div className="flex size-8 items-center justify-center rounded-xl bg-white/5 text-slate-400 opacity-0 transition-all group-hover:opacity-100 group-hover:bg-teal-500/20 group-hover:text-teal-300">
+                <Icon name="chevron_right" className="text-lg" />
               </div>
             </Link>
 
