@@ -1,20 +1,39 @@
-import { useState } from "react";
-import { Sparkles, BrainCircuit, Target, TrendingUp, AlertCircle, CheckCircle2 } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Sparkles, BrainCircuit, Target, TrendingUp, AlertCircle } from "lucide-react";
+import api from "../../services/api";
 
 export default function SkillAnalyze() {
-    const [skills] = useState([
-        { name: "JavaScript", level: 85, category: "Frontend" },
-        { name: "React", level: 75, category: "Frontend" },
-        { name: "Python", level: 60, category: "Backend" },
-        { name: "Data Structures", level: 50, category: "Computer Science" },
-        { name: "UI/UX Design", level: 40, category: "Design" },
-    ]);
+    const [skills, setSkills] = useState([]);
+    const [recommendations, setRecommendations] = useState([]);
+    const [gap, setGap] = useState(null);
+    const [loading, setLoading] = useState(true);
 
-    const [recommendations] = useState([
-        { skill: "Node.js", reason: "Complements your React skills for full-stack development." },
-        { skill: "System Design", reason: "Essential for senior roles and complex architectures." },
-        { skill: "TypeScript", reason: "Highly requested in modern frontend ecosystems." }
-    ]);
+    useEffect(() => {
+        const fetchSkillAnalysis = async () => {
+            try {
+                const response = await api.get("/students/skill-analysis/");
+                setSkills(response.data.skills);
+                setRecommendations(response.data.recommendations);
+                setGap(response.data.gap_analysis);
+            } catch (error) {
+                console.error("Error fetching skill analysis:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchSkillAnalysis();
+    }, []);
+
+    if (loading) {
+        return (
+            <div className="flex min-h-screen items-center justify-center bg-[#F8FAFC]">
+                <div className="flex flex-col items-center gap-4">
+                    <div className="size-12 animate-spin rounded-full border-4 border-indigo-600 border-t-transparent"></div>
+                    <p className="text-sm font-bold text-slate-500 font-heading">Analyzing your potential...</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-[#F8FAFC] font-body text-slate-900 px-4 py-8">
@@ -96,7 +115,7 @@ export default function SkillAnalyze() {
                                             <Sparkles size={14} />
                                         </div>
                                         <div>
-                                            <p className="text-sm font-bold text-white">{rec.skill}</p>
+                                            <p className="text-sm font-bold text-white">{rec.skill_name}</p>
                                             <p className="mt-1 text-xs text-slate-400 leading-relaxed">{rec.reason}</p>
                                         </div>
                                     </div>
@@ -111,7 +130,7 @@ export default function SkillAnalyze() {
                             </div>
                             <h3 className="text-xl font-black text-slate-900 tracking-tight">Skill Gap Detected</h3>
                             <p className="mt-3 text-sm font-medium text-slate-500 leading-relaxed">
-                                Your current roadmap requires <span className="font-bold text-slate-800">Cloud Computing</span> fundamentals to reach a 90% match rate.
+                                Your current roadmap requires <span className="font-bold text-slate-800">{gap?.required_skill || "additional"}</span> fundamentals to reach a {gap?.match_rate || 0}% match rate.
                             </p>
                             <button className="mt-6 w-full rounded-2xl bg-white border border-amber-200 px-4 py-3 text-sm font-bold text-amber-700 transition-colors hover:bg-amber-50">
                                 View Learning Path
