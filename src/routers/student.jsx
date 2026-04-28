@@ -1,4 +1,4 @@
-import { Route } from "react-router-dom";
+import { Navigate, Route } from "react-router-dom";
 import ProtectedRoute from "../components/ProtectedRoute";
 import StudentLayout from "../components/layot/StudentLayout";
 import StudentDashboard from "../pages/student/Dashboard";
@@ -23,6 +23,7 @@ const studentRoutes = (
       </ProtectedRoute>
     }
   >
+    <Route index element={<Navigate to="dashboard" replace />} />
     <Route path="dashboard" element={<StudentDashboard />} />
     <Route path="assessments" element={<StudentAssessments />} />
     <Route path="profile" element={<StudentProfile />} />
