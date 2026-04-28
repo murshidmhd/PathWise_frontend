@@ -8,10 +8,9 @@ import { chatApi as api } from "../../services/api";
 const ChatContainer = ({
   messages: initialMessages,
   contact,
-  currentUserId, 
+  currentUserId,
   roomId,
   currentUserName,
-  currentUserInitials,
   hideSidebar = false,
   quickReplies = [],
 }) => {
