@@ -13,10 +13,12 @@ export async function handleLoginSuccess(dispatch, token, role) {
         headers: { Authorization: `Bearer ${token}` },
       });
       user = profileRes.data;
+      console.log("user data is here auth.js:" , user)
 
-      // Show welcome gift toast on first login (gift just claimed)
-      console.log("Wallet data:", user?.wallet); // debug — remove later
-      if (user?.wallet?.is_welcome_gift_claimed === true) {
+      // Show welcome gift toast only once (first login after gift is claimed)
+      const giftShownKey = `gift_shown_${user?.user_id}`;
+      if (user?.wallet?.is_welcome_gift_claimed === true && !localStorage.getItem(giftShownKey)) {
+        localStorage.setItem(giftShownKey, "true");
         setTimeout(() => {
           toast.success("🎁 Welcome Gift! You received 8 free SkillPoints to get started.", {
             duration: 6000,

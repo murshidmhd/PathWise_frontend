@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
-import { BookOpen, Sparkles, Target, Trophy, History } from "lucide-react";
+import { BookOpen, Sparkles, Target, Trophy, History, AlertTriangle, RefreshCw, ClipboardList } from "lucide-react";
 import api from "../../services/api";
 
 // New Shared Components
@@ -145,7 +145,8 @@ export default function CareerRoadmapPage() {
       setMilestones(res.data.milestones || []);
       setCustomTitle("");
     } catch (err) {
-      alert("AI failed to generate this specific path. Try a common career title!");
+      const msg = err.response?.data?.error || err.response?.data?.message || "AI couldn't generate that path. Try a more common career title!";
+      setError(msg);
     } finally {
       setIsGenerating(false);
     }
@@ -172,7 +173,68 @@ export default function CareerRoadmapPage() {
     );
   }
 
-  if (error) return <div className="p-10 text-center text-rose-600 font-bold">{error}</div>;
+  if (error) {
+    const isAssessmentError = error.toLowerCase().includes("assessment");
+    return (
+      <div className="min-h-screen bg-page-bg px-4 py-8 flex items-start justify-center">
+        <div className="mx-auto mt-16 max-w-lg w-full">
+          <div className="rounded-[30px] border border-slate-200/80 bg-white p-8 shadow-sm text-center space-y-5">
+            {/* Icon */}
+            <div className={`mx-auto flex size-16 items-center justify-center rounded-2xl ${
+              isAssessmentError
+                ? "bg-amber-50 text-amber-500"
+                : "bg-rose-50 text-rose-500"
+            }`}>
+              {isAssessmentError
+                ? <ClipboardList className="size-7" />
+                : <AlertTriangle className="size-7" />
+              }
+            </div>
+
+            {/* Title */}
+            <h2 className="text-xl font-bold text-slate-900">
+              {isAssessmentError ? "Assessment Required" : "Something Went Wrong"}
+            </h2>
+
+            {/* Message */}
+            <p className="text-sm leading-relaxed text-slate-500 max-w-sm mx-auto">
+              {isAssessmentError
+                ? "Complete a skill assessment first so our AI can build a personalized career roadmap just for you."
+                : error
+              }
+            </p>
+
+            {/* Actions */}
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+              {isAssessmentError ? (
+                <a
+                  href="/student/skill-analyze"
+                  className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-[#0B818D] to-indigo-500 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-teal-200/40 transition hover:shadow-xl hover:scale-[1.02] active:scale-95"
+                >
+                  <ClipboardList className="size-4" />
+                  Take Assessment
+                </a>
+              ) : (
+                <button
+                  onClick={() => { setError(null); setLoading(true); window.location.reload(); }}
+                  className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-[#0B818D] to-indigo-500 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-teal-200/40 transition hover:shadow-xl hover:scale-[1.02] active:scale-95"
+                >
+                  <RefreshCw className="size-4" />
+                  Try Again
+                </button>
+              )}
+              <a
+                href="/student/dashboard"
+                className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-6 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 hover:border-slate-300"
+              >
+                Back to Dashboard
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-page-bg px-4 py-6 text-slate-900 sm:px-6 lg:px-8">
