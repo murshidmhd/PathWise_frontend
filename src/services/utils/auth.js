@@ -14,8 +14,9 @@ export async function handleLoginSuccess(dispatch, token, role) {
       });
       user = profileRes.data;
 
-      // Show welcome gift toast for first-time login
-      if (user?.wallet?.is_welcome_gift_claimed && user?.wallet?.balance === 8) {
+      // Show welcome gift toast on first login (gift just claimed)
+      console.log("Wallet data:", user?.wallet); // debug — remove later
+      if (user?.wallet?.is_welcome_gift_claimed === true) {
         setTimeout(() => {
           toast.success("🎁 Welcome Gift! You received 8 free SkillPoints to get started.", {
             duration: 6000,
@@ -28,7 +29,7 @@ export async function handleLoginSuccess(dispatch, token, role) {
               fontWeight: "600",
             },
           });
-        }, 1500); // slight delay so dashboard loads first
+        }, 1500);
       }
     } else if (role === "counselor") {
       const profileRes = await api.get("/counselors/profile/", {
