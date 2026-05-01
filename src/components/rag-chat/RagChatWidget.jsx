@@ -268,7 +268,7 @@ export default function RagChatWidget() {
               </div>
             </div>
 
-            <div className="max-h-[420px] space-y-4 overflow-y-auto bg-[#F8FAFC] px-4 py-4">
+            <div className="max-h-[420px] space-y-4 overflow-y-auto bg-page-bg px-4 py-4">
               {messages.map((message) => (
                 <MessageBubble key={message.id} message={message} />
               ))}

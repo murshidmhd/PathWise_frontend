@@ -146,7 +146,7 @@ export default function CounselorDashboard() {
   );
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] px-4 py-8 text-slate-900 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-page-bg px-4 py-8 text-slate-900 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl space-y-10">
         <header className="relative overflow-hidden rounded-[40px] border border-white bg-white/70 p-8 shadow-2xl shadow-slate-200/50 backdrop-blur-xl sm:p-10">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(11,129,141,0.1),transparent_40%),radial-gradient(circle_at_bottom_left,rgba(79,70,229,0.08),transparent_40%)]" />

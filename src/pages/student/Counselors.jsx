@@ -74,7 +74,7 @@ export default function StudentCounselors() {
     }
 
     return (
-        <div className="flex min-h-screen bg-[#F8FAFC] font-body text-slate-900 antialiased">
+        <div className="flex min-h-screen bg-page-bg font-body text-slate-900 antialiased">
             <main className="flex-1 p-4 sm:p-6 lg:p-8">
                 <header className="mb-8">
                     <h1 className="text-[24px] font-bold text-slate-900">Find a Mentor</h1>

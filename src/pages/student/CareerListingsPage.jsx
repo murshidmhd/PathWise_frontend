@@ -1,7 +1,13 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Sparkles, ArrowRight, Map } from "lucide-react";
+import { Sparkles, ArrowRight, Map, BriefcaseBusiness } from "lucide-react";
 import api from "../../services/api";
+import SectionTabs from "../../components/student/SectionTabs";
+
+const careerTabs = [
+  { label: "Career Matches", to: "/student/careers", icon: BriefcaseBusiness, end: true },
+  { label: "Roadmap", to: "/student/careers/roadmap", icon: Map },
+];
 
 function EmptyState({ title, description, action }) {
   return (
@@ -70,8 +76,12 @@ export default function CareerListingsPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] px-4 py-6 text-slate-900 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-page-bg px-4 py-6 text-slate-900 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
+        <div className="mb-6">
+          <SectionTabs tabs={careerTabs} />
+        </div>
+
         <header className="mb-8 rounded-[30px] border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
           <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
             <div>
@@ -97,7 +107,7 @@ export default function CareerListingsPage() {
                 </Link>
               ) : null}
               <Link
-                to="/student/roadmap"
+                to="/student/careers/roadmap"
                 className="inline-flex items-center gap-2 rounded-2xl bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
               >
                 Open Roadmap
@@ -172,7 +182,7 @@ export default function CareerListingsPage() {
                   <div className="mt-6 flex gap-3">
                     {index === 0 ? (
                       <Link
-                        to="/student/roadmap"
+                        to="/student/careers/roadmap"
                         className="inline-flex items-center gap-2 rounded-2xl bg-[#0B818D] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#096b75]"
                       >
                         <Map className="h-4 w-4" />

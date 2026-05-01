@@ -70,7 +70,7 @@ export default function CounselorProfile() {
     .toUpperCase();
 
   return (
-    <div className="flex min-h-screen bg-[#F8FAFC] text-slate-900 dark:bg-[#0F172A] dark:text-slate-100">
+    <div className="flex min-h-screen bg-page-bg text-slate-900 dark:bg-[#0F172A] dark:text-slate-100">
       <main className="flex-1 p-4 sm:p-6 lg:p-8">
         <div className="mx-auto max-w-5xl">
           <div className="mb-8 flex flex-col items-center gap-8 rounded-3xl border border-slate-200/60 bg-white p-8 shadow-sm md:flex-row dark:border-slate-700/50 dark:bg-slate-800">

@@ -1,6 +1,12 @@
 import { useState, useEffect } from "react";
-import { Sparkles, BrainCircuit, Target, TrendingUp, AlertCircle } from "lucide-react";
+import { Sparkles, BrainCircuit, Target, TrendingUp, AlertCircle, Wallet } from "lucide-react";
 import api from "../../services/api";
+import SectionTabs from "../../components/student/SectionTabs";
+
+const skillTabs = [
+    { label: "Skill Analysis", to: "/student/skills/analyze", icon: BrainCircuit },
+    { label: "SkillPoints", to: "/student/skills/points", icon: Wallet },
+];
 
 export default function SkillAnalyze() {
     const [skills, setSkills] = useState([]);
@@ -26,7 +32,7 @@ export default function SkillAnalyze() {
 
     if (loading) {
         return (
-            <div className="flex min-h-screen items-center justify-center bg-[#F8FAFC]">
+            <div className="flex min-h-screen items-center justify-center bg-page-bg">
                 <div className="flex flex-col items-center gap-4">
                     <div className="size-12 animate-spin rounded-full border-4 border-indigo-600 border-t-transparent"></div>
                     <p className="text-sm font-bold text-slate-500 font-heading">Analyzing your potential...</p>
@@ -36,8 +42,10 @@ export default function SkillAnalyze() {
     }
 
     return (
-        <div className="min-h-screen bg-[#F8FAFC] font-body text-slate-900 px-4 py-8">
+        <div className="min-h-screen bg-page-bg font-body text-slate-900 px-4 py-8">
             <div className="mx-auto max-w-6xl space-y-8">
+                <SectionTabs tabs={skillTabs} />
+
                 {/* Header */}
                 <header className="flex flex-col gap-3">
                     <span className="inline-flex w-fit items-center gap-2 rounded-full bg-indigo-50 px-4 py-1.5 text-[11px] font-black tracking-[0.18em] text-indigo-600 uppercase border border-indigo-100">

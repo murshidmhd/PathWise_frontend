@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
-import { BookOpen, Sparkles, Target, Trophy, History, AlertTriangle, RefreshCw, ClipboardList } from "lucide-react";
+import { BookOpen, Sparkles, Target, Trophy, History, AlertTriangle, RefreshCw, ClipboardList, BriefcaseBusiness, Map } from "lucide-react";
 import api from "../../services/api";
 
 // New Shared Components
@@ -9,6 +9,12 @@ import InfoCard from "../../components/roadmap/InfoCard";
 import RoadmapHeader from "../../components/roadmap/RoadmapHeader";
 import { handlePayment } from "../../services/utils/payment";
 import PricingModal from "../../components/payment/PricingModal";
+import SectionTabs from "../../components/student/SectionTabs";
+
+const careerTabs = [
+  { label: "Career Matches", to: "/student/careers", icon: BriefcaseBusiness, end: true },
+  { label: "Roadmap", to: "/student/careers/roadmap", icon: Map },
+];
 
 export default function CareerRoadmapPage() {
   const [roadmap, setRoadmap] = useState(null);
@@ -208,7 +214,7 @@ export default function CareerRoadmapPage() {
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
               {isAssessmentError ? (
                 <a
-                  href="/student/skill-analyze"
+                  href="/student/skills/analyze"
                   className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-[#0B818D] to-indigo-500 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-teal-200/40 transition hover:shadow-xl hover:scale-[1.02] active:scale-95"
                 >
                   <ClipboardList className="size-4" />
@@ -239,6 +245,7 @@ export default function CareerRoadmapPage() {
   return (
     <div className="min-h-screen bg-page-bg px-4 py-6 text-slate-900 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-6xl space-y-8">
+        <SectionTabs tabs={careerTabs} />
 
         <RoadmapHeader
           roadmap={roadmap}

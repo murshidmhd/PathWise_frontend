@@ -145,7 +145,7 @@ export default function StudentProfile() {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#F8FAFC]">
+      <div className="flex min-h-screen items-center justify-center bg-page-bg">
         <div className="mx-auto size-10 animate-spin rounded-full border-3 border-indigo-500 border-t-transparent" />
       </div>
     );

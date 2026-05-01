@@ -141,7 +141,7 @@ const CounselorChatHub = () => {
   } : null;
 
   return (
-    <div className="h-[calc(100vh-64px)] overflow-hidden bg-[#F8FAFC] p-4 lg:p-8">
+    <div className="h-[calc(100vh-64px)] overflow-hidden bg-page-bg p-4 lg:p-8">
       <div className="mx-auto flex h-full max-w-7xl overflow-hidden rounded-[40px] border border-white bg-white/70 shadow-2xl shadow-slate-200/50 backdrop-blur-xl">
         {/* Sidebar */}
         <aside className="w-80 flex flex-col min-w-[340px] border-r border-slate-100 bg-white/50">

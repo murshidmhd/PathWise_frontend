@@ -24,27 +24,14 @@ const sidebarLinks = [
   {
     icon: "work",
     label: "Careers",
-    caption: "Explore matching roles",
+    caption: "Roles and roadmap",
     to: "/student/careers",
   },
   {
-    icon: "route",
-    label: "Roadmap",
-    caption: "Plan your next steps",
-    to: "/student/roadmap",
-  },
-
-  {
-    icon: "chat",
-    label: "Chat",
-    caption: "Talk with support",
-    to: "/student/chat",
-  },
-  {
     icon: "psychology",
-    label: "Skill Analyze",
-    caption: "Map your proficiency",
-    to: "/student/skill-analyze",
+    label: "Skills",
+    caption: "Analysis and wallet",
+    to: "/student/skills/analyze",
   },
   {
     icon: "supervised_user_circle",
@@ -53,10 +40,16 @@ const sidebarLinks = [
     to: "/student/counselors",
   },
   {
-    icon: "database",
-    label: "SkillPoints",
-    caption: "Wallet & History",
-    to: "/student/skill-points",
+    icon: "chat",
+    label: "Chat",
+    caption: "Talk with support",
+    to: "/student/chat",
+  },
+  {
+    icon: "notifications",
+    label: "Notifications",
+    caption: "Updates and alerts",
+    to: "/student/notifications",
   },
 ];
 
@@ -80,7 +73,7 @@ export const Sidebar = ({ isOpen, onClose }) => {
 
   return (
     <aside
-      className={`fixed inset-y-0 left-0 z-50 flex h-screen w-[292px] flex-col overflow-hidden border-r border-white/10 bg-[#111C2D] text-slate-300 transition-transform duration-300 lg:translate-x-0 ${
+      className={`fixed inset-y-0 left-0 z-50 flex h-screen w-[240px] flex-col overflow-hidden border-r border-white/10 bg-[#111C2D] text-slate-300 transition-transform duration-300 lg:translate-x-0 ${
         isOpen ? "translate-x-0" : "-translate-x-full"
       }`}
     >
@@ -175,7 +168,11 @@ export const Sidebar = ({ isOpen, onClose }) => {
               const isActive =
                 item.to !== "#" &&
                 (location.pathname === item.to ||
-                  location.pathname.startsWith(`${item.to}/`));
+                  location.pathname.startsWith(`${item.to}/`) ||
+                  (item.to === "/student/careers" &&
+                    location.pathname.startsWith("/student/careers/")) ||
+                  (item.to === "/student/skills/analyze" &&
+                    location.pathname.startsWith("/student/skills/")));
 
               return (
                 <Link
@@ -184,35 +181,28 @@ export const Sidebar = ({ isOpen, onClose }) => {
                   onClick={() => {
                     if (window.innerWidth < 1024) onClose();
                   }}
-                  className={`group relative flex items-center gap-4 overflow-hidden rounded-[22px] px-4 py-4 transition-all ${
+                  className={`group relative flex items-center gap-3 overflow-hidden rounded-xl px-3 py-3 transition-all ${
                     isActive
                       ? "bg-gradient-to-r from-[#0B818D]/28 via-[#0B818D]/18 to-white/8 text-white shadow-[0_16px_40px_rgba(11,129,141,0.18)] ring-1 ring-white/10"
                       : "text-slate-400 hover:bg-white/6 hover:text-white"
                   }`}
                 >
                   <div
-                    className={`flex size-11 shrink-0 items-center justify-center rounded-2xl transition-all ${
+                    className={`flex size-9 shrink-0 items-center justify-center rounded-lg transition-all ${
                       isActive
                         ? "bg-white text-[#0B818D] shadow-sm"
                         : "bg-white/6 text-slate-300 group-hover:bg-white/10 group-hover:text-white"
                     }`}
                   >
-                    <Icon name={item.icon} className="text-[21px]" />
+                    <Icon name={item.icon} className="text-[18px]" />
                   </div>
 
                   <div className="min-w-0 flex-1">
-                    <p className="text-sm font-semibold">{item.label}</p>
-                    <p
-                      className={`mt-1 truncate text-[11px] ${
-                        isActive ? "text-teal-100/80" : "text-slate-500"
-                      }`}
-                    >
-                      {item.caption}
-                    </p>
+                    <p className="text-[13px] font-medium">{item.label}</p>
                   </div>
 
                   {isActive && (
-                    <span className="h-10 w-1.5 rounded-full bg-white/85" />
+                    <span className="h-8 w-1 rounded-full bg-white/85" />
                   )}
                 </Link>
               );
@@ -221,28 +211,11 @@ export const Sidebar = ({ isOpen, onClose }) => {
         </nav>
 
         <div className="relative shrink-0 border-t border-white/8 p-4">
-          <div className="rounded-[26px] border border-white/10 bg-gradient-to-br from-white/8 to-white/4 p-4 shadow-[0_16px_36px_rgba(2,6,23,0.2)]">
-            <div className="flex items-start gap-3">
-              <div className="flex size-11 items-center justify-center rounded-2xl bg-teal-400/14 text-teal-300">
-                <Icon name="tips_and_updates" className="text-[20px]" />
-              </div>
-              <div>
-                <p className="text-sm font-semibold text-white">
-                  Premium guidance
-                </p>
-                <p className="mt-1 text-xs leading-5 text-slate-400">
-                  Use assessment insights, AI chat, and roadmap planning
-                  together for a stronger journey.
-                </p>
-              </div>
-            </div>
-          </div>
-
           <button
             onClick={handleLogout}
-            className="mt-4 flex w-full items-center justify-center gap-3 rounded-[20px] border border-white/10 bg-white/5 px-4 py-3.5 text-sm font-semibold text-slate-200 transition hover:border-white/20 hover:bg-white/10 hover:text-white"
+            className="flex w-full items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm font-medium text-slate-200 transition hover:border-white/20 hover:bg-white/10 hover:text-white"
           >
-            <Icon name="logout" className="text-[20px]" />
+            <Icon name="logout" className="text-[18px]" />
             <span>Logout</span>
           </button>
         </div>

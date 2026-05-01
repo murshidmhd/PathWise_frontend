@@ -30,12 +30,16 @@ const studentRoutes = (
     <Route path="assessment_question/:id" element={<AssessmentQuestionsPage />} />
     <Route path="assessment_report/:id" element={<AssessmentReportPage />} />
     <Route path="careers" element={<CareerListingsPage />} />
-    <Route path="roadmap" element={<CareerRoadmapPage />} />
+    <Route path="careers/roadmap" element={<CareerRoadmapPage />} />
     <Route path="chat" element={<StudentChatHub />} />
     <Route path="counselors" element={<StudentCounselors />} />
     <Route path="notifications" element={<NotificationsPage />} />
-    <Route path="skill-points" element={<SkillPointsPage />} />
-    <Route path="skill-analyze" element={<SkillAnalyzePage />} />
+    <Route path="skills" element={<Navigate to="analyze" replace />} />
+    <Route path="skills/analyze" element={<SkillAnalyzePage />} />
+    <Route path="skills/points" element={<SkillPointsPage />} />
+    <Route path="roadmap" element={<Navigate to="careers/roadmap" replace />} />
+    <Route path="skill-points" element={<Navigate to="skills/points" replace />} />
+    <Route path="skill-analyze" element={<Navigate to="skills/analyze" replace />} />
   </Route>
 );
 

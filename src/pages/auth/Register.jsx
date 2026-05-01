@@ -322,7 +322,7 @@ const Register = () => {
                     First Name
                   </label>
                   <input
-                    className="w-full rounded-xl border-[1.5px] border-slate-200 bg-[#F8FAFC] px-4 py-3 text-sm transition-colors focus:border-amber-500 focus:ring-0"
+                    className="w-full rounded-xl border-[1.5px] border-slate-200 bg-page-bg px-4 py-3 text-sm transition-colors focus:border-amber-500 focus:ring-0"
                     placeholder="John Doe"
                     required
                     type="text"
@@ -335,7 +335,7 @@ const Register = () => {
                     Last Name
                   </label>
                   <input
-                    className="w-full rounded-xl border-[1.5px] border-slate-200 bg-[#F8FAFC] px-4 py-3 text-sm transition-colors focus:border-amber-500 focus:ring-0"
+                    className="w-full rounded-xl border-[1.5px] border-slate-200 bg-page-bg px-4 py-3 text-sm transition-colors focus:border-amber-500 focus:ring-0"
                     placeholder="John Doe"
                     required
                     type="text"
@@ -349,7 +349,7 @@ const Register = () => {
                     Email Address
                   </label>
                   <input
-                    className="w-full rounded-xl border-[1.5px] border-slate-200 bg-[#F8FAFC] px-4 py-3 text-sm transition-colors focus:border-amber-500 focus:ring-0"
+                    className="w-full rounded-xl border-[1.5px] border-slate-200 bg-page-bg px-4 py-3 text-sm transition-colors focus:border-amber-500 focus:ring-0"
                     placeholder="example@email.com"
                     required
                     type="email"
@@ -365,7 +365,7 @@ const Register = () => {
                         Qualification
                       </label>
                       <input
-                        className="w-full rounded-xl border-[1.5px] border-slate-200 bg-[#F8FAFC] px-4 py-3 text-sm transition-colors focus:border-amber-500 focus:ring-0"
+                        className="w-full rounded-xl border-[1.5px] border-slate-200 bg-page-bg px-4 py-3 text-sm transition-colors focus:border-amber-500 focus:ring-0"
                         placeholder="M.Sc Psychology"
                         required={isCounselor}
                         type="text"
@@ -379,7 +379,7 @@ const Register = () => {
                         Experience Years
                       </label>
                       <input
-                        className="w-full rounded-xl border-[1.5px] border-slate-200 bg-[#F8FAFC] px-4 py-3 text-sm transition-colors focus:border-amber-500 focus:ring-0"
+                        className="w-full rounded-xl border-[1.5px] border-slate-200 bg-page-bg px-4 py-3 text-sm transition-colors focus:border-amber-500 focus:ring-0"
                         placeholder="5"
                         required={isCounselor}
                         type="number"
@@ -394,7 +394,7 @@ const Register = () => {
                         Specialization
                       </label>
                       <input
-                        className="w-full rounded-xl border-[1.5px] border-slate-200 bg-[#F8FAFC] px-4 py-3 text-sm transition-colors focus:border-amber-500 focus:ring-0"
+                        className="w-full rounded-xl border-[1.5px] border-slate-200 bg-page-bg px-4 py-3 text-sm transition-colors focus:border-amber-500 focus:ring-0"
                         placeholder="Career Counseling"
                         required={isCounselor}
                         type="text"
@@ -426,7 +426,7 @@ const Register = () => {
                     Password
                   </label>
                   <input
-                    className="w-full rounded-xl border-[1.5px] border-slate-200 bg-[#F8FAFC] px-4 py-3 text-sm transition-colors focus:border-amber-500 focus:ring-0"
+                    className="w-full rounded-xl border-[1.5px] border-slate-200 bg-page-bg px-4 py-3 text-sm transition-colors focus:border-amber-500 focus:ring-0"
                     placeholder="••••••••"
                     required
                     type="password"
@@ -445,7 +445,7 @@ const Register = () => {
                     Confirm Password
                   </label>
                   <input
-                    className="w-full rounded-xl border-[1.5px] border-slate-200 bg-[#F8FAFC] px-4 py-3 text-sm transition-colors focus:border-amber-500 focus:ring-0"
+                    className="w-full rounded-xl border-[1.5px] border-slate-200 bg-page-bg px-4 py-3 text-sm transition-colors focus:border-amber-500 focus:ring-0"
                     placeholder="••••••••"
                     required
                     type="password"

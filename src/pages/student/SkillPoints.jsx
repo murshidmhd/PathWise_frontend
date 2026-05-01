@@ -11,12 +11,19 @@ import {
     ArrowDownLeft,
     ChevronRight,
     Trophy,
-    Info
+    Info,
+    BrainCircuit
 } from "lucide-react";
 import api from "../../services/api";
 import PricingModal from "../../components/payment/PricingModal";
 import { handlePayment } from "../../services/utils/payment";
 import { updateWallet } from "../../store/slices/authSlice";
+import SectionTabs from "../../components/student/SectionTabs";
+
+const skillTabs = [
+    { label: "Skill Analysis", to: "/student/skills/analyze", icon: BrainCircuit },
+    { label: "SkillPoints", to: "/student/skills/points", icon: WalletIcon },
+];
 
 const TransactionItem = ({ tx }) => {
     const isCredit = tx.amount > 0;
@@ -98,7 +105,7 @@ export default function SkillPointsPage() {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-[#F8FAFC] p-8 animate-pulse">
+            <div className="min-h-screen bg-page-bg p-8 animate-pulse">
                 <div className="max-w-6xl mx-auto space-y-8">
                     <div className="h-10 w-64 bg-slate-200 rounded-2xl" />
                     <div className="grid gap-6 lg:grid-cols-3">
@@ -111,8 +118,10 @@ export default function SkillPointsPage() {
     }
 
     return (
-        <div className="min-h-screen bg-[#F8FAFC] font-body text-slate-900 px-4 py-8">
+        <div className="min-h-screen bg-page-bg font-body text-slate-900 px-4 py-8">
             <div className="mx-auto max-w-6xl space-y-8">
+                <SectionTabs tabs={skillTabs} />
+
                 {/* Header */}
                 <header className="flex flex-col gap-3">
                     <span className="inline-flex w-fit items-center gap-2 rounded-full bg-teal-50 px-4 py-1.5 text-[11px] font-black tracking-[0.18em] text-teal-600 uppercase border border-teal-100">
@@ -209,21 +218,60 @@ export default function SkillPointsPage() {
 
                     {/* Right Column: Info & Rewards */}
                     <div className="lg:col-span-4 space-y-8">
-                        {/* Welcome Bonus Card */}
-                        <div className="rounded-[36px] border border-amber-100 bg-gradient-to-br from-amber-50/50 to-white p-8 shadow-sm">
-                            <div className="flex size-14 items-center justify-center rounded-2xl bg-amber-100 text-amber-600 mb-6 shadow-sm">
+                        {/* Welcome Bonus Card — Dynamic */}
+                        <div className={`rounded-[36px] border p-8 shadow-sm transition-all ${
+                            balance >= 8
+                                ? 'border-amber-100 bg-gradient-to-br from-amber-50/50 to-white'
+                                : 'border-slate-200/60 bg-gradient-to-br from-slate-50/50 to-white'
+                        }`}>
+                            <div className={`flex size-14 items-center justify-center rounded-2xl mb-6 shadow-sm ${
+                                balance >= 8
+                                    ? 'bg-amber-100 text-amber-600'
+                                    : 'bg-slate-100 text-slate-400'
+                            }`}>
                                 <Trophy size={28} />
                             </div>
-                            <h3 className="text-xl font-black text-slate-900 tracking-tight">Welcome Gift Unlocked!</h3>
-                            <p className="mt-3 text-sm font-medium text-slate-500 leading-relaxed">
-                                Congratulations! You&apos;ve received <span className="text-amber-600 font-bold">10 free SkillPoints</span> for joining PathWise.
-                            </p>
-                            <div className="mt-6 flex items-center justify-between rounded-2xl bg-white p-4 ring-1 ring-amber-100 shadow-sm shadow-amber-50">
-                                <p className="text-xs font-bold text-slate-600">Reward Status</p>
-                                <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-600 text-[10px] font-black border border-emerald-100">
-                                    <CheckCircle2 className="size-3" /> CLAIMED
-                                </div>
-                            </div>
+
+                            {balance >= 8 ? (
+                                <>
+                                    <h3 className="text-xl font-black text-slate-900 tracking-tight">
+                                        🎉 Welcome Gift Unlocked!
+                                    </h3>
+                                    <p className="mt-3 text-sm font-medium text-slate-500 leading-relaxed">
+                                        Congratulations! You&apos;ve received <span className="text-amber-600 font-bold">8 free SkillPoints</span> for joining PathWise.
+                                    </p>
+                                    <p className="mt-2 text-sm font-medium text-slate-500 leading-relaxed">
+                                        Use them to generate your first AI Career Roadmap — it&apos;s on us!
+                                    </p>
+                                    <div className="mt-6 flex items-center justify-between rounded-2xl bg-white p-4 ring-1 ring-amber-100 shadow-sm shadow-amber-50">
+                                        <p className="text-xs font-bold text-slate-600">Reward Status</p>
+                                        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-600 text-[10px] font-black border border-emerald-100">
+                                            <CheckCircle2 className="size-3" /> CLAIMED
+                                        </div>
+                                    </div>
+                                </>
+                            ) : (
+                                <>
+                                    <h3 className="text-xl font-black text-slate-900 tracking-tight">
+                                        Welcome Gift
+                                    </h3>
+                                    <p className="mt-3 text-sm font-medium text-slate-500 leading-relaxed">
+                                        Every new member gets <span className="text-amber-600 font-bold">8 free SkillPoints</span> to kickstart their career journey.
+                                    </p>
+                                    <div className="mt-5 flex items-center gap-3 rounded-2xl bg-amber-50/70 px-4 py-3 ring-1 ring-amber-100">
+                                        <Sparkles size={16} className="text-amber-500 shrink-0" />
+                                        <p className="text-xs font-semibold text-amber-700 leading-relaxed">
+                                            Your welcome gift will be credited automatically on your first login.
+                                        </p>
+                                    </div>
+                                    <div className="mt-4 flex items-center justify-between rounded-2xl bg-white p-4 ring-1 ring-slate-100 shadow-sm">
+                                        <p className="text-xs font-bold text-slate-600">Reward Status</p>
+                                        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-50 text-amber-600 text-[10px] font-black border border-amber-100">
+                                            ⏳ PENDING
+                                        </div>
+                                    </div>
+                                </>
+                            )}
                         </div>
 
                         {/* Utility Guide */}

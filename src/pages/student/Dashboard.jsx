@@ -164,10 +164,10 @@ export default function StudentDashboard() {
   const nextAction = !assessmentTaken
     ? { label: "Complete your first assessment", path: "/student/assessments" }
     : !roadmapCreated
-      ? { label: "Create your roadmap", path: "/student/roadmap" }
+      ? { label: "Create your roadmap", path: "/student/careers/roadmap" }
       : profileCompleted < 100
         ? { label: "Complete your profile", path: "/student/profile" }
-        : { label: "Review your roadmap", path: "/student/roadmap" };
+        : { label: "Review your roadmap", path: "/student/careers/roadmap" };
 
   // ── Career matches from report ─────────────────────────────────
   const careerMatches =
@@ -194,7 +194,7 @@ export default function StudentDashboard() {
     {
       done: roadmapCreated,
       text: roadmapCreated ? "Career roadmap created" : "Generate your career roadmap",
-      path: "/student/roadmap",
+      path: "/student/careers/roadmap",
     },
     {
       done: isOnboarded,
@@ -214,7 +214,7 @@ export default function StudentDashboard() {
     {
       icon: "map",
       label: "My Roadmap",
-      path: "/student/roadmap",
+      path: "/student/careers/roadmap",
       color: "text-[#0B818D] bg-teal-50",
     },
     {
@@ -228,9 +228,8 @@ export default function StudentDashboard() {
   ];
 
 
-
   return (
-    <div className="flex min-h-screen bg-[#F8FAFC] font-body text-slate-900 antialiased">
+    <div className="flex min-h-screen bg-page-bg font-body text-slate-900 antialiased">
       <main className="flex-1 p-4 sm:p-6 lg:p-8">
 
         {/* ── Header ── */}
@@ -535,7 +534,7 @@ export default function StudentDashboard() {
               ))}
 
               <Link
-                to="/student/roadmap"
+                to="/student/careers/roadmap"
                 className="mt-4 flex w-full items-center justify-center rounded-lg bg-[#0B818D] py-3 text-sm font-bold text-white shadow-sm transition-colors hover:bg-[#096d78]"
               >
                 View Career Paths

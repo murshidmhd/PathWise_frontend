@@ -350,7 +350,7 @@ export default function AssessmentReportPage() {
               </div>
               <div className="flex gap-4">
                 <Link
-                  to="/student/roadmap"
+                  to="/student/careers/roadmap"
                   className="rounded-xl bg-white px-6 py-3 text-sm font-bold text-primary shadow-sm hover:bg-teal-50"
                 >
                   Career Roadmap

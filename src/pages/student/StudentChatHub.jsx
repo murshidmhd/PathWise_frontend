@@ -125,7 +125,7 @@ const StudentChatHub = () => {
   }, [roomId, currentUserId]);
 
   return (
-    <div className="h-[calc(100vh-64px)] overflow-hidden bg-[#F8FAFC] p-4 lg:p-8">
+    <div className="h-[calc(100vh-64px)] overflow-hidden bg-page-bg p-4 lg:p-8">
       <div className="mx-auto flex h-full max-w-6xl overflow-hidden rounded-[40px] border border-white bg-white/70 shadow-2xl shadow-slate-200/50 backdrop-blur-xl">
         {!roomId ? (
           <div className="flex-1 flex flex-col items-center justify-center p-12 text-center bg-[radial-gradient(circle_at_center,white,transparent)]">
