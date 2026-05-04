@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Sparkles, BrainCircuit, Target, TrendingUp, AlertCircle, Wallet } from "lucide-react";
 import api from "../../services/api";
 import SectionTabs from "../../components/student/SectionTabs";
+import StudentFeedbackState from "../../components/student/StudentFeedbackState";
 
 const skillTabs = [
     { label: "Skill Analysis", to: "/student/skills/analyze", icon: BrainCircuit },
@@ -13,6 +14,7 @@ export default function SkillAnalyze() {
     const [recommendations, setRecommendations] = useState([]);
     const [gap, setGap] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("");
 
     useEffect(() => {
         const fetchSkillAnalysis = async () => {
@@ -23,6 +25,7 @@ export default function SkillAnalyze() {
                 setGap(response.data.gap_analysis);
             } catch (error) {
                 console.error("Error fetching skill analysis:", error);
+                setError("Unable to load your skill analysis right now.");
             } finally {
                 setLoading(false);
             }
@@ -46,8 +49,26 @@ export default function SkillAnalyze() {
             <div className="mx-auto max-w-6xl space-y-8">
                 <SectionTabs tabs={skillTabs} />
 
+                {error ? (
+                    <StudentFeedbackState
+                        icon={AlertCircle}
+                        title="Skill analysis unavailable"
+                        description={error}
+                        tone="error"
+                        action={
+                            <button
+                                type="button"
+                                onClick={() => window.location.reload()}
+                                className="rounded-2xl bg-slate-950 px-5 py-3 text-sm font-bold text-white transition hover:bg-slate-800"
+                            >
+                                Try Again
+                            </button>
+                        }
+                    />
+                ) : null}
+
                 {/* Header */}
-                <header className="flex flex-col gap-3">
+                {!error && <header className="flex flex-col gap-3">
                     <span className="inline-flex w-fit items-center gap-2 rounded-full bg-indigo-50 px-4 py-1.5 text-[11px] font-black tracking-[0.18em] text-indigo-600 uppercase border border-indigo-100">
                         <BrainCircuit size={12} /> Skill Intelligence
                     </span>
@@ -67,9 +88,9 @@ export default function SkillAnalyze() {
                             <span>Analyze New Skills</span>
                         </button>
                     </div>
-                </header>
+                </header>}
 
-                <div className="grid gap-8 lg:grid-cols-12">
+                {!error && <div className="grid gap-8 lg:grid-cols-12">
                     {/* Left Column: Current Skills overview */}
                     <div className="lg:col-span-8 space-y-8">
                         {/* Summary Card */}
@@ -87,7 +108,7 @@ export default function SkillAnalyze() {
                             </div>
 
                             <div className="space-y-6">
-                                {skills.map((skill, index) => (
+                                {skills.length ? skills.map((skill, index) => (
                                     <div key={index} className="space-y-2">
                                         <div className="flex items-center justify-between">
                                             <span className="text-sm font-bold text-slate-700">{skill.name}</span>
@@ -100,7 +121,14 @@ export default function SkillAnalyze() {
                                             />
                                         </div>
                                     </div>
-                                ))}
+                                )) : (
+                                    <StudentFeedbackState
+                                        icon={Target}
+                                        title="No skills mapped yet"
+                                        description="Complete your profile and assessment so PathWise can build a useful skill analysis."
+                                        compact
+                                    />
+                                )}
                             </div>
                         </div>
                     </div>
@@ -117,7 +145,7 @@ export default function SkillAnalyze() {
                             </div>
                             
                             <div className="space-y-5">
-                                {recommendations.map((rec, index) => (
+                                {recommendations.length ? recommendations.map((rec, index) => (
                                     <div key={index} className="flex items-start gap-4 p-4 rounded-2xl bg-white/5 border border-white/10">
                                         <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-emerald-400/20 text-emerald-400">
                                             <Sparkles size={14} />
@@ -127,12 +155,16 @@ export default function SkillAnalyze() {
                                             <p className="mt-1 text-xs text-slate-400 leading-relaxed">{rec.reason}</p>
                                         </div>
                                     </div>
-                                ))}
+                                )) : (
+                                    <p className="rounded-2xl border border-white/10 bg-white/5 p-4 text-sm font-medium leading-6 text-slate-300">
+                                        Recommendations will appear after your skills are mapped.
+                                    </p>
+                                )}
                             </div>
                         </div>
 
                         {/* Gap Warning */}
-                        <div className="rounded-[36px] border border-amber-100 bg-gradient-to-br from-amber-50 to-white p-8 shadow-sm">
+                        {gap ? <div className="rounded-[36px] border border-amber-100 bg-gradient-to-br from-amber-50 to-white p-8 shadow-sm">
                             <div className="flex size-14 items-center justify-center rounded-2xl bg-amber-100 text-amber-600 mb-6 shadow-sm">
                                 <AlertCircle size={28} />
                             </div>
@@ -143,9 +175,9 @@ export default function SkillAnalyze() {
                             <button className="mt-6 w-full rounded-2xl bg-white border border-amber-200 px-4 py-3 text-sm font-bold text-amber-700 transition-colors hover:bg-amber-50">
                                 View Learning Path
                             </button>
-                        </div>
+                        </div> : null}
                     </div>
-                </div>
+                </div>}
             </div>
         </div>
     );

@@ -1,25 +1,14 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Sparkles, ArrowRight, Map, BriefcaseBusiness } from "lucide-react";
+import { Sparkles, ArrowRight, Map, BriefcaseBusiness, AlertTriangle, ClipboardList } from "lucide-react";
 import api from "../../services/api";
 import SectionTabs from "../../components/student/SectionTabs";
+import StudentFeedbackState from "../../components/student/StudentFeedbackState";
 
 const careerTabs = [
   { label: "Career Matches", to: "/student/careers", icon: BriefcaseBusiness, end: true },
   { label: "Roadmap", to: "/student/careers/roadmap", icon: Map },
 ];
-
-function EmptyState({ title, description, action }) {
-  return (
-    <div className="rounded-[28px] border border-dashed border-slate-300 bg-white px-6 py-10 text-center shadow-sm">
-      <h2 className="text-2xl font-bold text-slate-950">{title}</h2>
-      <p className="mx-auto mt-3 max-w-2xl text-sm leading-7 text-slate-500">
-        {description}
-      </p>
-      {action}
-    </div>
-  );
-}
 
 export default function CareerListingsPage() {
   const [careers, setCareers] = useState([]);
@@ -122,26 +111,29 @@ export default function CareerListingsPage() {
             Loading career recommendations...
           </div>
         ) : error ? (
-          <EmptyState
+          <StudentFeedbackState
+            icon={AlertTriangle}
             title="We could not load careers"
             description={error}
+            tone="error"
             action={
               <Link
                 to="/student/assessments"
-                className="mt-6 inline-flex items-center gap-2 rounded-2xl bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
+                className="inline-flex items-center gap-2 rounded-2xl bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
               >
                 Go to Assessments
               </Link>
             }
           />
         ) : careers.length === 0 ? (
-          <EmptyState
+          <StudentFeedbackState
+            icon={ClipboardList}
             title="No recommended careers yet"
             description="Complete your assessment report first. Once recommendations are available, they will appear here."
             action={
               <Link
                 to="/student/assessments"
-                className="mt-6 inline-flex items-center gap-2 rounded-2xl bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
+                className="inline-flex items-center gap-2 rounded-2xl bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
               >
                 Start Assessment
               </Link>

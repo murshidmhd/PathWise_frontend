@@ -12,13 +12,15 @@ import {
     ChevronRight,
     Trophy,
     Info,
-    BrainCircuit
+    BrainCircuit,
+    AlertTriangle
 } from "lucide-react";
 import api from "../../services/api";
 import PricingModal from "../../components/payment/PricingModal";
 import { handlePayment } from "../../services/utils/payment";
 import { updateWallet } from "../../store/slices/authSlice";
 import SectionTabs from "../../components/student/SectionTabs";
+import StudentFeedbackState from "../../components/student/StudentFeedbackState";
 
 const skillTabs = [
     { label: "Skill Analysis", to: "/student/skills/analyze", icon: BrainCircuit },
@@ -66,10 +68,13 @@ export default function SkillPointsPage() {
     const [history, setHistory] = useState([]);
     const [balance, setBalance] = useState(0);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("");
     const [isPricingModalOpen, setIsPricingModalOpen] = useState(false);
 
     const fetchData = async () => {
         try {
+            setError("");
+            setLoading(true);
             const res = await api.get("/payments/history/");
             setHistory(res.data.transactions || []);
             setBalance(res.data.balance || 0);
@@ -81,6 +86,7 @@ export default function SkillPointsPage() {
             }));
         } catch (err) {
             console.error("Failed to fetch history:", err);
+            setError("Unable to load your SkillPoints wallet right now.");
         } finally {
             setLoading(false);
         }
@@ -122,8 +128,26 @@ export default function SkillPointsPage() {
             <div className="mx-auto max-w-6xl space-y-8">
                 <SectionTabs tabs={skillTabs} />
 
+                {error ? (
+                    <StudentFeedbackState
+                        icon={AlertTriangle}
+                        title="Wallet unavailable"
+                        description={error}
+                        tone="error"
+                        action={
+                            <button
+                                type="button"
+                                onClick={fetchData}
+                                className="rounded-2xl bg-slate-950 px-5 py-3 text-sm font-bold text-white transition hover:bg-slate-800"
+                            >
+                                Try Again
+                            </button>
+                        }
+                    />
+                ) : null}
+
                 {/* Header */}
-                <header className="flex flex-col gap-3">
+                {!error && <header className="flex flex-col gap-3">
                     <span className="inline-flex w-fit items-center gap-2 rounded-full bg-teal-50 px-4 py-1.5 text-[11px] font-black tracking-[0.18em] text-teal-600 uppercase border border-teal-100">
                         <Sparkles size={12} fill="currentColor" /> SkillPoint Ecosystem
                     </span>
@@ -144,9 +168,9 @@ export default function SkillPointsPage() {
                             <span>Add SkillPoints</span>
                         </button>
                     </div>
-                </header>
+                </header>}
 
-                <div className="grid gap-8 lg:grid-cols-12">
+                {!error && <div className="grid gap-8 lg:grid-cols-12">
                     {/* Left Column: Balance & History */}
                     <div className="lg:col-span-8 space-y-8">
                         {/* Balance Card */}
@@ -204,12 +228,13 @@ export default function SkillPointsPage() {
                                         <TransactionItem key={i} tx={tx} />
                                     ))
                                 ) : (
-                                    <div className="p-12 text-center">
-                                        <div className="mx-auto flex size-20 items-center justify-center rounded-full bg-slate-50 text-slate-200 mb-6">
-                                            <History size={40} />
-                                        </div>
-                                        <p className="text-base font-bold text-slate-400">No activities recorded yet.</p>
-                                        <p className="mt-2 text-sm font-medium text-slate-400">Your transactions will appear here.</p>
+                                    <div className="p-6">
+                                        <StudentFeedbackState
+                                            icon={History}
+                                            title="No activities recorded yet"
+                                            description="Your purchases and SkillPoint usage will appear here."
+                                            compact
+                                        />
                                     </div>
                                 )}
                             </div>
@@ -318,7 +343,7 @@ export default function SkillPointsPage() {
                             </div>
                         </div>
                     </div>
-                </div>
+                </div>}
             </div>
 
             <PricingModal
