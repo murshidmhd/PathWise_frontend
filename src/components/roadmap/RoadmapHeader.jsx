@@ -9,10 +9,13 @@ const RoadmapHeader = ({
     customTitle,
     setCustomTitle,
     handleCustomGenerate,
+    requestCustomGenerate,
     isGenerating,
     walletBalance,
     handlePayment
 }) => {
+    const onGenerate = requestCustomGenerate || handleCustomGenerate;
+
     return (
         <header className="rounded-[34px] border border-slate-200/80 bg-white p-6 shadow-sm sm:p-8">
             <div className="flex items-center justify-between">
@@ -63,12 +66,17 @@ const RoadmapHeader = ({
                                     className="w-full rounded-xl border border-white bg-white/80 px-4 py-2.5 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 backdrop-blur-sm"
                                     value={customTitle}
                                     onChange={(e) => setCustomTitle(e.target.value)}
-                                    onKeyPress={(e) => e.key === 'Enter' && handleCustomGenerate()}
+                                    onKeyDown={(e) => {
+                                        if (e.key === "Enter") {
+                                            e.preventDefault();
+                                            onGenerate();
+                                        }
+                                    }}
                                     disabled={isGenerating}
                                 />
                             </div>
                             <button
-                                onClick={handleCustomGenerate}
+                                onClick={onGenerate}
                                 disabled={isGenerating || !customTitle.trim()}
                                 className="flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-6 py-2.5 text-sm font-bold text-white transition hover:bg-indigo-700 disabled:opacity-50 shadow-sm whitespace-nowrap"
                             >

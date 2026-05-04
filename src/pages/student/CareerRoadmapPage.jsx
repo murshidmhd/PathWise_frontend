@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 import { BookOpen, Sparkles, Target, Trophy, History, AlertTriangle, RefreshCw, ClipboardList, BriefcaseBusiness, Map } from "lucide-react";
 import api from "../../services/api";
 
@@ -10,6 +12,8 @@ import RoadmapHeader from "../../components/roadmap/RoadmapHeader";
 import { handlePayment } from "../../services/utils/payment";
 import PricingModal from "../../components/payment/PricingModal";
 import SectionTabs from "../../components/student/SectionTabs";
+import ConfirmSpendModal from "../../components/student/ConfirmSpendModal";
+import StudentFeedbackState from "../../components/student/StudentFeedbackState";
 
 const careerTabs = [
   { label: "Career Matches", to: "/student/careers", icon: BriefcaseBusiness, end: true },
@@ -17,6 +21,7 @@ const careerTabs = [
 ];
 
 export default function CareerRoadmapPage() {
+  const navigate = useNavigate();
   const [roadmap, setRoadmap] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -26,13 +31,15 @@ export default function CareerRoadmapPage() {
 
   // Custom Roadmap State
   const [customTitle, setCustomTitle] = useState("");
+  const [pendingCustomTitle, setPendingCustomTitle] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
   const [isPricingModalOpen, setIsPricingModalOpen] = useState(false);
+  const [isSpendConfirmOpen, setIsSpendConfirmOpen] = useState(false);
   const [walletBalance, setWalletBalance] = useState(0);
 
   const fetchWallet = () => {
     api.get("/payments/wallet/").then((res) => {
-      setWalletBalance(res.data.balance_credits || 0);
+      setWalletBalance(res.data.balance_credits ?? res.data.balance ?? 0);
     }).catch(() => null);
   };
 
@@ -140,22 +147,36 @@ export default function CareerRoadmapPage() {
     }
   };
 
+  const requestCustomGenerate = () => {
+    const title = customTitle.trim();
+    if (!title) return;
+
+    setError(null);
+    setPendingCustomTitle(title);
+    setIsSpendConfirmOpen(true);
+  };
+
   const handleCustomGenerate = async () => {
-    if (!customTitle.trim()) return;
-    setIsGenerating(true);
-    try {
-      const res = await api.post(`/roadmap/${assessmentId}/custom/`, {
-        career_title: customTitle
+    const title = pendingCustomTitle.trim() || customTitle.trim();
+    if (!title) return;
+
+    setCustomTitle("");
+    setPendingCustomTitle("");
+    setIsSpendConfirmOpen(false);
+    toast.success("Roadmap generation started. We will notify you when it is ready.");
+    navigate("/student/dashboard");
+
+    api
+      .post(`/roadmap/${assessmentId}/custom/`, {
+        career_title: title
+      })
+      .then(() => {
+        fetchWallet();
+      })
+      .catch((err) => {
+        const msg = err.response?.data?.error || err.response?.data?.message || "AI couldn't start that roadmap. Try a more common career title.";
+        toast.error(msg);
       });
-      setRoadmap(res.data);
-      setMilestones(res.data.milestones || []);
-      setCustomTitle("");
-    } catch (err) {
-      const msg = err.response?.data?.error || err.response?.data?.message || "AI couldn't generate that path. Try a more common career title!";
-      setError(msg);
-    } finally {
-      setIsGenerating(false);
-    }
   };
 
   const orderedMilestones = useMemo(
@@ -179,68 +200,68 @@ export default function CareerRoadmapPage() {
     );
   }
 
-  if (error) {
-    const isAssessmentError = error.toLowerCase().includes("assessment");
-    return (
-      <div className="min-h-screen bg-page-bg px-4 py-8 flex items-start justify-center">
-        <div className="mx-auto mt-16 max-w-lg w-full">
-          <div className="rounded-[30px] border border-slate-200/80 bg-white p-8 shadow-sm text-center space-y-5">
-            {/* Icon */}
-            <div className={`mx-auto flex size-16 items-center justify-center rounded-2xl ${
-              isAssessmentError
-                ? "bg-amber-50 text-amber-500"
-                : "bg-rose-50 text-rose-500"
-            }`}>
-              {isAssessmentError
-                ? <ClipboardList className="size-7" />
-                : <AlertTriangle className="size-7" />
-              }
-            </div>
+  // if (error) {
+  //   const isAssessmentError = error.toLowerCase().includes("assessment");
+  //   return (
+  //     <div className="min-h-screen bg-page-bg px-4 py-8 flex items-start justify-center">
+  //       <div className="mx-auto mt-16 max-w-lg w-full">
+  //         <div className="rounded-[30px] border border-slate-200/80 bg-white p-8 shadow-sm text-center space-y-5">
+  //           {/* Icon */}
+  //           <div className={`mx-auto flex size-16 items-center justify-center rounded-2xl ${
+  //             isAssessmentError
+  //               ? "bg-amber-50 text-amber-500"
+  //               : "bg-rose-50 text-rose-500"
+  //           }`}>
+  //             {isAssessmentError
+  //               ? <ClipboardList className="size-7" />
+  //               : <AlertTriangle className="size-7" />
+  //             }
+  //           </div>
 
-            {/* Title */}
-            <h2 className="text-xl font-bold text-slate-900">
-              {isAssessmentError ? "Assessment Required" : "Something Went Wrong"}
-            </h2>
+  //           {/* Title */}
+  //           <h2 className="text-xl font-bold text-slate-900">
+  //             {isAssessmentError ? "Assessment Required" : "Something Went Wrong"}
+  //           </h2>
 
-            {/* Message */}
-            <p className="text-sm leading-relaxed text-slate-500 max-w-sm mx-auto">
-              {isAssessmentError
-                ? "Complete a skill assessment first so our AI can build a personalized career roadmap just for you."
-                : error
-              }
-            </p>
+  //           {/* Message */}
+  //           <p className="text-sm leading-relaxed text-slate-500 max-w-sm mx-auto">
+  //             {isAssessmentError
+  //               ? "Complete a skill assessment first so our AI can build a personalized career roadmap just for you."
+  //               : error
+  //             }
+  //           </p>
 
-            {/* Actions */}
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
-              {isAssessmentError ? (
-                <a
-                  href="/student/skills/analyze"
-                  className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-[#0B818D] to-indigo-500 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-teal-200/40 transition hover:shadow-xl hover:scale-[1.02] active:scale-95"
-                >
-                  <ClipboardList className="size-4" />
-                  Take Assessment
-                </a>
-              ) : (
-                <button
-                  onClick={() => { setError(null); setLoading(true); window.location.reload(); }}
-                  className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-[#0B818D] to-indigo-500 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-teal-200/40 transition hover:shadow-xl hover:scale-[1.02] active:scale-95"
-                >
-                  <RefreshCw className="size-4" />
-                  Try Again
-                </button>
-              )}
-              <a
-                href="/student/dashboard"
-                className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-6 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 hover:border-slate-300"
-              >
-                Back to Dashboard
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  //           {/* Actions */}
+  //           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+  //             {isAssessmentError ? (
+  //               <a
+  //                 href="/student/skills/analyze"
+  //                 className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-[#0B818D] to-indigo-500 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-teal-200/40 transition hover:shadow-xl hover:scale-[1.02] active:scale-95"
+  //               >
+  //                 <ClipboardList className="size-4" />
+  //                 Take Assessment
+  //               </a>
+  //             ) : (
+  //               <button
+  //                 onClick={() => { setError(null); setLoading(true); window.location.reload(); }}
+  //                 className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-[#0B818D] to-indigo-500 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-teal-200/40 transition hover:shadow-xl hover:scale-[1.02] active:scale-95"
+  //               >
+  //                 <RefreshCw className="size-4" />
+  //                 Try Again
+  //               </button>
+  //             )}
+  //             <a
+  //               href="/student/dashboard"
+  //               className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-6 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 hover:border-slate-300"
+  //             >
+  //               Back to Dashboard
+  //             </a>
+  //           </div>
+  //         </div>
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   return (
     <div className="min-h-screen bg-page-bg px-4 py-6 text-slate-900 sm:px-6 lg:px-8">
@@ -255,6 +276,7 @@ export default function CareerRoadmapPage() {
           customTitle={customTitle}
           setCustomTitle={setCustomTitle}
           handleCustomGenerate={handleCustomGenerate}
+          requestCustomGenerate={requestCustomGenerate}
           isGenerating={isGenerating}
           walletBalance={walletBalance}
           handlePayment={() => setIsPricingModalOpen(true)}
@@ -293,7 +315,11 @@ export default function CareerRoadmapPage() {
                     </button>
                   ))
                 ) : (
-                  <p className="text-xs text-slate-400 text-center py-4">No history yet.</p>
+                  <StudentFeedbackState
+                    title="No roadmap history yet"
+                    description="Generate or explore a roadmap and your previous paths will appear here."
+                    compact
+                  />
                 )}
               </div>
             </section>
@@ -333,6 +359,21 @@ export default function CareerRoadmapPage() {
             <InfoCard icon={BookOpen} title="Learning Path" value={`${totalCount} Steps`} description="Steps include skills & exams." accent="bg-emerald-50 text-emerald-600" />
           </aside>
         </div>
+        <ConfirmSpendModal
+          isOpen={isSpendConfirmOpen}
+          title="Spend 1 SkillPoint?"
+          description={`Generate a custom AI roadmap for ${pendingCustomTitle}. This will use 1 SkillPoint from your wallet.`}
+          costLabel="1 SkillPoint"
+          confirmLabel="Generate Roadmap"
+          loading={false}
+          onCancel={() => {
+            if (!isGenerating) {
+              setIsSpendConfirmOpen(false);
+              setPendingCustomTitle("");
+            }
+          }}
+          onConfirm={handleCustomGenerate}
+        />
       </div>
     </div>
   );
