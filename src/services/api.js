@@ -4,11 +4,26 @@ import axios from "axios";
 // const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 // const CHAT_API_URL = import.meta.env.VITE_CHAT_API_URL; 
 
-const API_BASE_URL = "https://pathwise.duckdns.org/api";
-const CHAT_API_URL = "https://pathwise.duckdns.org/api/chat";
+const getBaseUrl = (port = 8000) => {
+  const { hostname, protocol } = window.location;
 
-// const API_BASE_URL = "http://localhost:8000/api"
-// const CHAT_API_URL = "http://localhost:8001/api/chat"
+  // Hybrid mode: Local frontend -> Remote EC2 Backend
+  if (hostname.includes("localhost")) {
+    const parts = hostname.split('.');
+    // If visiting vimal.localhost, talk to vimal.pathwise.duckdns.org
+    if (parts.length > 1 && parts[0] !== 'localhost') {
+      return `http://${parts[0]}.pathwise.duckdns.org/api`;
+    }
+    // Fallback to main production domain
+    return `https://pathwise.duckdns.org/api`;
+  }
+
+  // Pure production mode
+  return `${protocol}//${hostname}/api`;
+};
+
+const API_BASE_URL = getBaseUrl(8000);
+const CHAT_API_URL = `${getBaseUrl(8001)}/chat`;
 
 // Main API instance
 const api = axios.create({
