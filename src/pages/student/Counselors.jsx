@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import api from "../../services/api";
 import toast from "react-hot-toast";
 
@@ -11,29 +11,88 @@ function Icon({ name, className = "" }) {
 
 export default function StudentCounselors() {
     const [counselors, setCounselors] = useState([]);
+    const [totalCounselors, setTotalCounselors] = useState(0);
     const [requests, setRequests] = useState([]);
+    const [filterOptions, setFilterOptions] = useState({
+        specializations: [],
+        locations: [],
+    });
     const [loading, setLoading] = useState(true);
+    const [filtering, setFiltering] = useState(false);
     const [requestingId, setRequestingId] = useState(null);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [specializationFilter, setSpecializationFilter] = useState("all");
+    const [locationFilter, setLocationFilter] = useState("all");
+    const [ratingFilter, setRatingFilter] = useState("all");
+    const [experienceFilter, setExperienceFilter] = useState("all");
+    const [hasLoadedInitialData, setHasLoadedInitialData] = useState(false);
     const navigate = useNavigate();
+
+    const filterParams = useMemo(() => {
+        const params = {};
+
+        if (searchTerm.trim()) params.search = searchTerm.trim();
+        if (specializationFilter !== "all") params.specialization = specializationFilter;
+        if (locationFilter !== "all") params.location = locationFilter;
+        if (ratingFilter !== "all") params.min_rating = ratingFilter;
+        if (experienceFilter !== "all") params.min_experience = experienceFilter;
+
+        return params;
+    }, [experienceFilter, locationFilter, ratingFilter, searchTerm, specializationFilter]);
 
     useEffect(() => {
         fetchData();
     }, []);
 
+    useEffect(() => {
+        const timeoutId = setTimeout(() => {
+            if (!hasLoadedInitialData) return;
+            fetchCounselors(filterParams);
+        }, 350);
+
+        return () => clearTimeout(timeoutId);
+    }, [filterParams, hasLoadedInitialData]);
+
+    const normalizeOptions = (data) => ({
+        specializations: data?.specializations || data?.specialization || [],
+        locations: data?.locations || data?.location || [],
+    });
+
     const fetchData = async () => {
         setLoading(true);
         try {
-            const [counselorsRes, requestsRes] = await Promise.all([
-                api.get("/counselors/available/"),
-                api.get("/counselors/request/")
+            const [counselorsRes, requestsRes, filterOptionsRes] = await Promise.all([
+                api.get("/counselors/available/", { params: filterParams }),
+                api.get("/counselors/request/"),
+                api.get("/counselors/filter-options/")
             ]);
-            setCounselors(counselorsRes.data);
+            const initialCounselors = counselorsRes.data?.results || counselorsRes.data;
+            setCounselors(initialCounselors);
+            setTotalCounselors(counselorsRes.data?.count ?? initialCounselors.length);
             setRequests(requestsRes.data);
+            setFilterOptions(normalizeOptions(filterOptionsRes.data));
         } catch (err) {
             console.error(err);
             toast.error("Failed to load counselors.");
         } finally {
             setLoading(false);
+            setHasLoadedInitialData(true);
+        }
+    };
+
+    const fetchCounselors = async (params = {}) => {
+        setFiltering(true);
+        try {
+            const res = await api.get("/counselors/available/", { params });
+            setCounselors(res.data?.results || res.data);
+            if (res.data?.count !== undefined && Object.keys(params).length === 0) {
+                setTotalCounselors(res.data.count);
+            }
+        } catch (err) {
+            console.error(err);
+            toast.error("Failed to filter counselors.");
+        } finally {
+            setFiltering(false);
         }
     };
 
@@ -52,7 +111,12 @@ export default function StudentCounselors() {
                 message: message || "I would like to request you as my mentor."
             });
             toast.success("Request submitted successfully!");
-            fetchData(); // Refresh to see pending status
+            const [requestsRes, counselorsRes] = await Promise.all([
+                api.get("/counselors/request/"),
+                api.get("/counselors/available/", { params: filterParams }),
+            ]);
+            setRequests(requestsRes.data);
+            setCounselors(counselorsRes.data?.results || counselorsRes.data);
         } catch (err) {
             const msg = err.response?.data?.detail || "Failed to submit request.";
             toast.error(msg);
@@ -63,6 +127,21 @@ export default function StudentCounselors() {
 
     const getRequestStatus = (counselorId) => {
         return requests.find(r => r.counselor === counselorId);
+    };
+
+    const hasActiveFilters =
+        searchTerm ||
+        specializationFilter !== "all" ||
+        locationFilter !== "all" ||
+        ratingFilter !== "all" ||
+        experienceFilter !== "all";
+
+    const clearFilters = () => {
+        setSearchTerm("");
+        setSpecializationFilter("all");
+        setLocationFilter("all");
+        setRatingFilter("all");
+        setExperienceFilter("all");
     };
 
     if (loading) {
@@ -93,6 +172,88 @@ export default function StudentCounselors() {
                         </div>
                     </div>
                 )}
+
+                <section className="mb-8 rounded-2xl border border-slate-100 bg-white p-4 shadow-sm sm:p-5">
+                    <div className="grid gap-3 lg:grid-cols-[1.4fr_repeat(4,minmax(0,0.8fr))_auto]">
+                        <label className="relative block">
+                            <Icon name="search" className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-xl text-slate-400" />
+                            <input
+                                type="search"
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                placeholder="Search by name, skill, city..."
+                                className="h-12 w-full rounded-xl border border-slate-200 bg-slate-50 py-3 pl-12 pr-4 text-sm font-medium text-slate-900 outline-none transition focus:border-[#0B818D] focus:bg-white focus:ring-4 focus:ring-teal-50"
+                            />
+                        </label>
+
+                        <select
+                            value={specializationFilter}
+                            onChange={(e) => setSpecializationFilter(e.target.value)}
+                            className="h-12 rounded-xl border border-slate-200 bg-white px-3 text-sm font-bold text-slate-700 outline-none transition focus:border-[#0B818D] focus:ring-4 focus:ring-teal-50"
+                        >
+                            <option value="all">All Specializations</option>
+                            {filterOptions.specializations.map((specialization) => (
+                                <option key={specialization} value={specialization}>
+                                    {specialization}
+                                </option>
+                            ))}
+                        </select>
+
+                        <select
+                            value={locationFilter}
+                            onChange={(e) => setLocationFilter(e.target.value)}
+                            className="h-12 rounded-xl border border-slate-200 bg-white px-3 text-sm font-bold text-slate-700 outline-none transition focus:border-[#0B818D] focus:ring-4 focus:ring-teal-50"
+                        >
+                            <option value="all">All Locations</option>
+                            {filterOptions.locations.map((location) => (
+                                <option key={location} value={location}>
+                                    {location}
+                                </option>
+                            ))}
+                        </select>
+
+                        <select
+                            value={ratingFilter}
+                            onChange={(e) => setRatingFilter(e.target.value)}
+                            className="h-12 rounded-xl border border-slate-200 bg-white px-3 text-sm font-bold text-slate-700 outline-none transition focus:border-[#0B818D] focus:ring-4 focus:ring-teal-50"
+                        >
+                            <option value="all">Any Rating</option>
+                            <option value="4">4+ Stars</option>
+                            <option value="3">3+ Stars</option>
+                        </select>
+
+                        <select
+                            value={experienceFilter}
+                            onChange={(e) => setExperienceFilter(e.target.value)}
+                            className="h-12 rounded-xl border border-slate-200 bg-white px-3 text-sm font-bold text-slate-700 outline-none transition focus:border-[#0B818D] focus:ring-4 focus:ring-teal-50"
+                        >
+                            <option value="all">Any Experience</option>
+                            <option value="1">1+ Years</option>
+                            <option value="3">3+ Years</option>
+                            <option value="5">5+ Years</option>
+                        </select>
+
+                        <button
+                            type="button"
+                            onClick={clearFilters}
+                            disabled={!hasActiveFilters}
+                            className="h-12 rounded-xl border border-slate-200 px-4 text-sm font-bold text-slate-600 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-45"
+                        >
+                            Clear
+                        </button>
+                    </div>
+
+                    <div className="mt-4 flex items-center justify-between gap-3 text-xs font-bold text-slate-500">
+                        <span>
+                            {filtering ? "Updating mentors..." : `Showing ${counselors.length} mentors`}
+                        </span>
+                        {hasActiveFilters && (
+                            <span className="rounded-full bg-teal-50 px-3 py-1 text-[#0B818D]">
+                                Filters active
+                            </span>
+                        )}
+                    </div>
+                </section>
 
                 <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
                     {counselors.map((counselor) => {
@@ -181,12 +342,25 @@ export default function StudentCounselors() {
                 {counselors.length === 0 && (
                     <div className="flex flex-col items-center justify-center py-20 text-center">
                         <div className="mb-4 flex size-20 items-center justify-center rounded-3xl bg-slate-100 text-slate-400">
-                            <Icon name="person_off" className="text-4xl" />
+                            <Icon name={totalCounselors ? "manage_search" : "person_off"} className="text-4xl" />
                         </div>
-                        <h3 className="text-lg font-bold text-slate-900">No Counselors Available</h3>
+                        <h3 className="text-lg font-bold text-slate-900">
+                            {totalCounselors ? "No mentors match your filters" : "No Counselors Available"}
+                        </h3>
                         <p className="mt-1 text-sm text-slate-500 max-w-xs">
-                            Check back soon! Our team is onboarding new mentors to help you with your journey.
+                            {totalCounselors
+                                ? "Try changing your search or clearing filters to see more mentors."
+                                : "Check back soon! Our team is onboarding new mentors to help you with your journey."}
                         </p>
+                        {totalCounselors ? (
+                            <button
+                                type="button"
+                                onClick={clearFilters}
+                                className="mt-5 rounded-xl bg-slate-900 px-5 py-3 text-sm font-bold text-white transition hover:bg-slate-800"
+                            >
+                                Clear Filters
+                            </button>
+                        ) : null}
                     </div>
                 )}
             </main>
