@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import ChatContainer from "../../components/chat/ChatContainer";
-import { chatApi as api } from "../../services/api";
-import axios from "axios";
+import api, { chatApi } from "../../services/api";
 import { messaging, getToken, onMessage } from "../../firebase";
+import VideoCallModal from "../../components/video/VideoCallModal";
 
 function Icon({ name, className = "" }) {
   return (
@@ -17,6 +17,7 @@ const CounselorChatHub = () => {
   const [students, setStudents] = useState([]);
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [messages, setMessages] = useState([]);
+  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
 
   const currentUserId = useSelector(
     (state) => state.auth.user?.user_id || state.auth.user?.id || 2,
@@ -35,10 +36,7 @@ const CounselorChatHub = () => {
   useEffect(() => {
     const fetchStudents = async () => {
       try {
-        const response = await axios.get("https://pathwise.duckdns.org/api/counselors/students/", {
-          withCredentials: true,
-          headers: { Authorization: `Bearer ${localStorage.getItem("access")}` }
-        });
+        const response = await api.get("/counselors/students/");
 
         console.log("this is the response data in counselor hub", response.data)
         setStudents(response.data);
@@ -69,7 +67,7 @@ const CounselorChatHub = () => {
         });
 
         if (token) {
-          await axios.post("https://pathwise.duckdns.org/register-fcm/", {
+          await api.post("/register-fcm/", {
             user_id: currentUserId,
             token,
           });
@@ -93,7 +91,7 @@ const CounselorChatHub = () => {
     const fetchMessages = async () => {
       if (!roomId) return;
       try {
-        const response = await api.get(`/rooms/${roomId}/messages/`);
+        const response = await chatApi.get(`/rooms/${roomId}/messages/`);
 
         const transformed = response.data.map((msg) => {
           const senderId = msg.sender_id ?? msg.sender_detail?.id ?? msg.sender;
@@ -304,11 +302,11 @@ const CounselorChatHub = () => {
                       </div>
                     </div>
                     <button 
-                      onClick={() => alert("🚀 We're working on this feature! Soon you'll be able to host 1v1 video mentorship sessions directly from this panel.")}
+                      onClick={() => setIsVideoModalOpen(true)}
                       className="w-full group flex items-center justify-center gap-2 rounded-2xl bg-[#0B818D] hover:bg-[#0d99a6] text-white font-black py-3.5 px-4 transition-all hover:scale-[1.02] active:scale-[0.98]"
                     >
                       <Icon name="videocam" className="text-lg group-hover:animate-bounce" />
-                      Book Video Call
+                      Start Live Session
                     </button>
                   </div>
                 </div>
@@ -317,6 +315,14 @@ const CounselorChatHub = () => {
           )}
         </div>
       </div>
+      {selectedStudent && (
+        <VideoCallModal
+          isOpen={isVideoModalOpen}
+          onClose={() => setIsVideoModalOpen(false)}
+          roomId={roomId}
+          userName={currentUserName}
+        />
+      )}
     </div>
   );
 };

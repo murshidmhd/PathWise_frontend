@@ -28,10 +28,10 @@ const sidebarLinks = [
     to: "/student/careers",
   },
   {
-    icon: "psychology",
-    label: "Skills",
-    caption: "Analysis and wallet",
-    to: "/student/skills/analyze",
+    icon: "stars",
+    label: "SkillPoints",
+    caption: "Wallet and payments",
+    to: "/student/skill-points",
   },
   {
     icon: "supervised_user_circle",
@@ -171,7 +171,7 @@ export const Sidebar = ({ isOpen, onClose }) => {
                   location.pathname.startsWith(`${item.to}/`) ||
                   (item.to === "/student/careers" &&
                     location.pathname.startsWith("/student/careers/")) ||
-                  (item.to === "/student/skills/analyze" &&
+                  (item.to === "/student/skill-points" &&
                     location.pathname.startsWith("/student/skills/")));
 
               return (

@@ -1,14 +1,10 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Sparkles, ArrowRight, Map, BriefcaseBusiness, AlertTriangle, ClipboardList } from "lucide-react";
+import { Sparkles, ArrowRight, AlertTriangle, ClipboardList, Map } from "lucide-react";
 import api from "../../services/api";
 import SectionTabs from "../../components/student/SectionTabs";
 import StudentFeedbackState from "../../components/student/StudentFeedbackState";
-
-const careerTabs = [
-  { label: "Career Matches", to: "/student/careers", icon: BriefcaseBusiness, end: true },
-  { label: "Roadmap", to: "/student/careers/roadmap", icon: Map },
-];
+import { careerTabs } from "./careerTabs";
 
 export default function CareerListingsPage() {
   const [careers, setCareers] = useState([]);

@@ -45,7 +45,7 @@ export default function Login() {
 
       if (role === "student") navigate("/student/dashboard");
       if (role === "counselor") navigate("/counselor/dashboard");
-      if (role === "admin") navigate("/admin/dashboard");
+      if (role === "platform_admin") navigate("/admin/dashboard");
       toast.success("Logged in successfully");
     } catch (err) {
       const code = err.response?.data?.code;

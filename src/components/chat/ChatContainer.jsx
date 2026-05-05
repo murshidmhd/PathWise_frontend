@@ -5,6 +5,8 @@ import ChatSidebar from "./ChatSidebar";
 import { useWebSocket } from "../../hooks/useWebSocket";
 import { chatApi as api } from "../../services/api";
 
+import VideoCallModal from "../video/VideoCallModal";
+
 const ChatContainer = ({
   messages: initialMessages,
   contact,
@@ -13,10 +15,13 @@ const ChatContainer = ({
   currentUserName,
   hideSidebar = false,
   quickReplies = [],
+  onSessionEnd,
 }) => {
   const [localMessages, setLocalMessages] = useState(initialMessages || []);
+  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
 
   useEffect(() => {
+    console.log("initialMessages", initialMessages);
     setLocalMessages(initialMessages || []);
   }, [initialMessages]);
 
@@ -95,14 +100,29 @@ const ChatContainer = ({
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             <span className="hidden items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-[11px] font-semibold text-slate-600 sm:inline-flex">
               <span className={`size-2 rounded-full ${connectionTone}`} />
               {connectionLabel}
             </span>
 
+            <button
+              onClick={() => setIsVideoModalOpen(true)}
+              className="flex size-10 items-center justify-center rounded-xl bg-[#0B818D]/10 text-[#0B818D] transition-all hover:bg-[#0B818D] hover:text-white active:scale-95"
+              title="Start Video Call"
+            >
+              <span className="material-symbols-outlined text-xl">videocam</span>
+            </button>
           </div>
         </div>
+
+        <VideoCallModal
+          isOpen={isVideoModalOpen}
+          onClose={() => setIsVideoModalOpen(false)}
+          roomId={roomId}
+          userName={currentUserName}
+          onSessionEnd={onSessionEnd}
+        />
 
         <MessageList messages={localMessages} currentUserId={currentUserId} />
         

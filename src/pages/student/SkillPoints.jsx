@@ -12,20 +12,13 @@ import {
     ChevronRight,
     Trophy,
     Info,
-    BrainCircuit,
     AlertTriangle
 } from "lucide-react";
 import api from "../../services/api";
 import PricingModal from "../../components/payment/PricingModal";
 import { handlePayment } from "../../services/utils/payment";
 import { updateWallet } from "../../store/slices/authSlice";
-import SectionTabs from "../../components/student/SectionTabs";
 import StudentFeedbackState from "../../components/student/StudentFeedbackState";
-
-const skillTabs = [
-    { label: "Skill Analysis", to: "/student/skills/analyze", icon: BrainCircuit },
-    { label: "SkillPoints", to: "/student/skills/points", icon: WalletIcon },
-];
 
 const TransactionItem = ({ tx }) => {
     const isCredit = tx.amount > 0;
@@ -126,8 +119,6 @@ export default function SkillPointsPage() {
     return (
         <div className="min-h-screen bg-page-bg font-body text-slate-900 px-4 py-8">
             <div className="mx-auto max-w-6xl space-y-8">
-                <SectionTabs tabs={skillTabs} />
-
                 {error ? (
                     <StudentFeedbackState
                         icon={AlertTriangle}

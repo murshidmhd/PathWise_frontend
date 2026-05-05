@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-import { BookOpen, Sparkles, Target, Trophy, History, AlertTriangle, RefreshCw, ClipboardList, BriefcaseBusiness, Map } from "lucide-react";
+import { BookOpen, Sparkles, Target, Trophy, History, AlertTriangle, RefreshCw, ClipboardList } from "lucide-react";
 import api from "../../services/api";
 
 // New Shared Components
@@ -14,11 +14,7 @@ import PricingModal from "../../components/payment/PricingModal";
 import SectionTabs from "../../components/student/SectionTabs";
 import ConfirmSpendModal from "../../components/student/ConfirmSpendModal";
 import StudentFeedbackState from "../../components/student/StudentFeedbackState";
-
-const careerTabs = [
-  { label: "Career Matches", to: "/student/careers", icon: BriefcaseBusiness, end: true },
-  { label: "Roadmap", to: "/student/careers/roadmap", icon: Map },
-];
+import { careerTabs } from "./careerTabs";
 
 export default function CareerRoadmapPage() {
   const navigate = useNavigate();

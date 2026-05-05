@@ -4,7 +4,6 @@ import { Link, useNavigate } from "react-router-dom";
 import api from "../../services/api";
 // import { normalizeStudentTracking } from "../../utils/studentTracking";
 import { normalizeStudentTracking } from "../../services/utils/studentTracking";
-import CounselorRatingModal from "./CounselorRatingModal";
 import { handlePayment } from "../../services/utils/payment";
 import PricingModal from "../../components/payment/PricingModal";
 
@@ -114,7 +113,6 @@ export default function StudentDashboard() {
   } = tracking;
 
   const [counselor, setCounselor] = useState(null);
-  const [isRatingModalOpen, setIsRatingModalOpen] = useState(false);
   const [isPricingModalOpen, setIsPricingModalOpen] = useState(false);
   const [walletBalance, setWalletBalance] = useState(0);
 
@@ -593,14 +591,6 @@ export default function StudentDashboard() {
                 </div>
               </div>
               <div className="flex gap-3 shrink-0">
-                {counselor && (
-                  <button
-                    onClick={() => setIsRatingModalOpen(true)}
-                    className="rounded-lg border border-amber-500 px-5 py-2.5 text-sm font-bold text-amber-600 transition-colors hover:bg-amber-50"
-                  >
-                    Rate Counselor
-                  </button>
-                )}
                 <button
                   type="button"
                   className="rounded-lg border border-[#0B818D] px-5 py-2.5 text-sm font-bold text-[#0B818D] transition-colors hover:bg-teal-50"
@@ -613,16 +603,6 @@ export default function StudentDashboard() {
           </div>
         </section>
 
-        {counselor && (
-          <CounselorRatingModal
-            isOpen={isRatingModalOpen}
-            onClose={() => setIsRatingModalOpen(false)}
-            counselor={counselor}
-            onRatingSuccess={() => {
-              // Optionally refresh profile to see updated average if needed
-            }}
-          />
-        )}
 
       </main>
     </div>
