@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Bell, BellOff, CheckCircle2, CreditCard, Info, AlertCircle, ShoppingBag, ArrowLeft, MoreVertical, Trash2 } from 'lucide-react';
+import { Bell, BellOff, CheckCircle2, CreditCard, Info, AlertCircle, ShoppingBag, ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import api from '../../services/api';
 
@@ -125,7 +125,6 @@ const NotificationsPage = () => {
     const filteredNotifications = notifications.filter(n => {
         if (filter === 'unread') return !n.is_read;
         if (filter === 'system') return n.type === 'system';
-        if (filter === 'payment') return n.type === 'payment';
         if (filter === 'mentors') return n.type === 'mentor_assignment' || n.type === 'mentor_request' || n.type === 'student_assignment';
         return true;
     });
@@ -140,7 +139,7 @@ const NotificationsPage = () => {
                     <div className="relative z-10 flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
                         <div>
                             <Link
-                                to="/student/dashboard"
+                                to="/counselor/dashboard"
                                 className="inline-flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.2em] text-[#0B818D] transition hover:translate-x-[-4px]"
                             >
                                 <ArrowLeft className="size-4" />
@@ -148,7 +147,7 @@ const NotificationsPage = () => {
                             </Link>
                             <h1 className="mt-4 text-4xl font-black tracking-tight text-slate-950 sm:text-5xl">Alert Center</h1>
                             <p className="mt-2 text-base font-medium text-slate-500">
-                                Track your career progress and mentor updates.
+                                Management notifications for your student cohort.
                             </p>
                         </div>
                         <button
@@ -163,7 +162,7 @@ const NotificationsPage = () => {
 
                 {/* Filters */}
                 <div className="flex items-center gap-3 rounded-[28px] border border-slate-200/60 bg-white/50 p-2 shadow-sm backdrop-blur-md overflow-x-auto no-scrollbar">
-                    {['all', 'unread', 'mentors', 'system', 'payment'].map((f) => (
+                    {['all', 'unread', 'mentors', 'system'].map((f) => (
                         <button
                             key={f}
                             onClick={() => setFilter(f)}
@@ -206,23 +205,12 @@ const NotificationsPage = () => {
                                     </div>
                                     <h3 className="mt-8 text-2xl font-black tracking-tight text-slate-900">Zero Blockers</h3>
                                     <p className="mt-2 max-w-xs text-sm font-bold text-slate-400">
-                                        You&apos;re completely up to date. New career insights will arrive here.
+                                        You&apos;re completely up to date. New student updates will arrive here.
                                     </p>
                                 </motion.div>
                             )}
                         </AnimatePresence>
                     )}
-                </div>
-
-                {/* Preferences Hint */}
-                <div className="rounded-[30px] border border-indigo-100 bg-gradient-to-br from-indigo-50/50 via-white to-indigo-50/50 p-6 text-center shadow-sm">
-                    <div className="mx-auto flex size-12 items-center justify-center rounded-2xl bg-indigo-600 text-white shadow-lg shadow-indigo-100">
-                        <CheckCircle2 size={24} />
-                    </div>
-                    <h4 className="mt-4 text-sm font-black text-slate-900">Notification Settings</h4>
-                    <p className="mt-1 text-xs font-semibold text-slate-500">
-                        Manage how you receive alerts in your <Link to="/student/profile" className="text-indigo-600 underline">Profile Settings</Link>.
-                    </p>
                 </div>
             </div>
         </div>

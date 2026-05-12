@@ -6,6 +6,10 @@ import api from "../../services/api";
 import { normalizeStudentTracking } from "../../services/utils/studentTracking";
 import { handlePayment } from "../../services/utils/payment";
 import PricingModal from "../../components/payment/PricingModal";
+import {
+  AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+  Radar, RadarChart, PolarGrid, PolarAngleAxis
+} from 'recharts';
 
 const CAREER_ICONS = [
   "web",
@@ -55,6 +59,24 @@ function formatLabel(value, fallback) {
     .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
     .join(" ");
 }
+
+const activityData = [
+  { name: 'Mon', score: 40 },
+  { name: 'Tue', score: 30 },
+  { name: 'Wed', score: 60 },
+  { name: 'Thu', score: 50 },
+  { name: 'Fri', score: 80 },
+  { name: 'Sat', score: 70 },
+  { name: 'Sun', score: 90 },
+];
+
+const aptitudeData = [
+  { subject: 'Logical', A: 85, fullMark: 100 },
+  { subject: 'Verbal', A: 70, fullMark: 100 },
+  { subject: 'Quant', A: 60, fullMark: 100 },
+  { subject: 'Spatial', A: 90, fullMark: 100 },
+  { subject: 'Abstract', A: 75, fullMark: 100 },
+];
 
 export default function StudentDashboard() {
   const user = useSelector((state) => state.auth.user);
@@ -227,8 +249,7 @@ export default function StudentDashboard() {
 
 
   return (
-    <div className="flex min-h-screen bg-page-bg font-body text-slate-900 antialiased">
-      <main className="flex-1 p-4 sm:p-6 lg:p-8">
+    <div className="p-4 py-8 font-body text-slate-900">
 
         {/* ── Header ── */}
         <header className="mb-8 flex flex-col justify-between gap-4 xl:flex-row xl:items-center">
@@ -408,6 +429,45 @@ export default function StudentDashboard() {
           </div>
         </section>
 
+        {/* ── Activity Trend ── */}
+        <section className="mb-8">
+          <div className="flex flex-col rounded-[12px] border border-slate-100 bg-white shadow-sm p-6">
+            <div className="mb-6 flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-bold text-slate-900">Activity Trend</h3>
+                <p className="mt-1 text-xs text-slate-500">Your engagement over the past week</p>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="flex items-center gap-1 text-xs font-bold text-emerald-500 bg-emerald-50 px-2 py-1 rounded-md">
+                  <Icon name="trending_up" className="text-[14px]" /> +12%
+                </span>
+                <span className="text-xs text-slate-400">vs last week</span>
+              </div>
+            </div>
+            <div className="h-[220px] w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={activityData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="colorScore" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#0B818D" stopOpacity={0.3}/>
+                      <stop offset="95%" stopColor="#0B818D" stopOpacity={0}/>
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                  <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#94a3b8' }} dy={10} />
+                  <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#94a3b8' }} />
+                  <Tooltip 
+                    contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                    labelStyle={{ fontWeight: 'bold', color: '#334155' }}
+                    itemStyle={{ color: '#0B818D', fontWeight: 600 }}
+                  />
+                  <Area type="monotone" dataKey="score" stroke="#0B818D" strokeWidth={3} fillOpacity={1} fill="url(#colorScore)" />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        </section>
+
         {/* ── Assessment Progress — hidden once completed ── */}
         {sectionStatus !== "completed" && (
           <section className="mb-8">
@@ -500,45 +560,29 @@ export default function StudentDashboard() {
             </div>
           </div>
 
-          {/* To-Do */}
-          {/* <div className="flex flex-col rounded-[12px] border border-slate-100 bg-white shadow-sm lg:col-span-4">
+          {/* Aptitude Profile */}
+          <div className="flex flex-col rounded-[12px] border border-slate-100 bg-white shadow-sm lg:col-span-4">
             <div className="border-b border-slate-100 p-6">
-              <h3 className="text-lg font-bold text-slate-900">Getting Started</h3>
+              <h3 className="text-lg font-bold text-slate-900">Aptitude Profile</h3>
+              <p className="mt-1 text-xs text-slate-500">Your cognitive strengths analysis</p>
             </div>
-            <div className="space-y-5 p-6">
-              {todoItems.map((item) => (
-                <button
-                  key={item.text}
-                  type="button"
-                  onClick={() => !item.done && navigate(item.path)}
-                  className={`flex w-full items-start gap-3 text-left ${
-                    item.done ? "opacity-60 cursor-default" : "cursor-pointer"
-                  }`}
-                >
-                  <div className="mt-0.5">
-                    <Icon
-                      name={item.done ? "check_circle" : "radio_button_unchecked"}
-                      className={item.done ? "text-xl text-emerald-500" : "text-xl text-slate-300"}
-                    />
-                  </div>
-                  <p
-                    className={`text-sm ${
-                      item.done ? "text-slate-400 line-through" : "text-slate-700"
-                    }`}
-                  >
-                    {item.text}
-                  </p>
-                </button>
-              ))}
-
-              <Link
-                to="/student/careers/roadmap"
-                className="mt-4 flex w-full items-center justify-center rounded-lg bg-[#0B818D] py-3 text-sm font-bold text-white shadow-sm transition-colors hover:bg-[#096d78]"
-              >
-                View Career Paths
-              </Link>
+            <div className="flex-1 p-6 flex items-center justify-center min-h-[300px]">
+              {assessmentTaken ? (
+                <ResponsiveContainer width="100%" height="100%">
+                  <RadarChart cx="50%" cy="50%" outerRadius="70%" data={aptitudeData}>
+                    <PolarGrid stroke="#e2e8f0" />
+                    <PolarAngleAxis dataKey="subject" tick={{ fill: '#64748b', fontSize: 12, fontWeight: 600 }} />
+                    <Radar name="Student" dataKey="A" stroke="#0B818D" strokeWidth={2} fill="#0B818D" fillOpacity={0.3} />
+                    <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
+                  </RadarChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="text-center text-sm text-slate-400">
+                  Complete your assessment to view your aptitude profile
+                </div>
+              )}
             </div>
-          </div> */}
+          </div>
         </section>
 
         {/* ── RIASEC Personality Type ── */}
@@ -604,7 +648,6 @@ export default function StudentDashboard() {
         </section>
 
 
-      </main>
     </div>
   );
 }

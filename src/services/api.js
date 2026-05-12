@@ -9,6 +9,12 @@ const getBaseUrl = () => {
 
   // Local development
   if (hostname.includes("localhost")) {
+    const parts = hostname.split(".");
+    // If visiting vimal.localhost, talk to vimal.pathwise.duckdns.org
+    if (parts.length > 1 && parts[0] !== "localhost") {
+      return `https://${parts[0]}.pathwise.duckdns.org/api`;
+    }
+    // Fallback to main production domain
     return "https://pathwise.duckdns.org/api";
   }
 

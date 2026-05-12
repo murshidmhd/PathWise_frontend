@@ -260,7 +260,7 @@ export default function CareerRoadmapPage() {
   // }
 
   return (
-    <div className="min-h-screen bg-page-bg px-4 py-6 text-slate-900 sm:px-6 lg:px-8">
+    <div className="p-4 py-6 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-6xl space-y-8">
         <SectionTabs tabs={careerTabs} />
 
@@ -285,7 +285,7 @@ export default function CareerRoadmapPage() {
           user={user}
         />
 
-        <div className="grid gap-6 lg:grid-cols-[0.7fr_1.8fr_0.95fr]">
+        <div className="grid gap-6 grid-cols-1 lg:grid-cols-[0.7fr_1.8fr_0.95fr]">
           {/* History Sidebar */}
           <aside className="space-y-4">
             <section className="rounded-[30px] border border-slate-200/80 bg-white p-5 shadow-sm">

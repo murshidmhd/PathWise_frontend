@@ -7,6 +7,7 @@ import CounselorProfile from "../pages/counselor/Profile";
 import CounselorStudents from "../pages/counselor/Students";
 import CounselorStudentDetail from "../pages/counselor/StudentDetail";
 import CounselorChatHub from "../pages/counselor/CounselorChatHub";
+import NotificationsPage from "../pages/counselor/Notifications.jsx";
 
 const counselorRoutes = (
   <Route
@@ -23,6 +24,7 @@ const counselorRoutes = (
     <Route path="profile" element={<CounselorProfile />} />
     <Route path="approval" element={<CounselorApprovalPage />} />
     <Route path="chat" element={<CounselorChatHub />} />
+    <Route path="notifications" element={<NotificationsPage />} />
   </Route>
 );
 
