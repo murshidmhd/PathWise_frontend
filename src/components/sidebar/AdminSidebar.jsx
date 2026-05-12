@@ -8,59 +8,70 @@ function Icon({ name, className = "" }) {
   );
 }
 
-const sidebarLinks = [
+const superAdminLinks = [
   {
     icon: "space_dashboard",
     label: "Overview",
-    caption: "Platform command center",
+    caption: "Platform metrics",
+    to: "/superadmin/dashboard",
+  },
+  {
+    icon: "corporate_fare",
+    label: "Colleges",
+    caption: "Manage ecosystems",
+    to: "/superadmin/colleges",
+  }
+];
+
+const collegeAdminLinks = [
+  {
+    icon: "space_dashboard",
+    label: "Overview",
+    caption: "College command center",
     to: "/admin/dashboard",
   },
   {
     icon: "verified_user",
     label: "Approvals",
-    caption: "Review pending requests",
+    caption: "Review student requests",
     to: "/admin/approvals",
   },
   {
     icon: "group",
     label: "Users",
-    caption: "Manage students and counselors",
+    caption: "Manage students & mentors",
     to: "/admin/users",
   },
   {
     icon: "assignment_ind",
     label: "Counselor Requests",
-    caption: "Review assignment requests",
+    caption: "Review assignments",
     to: "/admin/counselor-requests",
   },
   {
     icon: "analytics",
     label: "Reports",
-    caption: "Track adoption and health",
+    caption: "Track college growth",
     to: "/admin/reports",
-  },
-  {
-    icon: "settings",
-    label: "Settings",
-    caption: "Configure platform controls",
-    to: "/admin/settings",
-  },
+  }
 ];
 
 export const AdminSidebar = ({ isOpen, onClose }) => {
   const location = useLocation();
   const handleLogout = useLogout();
-  const user = useSelector((state) => state.auth.user);
+  const { user, role } = useSelector((state) => state.auth);
 
   const fullName = user?.full_name || "Admin";
   const userInitial = fullName.charAt(0).toUpperCase() || "A";
+  
+  const isSuperAdmin = role === "platform_admin";
+  const activeLinks = isSuperAdmin ? superAdminLinks : collegeAdminLinks;
 
   const renderLinks = () =>
-    sidebarLinks.map((item) => {
+    activeLinks.map((item) => {
       const isActive =
         location.pathname === item.to ||
-        (item.to !== "/admin/dashboard" &&
-          location.pathname.startsWith(`${item.to}/`));
+        (item.to.length > 10 && location.pathname.startsWith(`${item.to}/`));
 
       return (
         <Link
@@ -109,7 +120,6 @@ export const AdminSidebar = ({ isOpen, onClose }) => {
         isOpen ? "translate-x-0" : "-translate-x-full"
       }`}
     >
-      {/* Amber Ambient Background */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(245,158,11,0.12),transparent_35%),radial-gradient(circle_at_bottom_right,rgba(217,119,6,0.08),transparent_25%)]" />
       <div className="absolute inset-y-0 right-0 w-px bg-gradient-to-b from-transparent via-amber-500/10 to-transparent" />
 
@@ -125,12 +135,11 @@ export const AdminSidebar = ({ isOpen, onClose }) => {
                   PathWise
                 </h2>
                 <p className="text-[10px] font-bold tracking-[0.28em] text-amber-500 uppercase">
-                  Admin Space
+                  {isSuperAdmin ? "Super Admin" : "College Space"}
                 </p>
               </div>
             </div>
 
-            {/* Mobile Close Button */}
             <button
               onClick={onClose}
               className="flex size-10 items-center justify-center rounded-xl bg-white/5 text-slate-400 transition hover:bg-white/10 hover:text-white lg:hidden"
@@ -147,7 +156,7 @@ export const AdminSidebar = ({ isOpen, onClose }) => {
               <div>
                 <p className="text-sm font-semibold text-white">{fullName}</p>
                 <p className="mt-1 text-xs text-slate-500">
-                  Platform Administrator
+                  {isSuperAdmin ? "Main Platform Admin" : "College Principal"}
                 </p>
               </div>
             </div>
@@ -159,26 +168,10 @@ export const AdminSidebar = ({ isOpen, onClose }) => {
         </nav>
 
         <div className="relative shrink-0 border-t border-white/5 p-4">
-          <div className="rounded-[24px] border border-white/5 bg-gradient-to-br from-white/5 to-white/0 p-4 shadow-[0_16px_36px_rgba(2,6,23,0.1)]">
-            <div className="flex items-start gap-4">
-              <div className="flex size-10 items-center justify-center rounded-xl bg-amber-500/10 text-amber-500">
-                <Icon name="monitoring" className="text-[20px]" />
-              </div>
-              <div>
-                <p className="text-sm font-semibold text-white">
-                  System status
-                </p>
-                <p className="mt-1 text-[11px] leading-5 text-slate-500">
-                  Core admin services are healthy and syncing in real-time.
-                </p>
-              </div>
-            </div>
-          </div>
-
           <button
             type="button"
             onClick={handleLogout}
-            className="mt-4 flex w-full items-center justify-center gap-3 rounded-[18px] border border-white/5 bg-white/5 px-4 py-3 text-sm font-semibold text-slate-300 transition hover:border-amber-500/20 hover:bg-amber-500/10 hover:text-white"
+            className="flex w-full items-center justify-center gap-3 rounded-[18px] border border-white/5 bg-white/5 px-4 py-3 text-sm font-semibold text-slate-300 transition hover:border-amber-500/20 hover:bg-amber-500/10 hover:text-white"
           >
             <Icon name="logout" className="text-[20px]" />
             <span>Logout</span>

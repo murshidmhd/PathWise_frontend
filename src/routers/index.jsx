@@ -4,6 +4,7 @@ import ProtectedRoute from "../components/ProtectedRoute";
 import studentRoutes from "./student";
 import counselorRoutes from "./counselor";
 import adminRoutes from "./admin";
+import superAdminRoutes from "./superAdmin";
 
 export default function AppRoutes() {
   return (
@@ -20,6 +21,7 @@ export default function AppRoutes() {
       {studentRoutes}
       {counselorRoutes}
       {adminRoutes}
+      {superAdminRoutes}
       <Route
         path="/pending-approval"
         element={<Navigate to="/counselor/approval" replace />}

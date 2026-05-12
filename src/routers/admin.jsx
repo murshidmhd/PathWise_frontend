@@ -14,7 +14,7 @@ const adminRoutes = (
   <Route
     path="/admin"
     element={
-      <ProtectedRoute allowedRoles={["platform_admin"]}>
+      <ProtectedRoute allowedRoles={["college_admin"]}>
         <AdminLayout />
       </ProtectedRoute>
     }
@@ -23,8 +23,6 @@ const adminRoutes = (
     <Route path="dashboard" element={<AdminDashboard />} />
     <Route path="approvals" element={<AdminApprovals />} />
     <Route path="users" element={<AdminUsers />} />
-    {/* <Route path="reports" element={<AdminReports />} /> */}
-    {/* <Route path="settings" element={<AdminSettings />} /> */}
     <Route path="counselor-approval" element={<CounselorApprovals />} />
     <Route path="counselor-requests" element={<AdminCounselorRequests />} />
   </Route>

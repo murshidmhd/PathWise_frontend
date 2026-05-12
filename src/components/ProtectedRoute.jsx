@@ -4,8 +4,8 @@ import { Navigate, useLocation } from "react-router-dom";
 const roleHome = {
   student: "/student",
   counselor: "/counselor/dashboard",
-  platform_admin: "/admin/dashboard",
-  college_admin: "/college/dashboard",
+  platform_admin: "/superadmin/dashboard",
+  college_admin: "/admin/dashboard",
 };
 
 const ProtectedRoute = ({ children, allowedRoles = [], allowGuests = false }) => {
