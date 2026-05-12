@@ -44,7 +44,7 @@ export function SectionHeading({ eyebrow, title, description, action }) {
 
 export function AdminPageFrame({ badge, title, description, children }) {
   return (
-    <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(251,191,36,0.12),_transparent_28%),linear-gradient(180deg,_#f8fafc_0%,_#eef2ff_100%)] p-4 text-slate-900 sm:p-6 lg:p-8">
+    <div className="bg-[radial-gradient(circle_at_top_left,_rgba(251,191,36,0.12),_transparent_28%),linear-gradient(180deg,_#f8fafc_0%,_#eef2ff_100%)] p-4 text-slate-900 sm:p-6 lg:p-8">
       <div className="mx-auto max-w-7xl">
         <section className="overflow-hidden rounded-[32px] border border-white/70 bg-slate-950 px-6 py-7 text-white shadow-[0_30px_80px_rgba(15,23,42,0.18)] sm:px-8">
           <div className="max-w-3xl">

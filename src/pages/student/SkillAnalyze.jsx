@@ -1,0 +1,180 @@
+import { useState, useEffect } from "react";
+import { Sparkles, BrainCircuit, Target, TrendingUp, AlertCircle } from "lucide-react";
+import api from "../../services/api";
+import SectionTabs from "../../components/student/SectionTabs";
+import StudentFeedbackState from "../../components/student/StudentFeedbackState";
+import { careerTabs } from "./careerTabs";
+
+export default function SkillAnalyze() {
+    const [skills, setSkills] = useState([]);
+    const [recommendations, setRecommendations] = useState([]);
+    const [gap, setGap] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("");
+
+    useEffect(() => {
+        const fetchSkillAnalysis = async () => {
+            try {
+                const response = await api.get("/students/skill-analysis/");
+                setSkills(response.data.skills);
+                setRecommendations(response.data.recommendations);
+                setGap(response.data.gap_analysis);
+            } catch (error) {
+                console.error("Error fetching skill analysis:", error);
+                setError("Unable to load your skill analysis right now.");
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchSkillAnalysis();
+    }, []);
+
+    if (loading) {
+        return (
+            <div className="flex min-h-screen items-center justify-center bg-page-bg">
+                <div className="flex flex-col items-center gap-4">
+                    <div className="size-12 animate-spin rounded-full border-4 border-indigo-600 border-t-transparent"></div>
+                    <p className="text-sm font-bold text-slate-500 font-heading">Analyzing your potential...</p>
+                </div>
+            </div>
+        );
+    }
+
+    return (
+        <div className="min-h-screen bg-page-bg font-body text-slate-900 px-4 py-8">
+            <div className="mx-auto max-w-6xl space-y-8">
+                <SectionTabs tabs={careerTabs} />
+
+                {error ? (
+                    <StudentFeedbackState
+                        icon={AlertCircle}
+                        title="Skill analysis unavailable"
+                        description={error}
+                        tone="error"
+                        action={
+                            <button
+                                type="button"
+                                onClick={() => window.location.reload()}
+                                className="rounded-2xl bg-slate-950 px-5 py-3 text-sm font-bold text-white transition hover:bg-slate-800"
+                            >
+                                Try Again
+                            </button>
+                        }
+                    />
+                ) : null}
+
+                {/* Header */}
+                {!error && <header className="flex flex-col gap-3">
+                    <span className="inline-flex w-fit items-center gap-2 rounded-full bg-indigo-50 px-4 py-1.5 text-[11px] font-black tracking-[0.18em] text-indigo-600 uppercase border border-indigo-100">
+                        <BrainCircuit size={12} /> Skill Intelligence
+                    </span>
+                    <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+                        <div>
+                            <h1 className="font-heading text-4xl font-black tracking-tight text-slate-900">
+                                Skill Analysis
+                            </h1>
+                            <p className="mt-2 text-base font-medium text-slate-500">
+                                Discover your strengths, identify gaps, and unlock your true potential.
+                            </p>
+                        </div>
+                        <button
+                            className="flex items-center gap-3 rounded-[24px] bg-gradient-to-br from-indigo-600 to-indigo-700 px-6 py-4 text-sm font-black text-white shadow-xl shadow-indigo-200 transition-all hover:scale-[1.02] active:scale-95"
+                        >
+                            <Sparkles size={20} />
+                            <span>Analyze New Skills</span>
+                        </button>
+                    </div>
+                </header>}
+
+                {!error && <div className="grid gap-8 lg:grid-cols-12">
+                    {/* Left Column: Current Skills overview */}
+                    <div className="lg:col-span-8 space-y-8">
+                        {/* Summary Card */}
+                        <div className="relative overflow-hidden rounded-[40px] bg-white p-8 border border-slate-200/60 shadow-sm">
+                            <div className="flex items-center justify-between mb-8">
+                                <div className="flex items-center gap-3">
+                                    <div className="flex size-12 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-600">
+                                        <Target size={24} />
+                                    </div>
+                                    <div>
+                                        <h3 className="text-xl font-black text-slate-900 tracking-tight">Current Proficiency</h3>
+                                        <p className="text-sm font-medium text-slate-500">Your mapped skill portfolio</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="space-y-6">
+                                {skills.length ? skills.map((skill, index) => (
+                                    <div key={index} className="space-y-2">
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-sm font-bold text-slate-700">{skill.name}</span>
+                                            <span className="text-xs font-black text-indigo-600">{skill.level}%</span>
+                                        </div>
+                                        <div className="h-3 w-full rounded-full bg-slate-100 overflow-hidden">
+                                            <div 
+                                                className="h-full rounded-full bg-gradient-to-r from-indigo-500 to-indigo-600 transition-all duration-1000"
+                                                style={{ width: `${skill.level}%` }}
+                                            />
+                                        </div>
+                                    </div>
+                                )) : (
+                                    <StudentFeedbackState
+                                        icon={Target}
+                                        title="No skills mapped yet"
+                                        description="Complete your profile and assessment so PathWise can build a useful skill analysis."
+                                        compact
+                                    />
+                                )}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Right Column: Recommendations & Gaps */}
+                    <div className="lg:col-span-4 space-y-8">
+                        {/* Recommendations */}
+                        <div className="rounded-[36px] bg-[#111C2D] p-8 text-white shadow-2xl">
+                            <div className="flex items-center gap-3 mb-8">
+                                <div className="flex size-10 items-center justify-center rounded-xl bg-white/10 text-emerald-400">
+                                    <TrendingUp size={20} />
+                                </div>
+                                <h3 className="text-lg font-black tracking-tight">Growth Areas</h3>
+                            </div>
+                            
+                            <div className="space-y-5">
+                                {recommendations.length ? recommendations.map((rec, index) => (
+                                    <div key={index} className="flex items-start gap-4 p-4 rounded-2xl bg-white/5 border border-white/10">
+                                        <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-emerald-400/20 text-emerald-400">
+                                            <Sparkles size={14} />
+                                        </div>
+                                        <div>
+                                            <p className="text-sm font-bold text-white">{rec.skill_name}</p>
+                                            <p className="mt-1 text-xs text-slate-400 leading-relaxed">{rec.reason}</p>
+                                        </div>
+                                    </div>
+                                )) : (
+                                    <p className="rounded-2xl border border-white/10 bg-white/5 p-4 text-sm font-medium leading-6 text-slate-300">
+                                        Recommendations will appear after your skills are mapped.
+                                    </p>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Gap Warning */}
+                        {gap ? <div className="rounded-[36px] border border-amber-100 bg-gradient-to-br from-amber-50 to-white p-8 shadow-sm">
+                            <div className="flex size-14 items-center justify-center rounded-2xl bg-amber-100 text-amber-600 mb-6 shadow-sm">
+                                <AlertCircle size={28} />
+                            </div>
+                            <h3 className="text-xl font-black text-slate-900 tracking-tight">Skill Gap Detected</h3>
+                            <p className="mt-3 text-sm font-medium text-slate-500 leading-relaxed">
+                                Your current roadmap requires <span className="font-bold text-slate-800">{gap?.required_skill || "additional"}</span> fundamentals to reach a {gap?.match_rate || 0}% match rate.
+                            </p>
+                            <button className="mt-6 w-full rounded-2xl bg-white border border-amber-200 px-4 py-3 text-sm font-bold text-amber-700 transition-colors hover:bg-amber-50">
+                                View Learning Path
+                            </button>
+                        </div> : null}
+                    </div>
+                </div>}
+            </div>
+        </div>
+    );
+}

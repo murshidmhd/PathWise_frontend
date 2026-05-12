@@ -1,6 +1,6 @@
 export default function ApprovalPage() {
   return (
-    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#F8FAFC] px-6 text-slate-900">
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-page-bg px-6 text-slate-900">
       <div className="pointer-events-none absolute -top-16 -left-16 h-72 w-72 rounded-full bg-[#6366F1]/12 blur-3xl" />
       <div className="pointer-events-none absolute -right-16 bottom-10 h-72 w-72 rounded-full bg-[#0D9488]/12 blur-3xl" />
 

@@ -87,7 +87,35 @@ const ChatSidebar = ({ contact }) => {
               </button>
             </div>
           </section>
-        ) : null}
+        ) : (
+          <section className="rounded-[24px] bg-gradient-to-br from-teal-50 to-white border border-teal-100 p-5 shadow-sm">
+            <div className="flex items-center gap-2 mb-2 text-[#0B818D]">
+              <span className="material-symbols-outlined text-lg">calendar_add_on</span>
+              <h5 className="text-sm font-bold tracking-tight">Book a Session</h5>
+            </div>
+            <p className="text-[11px] text-slate-500 mb-4 leading-relaxed">
+              Need 1-on-1 guidance? Book a 45-minute video call with {contact.name.split(' ')[0]}.
+            </p>
+            
+            <div className="bg-white rounded-xl border border-slate-100 p-3 mb-4">
+               <div className="flex justify-between items-center mb-2">
+                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Cost</span>
+                 <span className="text-xs font-black text-amber-600">10 SP</span>
+               </div>
+               <div className="flex justify-between items-center">
+                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Next Slot</span>
+                 <span className="text-xs font-bold text-slate-700">Tomorrow, 10:00 AM</span>
+               </div>
+            </div>
+
+            <button 
+              onClick={() => alert("🚀 We're working on the scheduling system! Soon you'll be able to book 1-on-1 mentorship sessions with SkillPoints.")}
+              className="w-full flex items-center justify-center gap-2 rounded-xl bg-[#0B818D] hover:bg-[#096a75] py-2.5 text-[11px] font-black uppercase tracking-widest text-white transition-colors shadow-md shadow-teal-500/20"
+            >
+              View Calendar
+            </button>
+          </section>
+        )}
       </div>
     </aside>
   );

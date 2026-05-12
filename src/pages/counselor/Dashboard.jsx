@@ -146,8 +146,7 @@ export default function CounselorDashboard() {
   );
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] px-4 py-8 text-slate-900 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-7xl space-y-10">
+    <div className="mx-auto max-w-7xl space-y-10 px-4 py-8 sm:px-6 lg:px-8">
         <header className="relative overflow-hidden rounded-[40px] border border-white bg-white/70 p-8 shadow-2xl shadow-slate-200/50 backdrop-blur-xl sm:p-10">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(11,129,141,0.1),transparent_40%),radial-gradient(circle_at_bottom_left,rgba(79,70,229,0.08),transparent_40%)]" />
           <div className="relative z-10 flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
@@ -178,6 +177,13 @@ export default function CounselorDashboard() {
                 className="inline-flex items-center gap-2 rounded-[22px] border-2 border-slate-100 bg-white px-7 py-4 text-sm font-bold text-slate-700 transition-all hover:border-[#0B818D]/30 hover:bg-slate-50 hover:text-[#0B818D] active:scale-95"
               >
                 Open chat
+              </Link>
+              <Link
+                to="/counselor/notifications"
+                className="relative flex size-[60px] items-center justify-center rounded-[22px] border-2 border-slate-100 bg-white text-slate-700 transition-all hover:border-indigo-100 hover:bg-indigo-50/30 hover:text-indigo-600 active:scale-95 shadow-sm"
+              >
+                <Icon name="notifications" className="text-[24px]" />
+                <span className="absolute top-4 right-4 size-2 rounded-full border-2 border-white bg-indigo-500" />
               </Link>
             </div>
           </div>
@@ -364,6 +370,5 @@ export default function CounselorDashboard() {
           </article>
         </section>
       </div>
-    </div>
   );
 }

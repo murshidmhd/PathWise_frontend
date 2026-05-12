@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import axios from "axios";
-import { chatApi as api } from "../../services/api";
+import api, { chatApi } from "../../services/api";
 import ChatContainer from "../../components/chat/ChatContainer";
+import VideoCallModal from "../../components/video/VideoCallModal";
+import CounselorRatingModal from "./CounselorRatingModal";
 import { messaging, getToken, onMessage } from "../../firebase";
 
 function Icon({ name, className = "" }) {
@@ -15,6 +16,8 @@ function Icon({ name, className = "" }) {
 
 const StudentChatHub = () => {
   const [messages, setMessages] = useState([]);
+  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
+  const [isRatingModalOpen, setIsRatingModalOpen] = useState(false);
   const user = useSelector((state) => state.auth.user);
 
   const counselorName = user?.counselor_details?.full_name || "Assigned Counselor";
@@ -49,7 +52,7 @@ const StudentChatHub = () => {
     const fetchMessages = async () => {
       if (!roomId) return;
       try {
-        const response = await api.get(`/rooms/${roomId}/messages/`);
+        const response = await chatApi.get(`/rooms/${roomId}/messages/`);
 
         const transformed = response.data.map((msg) => {
           const senderId = msg.sender_id ?? msg.sender_detail?.id ?? msg.sender;
@@ -103,7 +106,7 @@ const StudentChatHub = () => {
         });
 
         if (token) {
-          await axios.post("http://localhost:8001/register-fcm/", {
+          await api.post("/register-fcm/", {
             user_id: currentUserId,
             token,
           });
@@ -125,7 +128,7 @@ const StudentChatHub = () => {
   }, [roomId, currentUserId]);
 
   return (
-    <div className="h-[calc(100vh-64px)] overflow-hidden bg-[#F8FAFC] p-4 lg:p-8">
+    <div className="h-[calc(100vh-64px)] overflow-hidden bg-page-bg p-4 lg:p-8">
       <div className="mx-auto flex h-full max-w-6xl overflow-hidden rounded-[40px] border border-white bg-white/70 shadow-2xl shadow-slate-200/50 backdrop-blur-xl">
         {!roomId ? (
           <div className="flex-1 flex flex-col items-center justify-center p-12 text-center bg-[radial-gradient(circle_at_center,white,transparent)]">
@@ -175,10 +178,32 @@ const StudentChatHub = () => {
               currentUserName={currentUserName}
               currentUserInitials={currentUserInitials}
               roomId={roomId}
+              onSessionEnd={() => setIsRatingModalOpen(true)}
             />
           </div>
         )}
       </div>
+
+      {/* Video call — launched from chat header button */}
+      {roomId && (
+        <VideoCallModal
+          isOpen={isVideoModalOpen}
+          onClose={() => setIsVideoModalOpen(false)}
+          roomId={roomId}
+          userName={currentUserName}
+          onSessionEnd={() => setIsRatingModalOpen(true)}
+        />
+      )}
+
+      {/* Rating modal — appears automatically after a video session */}
+      {user?.counselor_details && (
+        <CounselorRatingModal
+          isOpen={isRatingModalOpen}
+          onClose={() => setIsRatingModalOpen(false)}
+          counselor={user.counselor_details}
+          onRatingSuccess={() => setIsRatingModalOpen(false)}
+        />
+      )}
     </div>
   );
 };

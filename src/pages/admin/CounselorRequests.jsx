@@ -45,7 +45,7 @@ export default function AdminCounselorRequests() {
     };
 
     return (
-        <div className="min-h-screen bg-[#F8FAFC] p-4 sm:p-6 lg:p-8">
+        <div className="min-h-screen bg-page-bg p-4 sm:p-6 lg:p-8">
             <header className="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
                 <div>
                     <h1 className="text-2xl font-bold text-slate-900">Counselor Requests</h1>

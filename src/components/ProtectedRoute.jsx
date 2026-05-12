@@ -4,7 +4,8 @@ import { Navigate, useLocation } from "react-router-dom";
 const roleHome = {
   student: "/student",
   counselor: "/counselor/dashboard",
-  admin: "/admin",
+  platform_admin: "/superadmin/dashboard",
+  college_admin: "/admin/dashboard",
 };
 
 const ProtectedRoute = ({ children, allowedRoles = [], allowGuests = false }) => {
@@ -25,7 +26,6 @@ const ProtectedRoute = ({ children, allowedRoles = [], allowGuests = false }) =>
     location.pathname === "/auth/approval" ||
     location.pathname === "/counselor/approval";
 
-  // Guests routes
   if (allowGuests) {
     if (token && isGuestAuthRoute) {
       return <Navigate to={roleHome[role] || "/"} replace />;
@@ -33,12 +33,10 @@ const ProtectedRoute = ({ children, allowedRoles = [], allowGuests = false }) =>
     return children;
   }
 
-  // Not logged in
   if (!token) {
     return <Navigate to="/auth/login" replace />;
   }
 
-  // Counselor approval guard
   if (role === "counselor" && approvalStatus !== "approved") {
     if (!isApprovalRoute) {
       return <Navigate to="/auth/approval" replace />;
@@ -46,7 +44,6 @@ const ProtectedRoute = ({ children, allowedRoles = [], allowGuests = false }) =>
     return children;
   }
 
-  // Role-based access control
   if (allowedRoles.length && !allowedRoles.includes(role)) {
     return <Navigate to={roleHome[role] || "/auth/landing"} replace />;
   }

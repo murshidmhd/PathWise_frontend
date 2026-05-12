@@ -77,7 +77,7 @@ const StudentLayout = () => {
 
       <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
 
-      <main className="flex-1 pt-16 lg:ml-[292px] lg:pt-0">
+      <main className="flex-1 pt-16 lg:ml-[240px] lg:pt-0">
         <Outlet />
       </main>
     </div>

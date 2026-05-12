@@ -1,5 +1,6 @@
 import api, { setAccessToken } from "../api";
 import { setUser } from "../../store/slices/authSlice";
+import toast from "react-hot-toast";
 
 export async function handleLoginSuccess(dispatch, token, role) {
   setAccessToken(token);
@@ -12,6 +13,26 @@ export async function handleLoginSuccess(dispatch, token, role) {
         headers: { Authorization: `Bearer ${token}` },
       });
       user = profileRes.data;
+      console.log("user data is here auth.js:" , user)
+
+      // Show welcome gift toast only once (first login after gift is claimed)
+      const giftShownKey = `gift_shown_${user?.user_id}`;
+      if (user?.wallet?.is_welcome_gift_claimed === true && !localStorage.getItem(giftShownKey)) {
+        localStorage.setItem(giftShownKey, "true");
+        setTimeout(() => {
+          toast.success("🎁 Welcome Gift! You received 8 free SkillPoints to get started.", {
+            duration: 6000,
+            icon: "🎉",
+            style: {
+              borderRadius: "16px",
+              background: "#111C2D",
+              color: "#fff",
+              border: "1px solid rgba(11,129,141,0.4)",
+              fontWeight: "600",
+            },
+          });
+        }, 1500);
+      }
     } else if (role === "counselor") {
       const profileRes = await api.get("/counselors/profile/", {
         headers: { Authorization: `Bearer ${token}` },

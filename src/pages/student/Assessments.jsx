@@ -169,7 +169,7 @@ export default function StudentAssessments() {
   const HeroIcon = uiState.icon;
 
   return (
-    <div className="min-h-screen bg-page-bg px-4 py-8 font-body text-slate-900">
+    <div className="p-4 py-8 font-body text-slate-900">
       <div className="mx-auto max-w-6xl space-y-8">
         <header className="flex flex-col gap-3">
           <span className="inline-flex w-fit items-center rounded-full bg-teal-50 px-4 py-1.5 text-[11px] font-bold tracking-[0.18em] text-[#0B818D] uppercase">

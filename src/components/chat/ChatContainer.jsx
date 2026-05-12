@@ -5,17 +5,23 @@ import ChatSidebar from "./ChatSidebar";
 import { useWebSocket } from "../../hooks/useWebSocket";
 import { chatApi as api } from "../../services/api";
 
+import VideoCallModal from "../video/VideoCallModal";
+
 const ChatContainer = ({
   messages: initialMessages,
   contact,
   currentUserId,
   roomId,
   currentUserName,
-  currentUserInitials,
+  hideSidebar = false,
+  quickReplies = [],
+  onSessionEnd,
 }) => {
   const [localMessages, setLocalMessages] = useState(initialMessages || []);
+  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
 
   useEffect(() => {
+    console.log("initialMessages", initialMessages);
     setLocalMessages(initialMessages || []);
   }, [initialMessages]);
 
@@ -41,7 +47,7 @@ const ChatContainer = ({
     [currentUserId],
   );
 
-  const { sendMessage, status } = useWebSocket(
+  const { status } = useWebSocket(
     roomId ? `chat/${roomId}` : null,
     onMessage,
   );
@@ -52,14 +58,6 @@ const ChatContainer = ({
         message: text,
         sender_id: currentUserId,
         sender_name: currentUserName || "User",
-      })
-      .then(() => {
-        sendMessage({
-          message: text,
-          sender_id: currentUserId,
-          sender_initials: currentUserInitials || "??",
-          timestamp: new Date().toISOString(),
-        });
       })
       .catch((error) => {
         console.error("Error sending message:", error);
@@ -102,22 +100,51 @@ const ChatContainer = ({
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             <span className="hidden items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-[11px] font-semibold text-slate-600 sm:inline-flex">
               <span className={`size-2 rounded-full ${connectionTone}`} />
               {connectionLabel}
             </span>
 
+            <button
+              onClick={() => setIsVideoModalOpen(true)}
+              className="flex size-10 items-center justify-center rounded-xl bg-[#0B818D]/10 text-[#0B818D] transition-all hover:bg-[#0B818D] hover:text-white active:scale-95"
+              title="Start Video Call"
+            >
+              <span className="material-symbols-outlined text-xl">videocam</span>
+            </button>
           </div>
         </div>
 
+        <VideoCallModal
+          isOpen={isVideoModalOpen}
+          onClose={() => setIsVideoModalOpen(false)}
+          roomId={roomId}
+          userName={currentUserName}
+          onSessionEnd={onSessionEnd}
+        />
+
         <MessageList messages={localMessages} currentUserId={currentUserId} />
-        <div className="shrink-0">
+        
+        <div className="shrink-0 bg-white/80 backdrop-blur-sm border-t border-slate-100">
+          {quickReplies.length > 0 && (
+            <div className="flex gap-2 overflow-x-auto p-4 pb-2 custom-scrollbar">
+              {quickReplies.map((reply, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => handleSendMessage(reply)}
+                  className="whitespace-nowrap rounded-full border border-slate-200 bg-white px-4 py-1.5 text-[11px] font-bold text-slate-600 transition-all hover:border-[#0B818D] hover:bg-[#0B818D]/5 hover:text-[#0B818D]"
+                >
+                  {reply}
+                </button>
+              ))}
+            </div>
+          )}
           <ChatInput onSendMessage={handleSendMessage} />
         </div>
       </div>
 
-      <ChatSidebar contact={contact} />
+      {!hideSidebar && <ChatSidebar contact={contact} />}
     </div>
   );
 };

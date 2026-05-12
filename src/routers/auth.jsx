@@ -9,6 +9,8 @@ import CounselorApprovalPage from "../pages/counselor/Approval";
 import CompleteRegistration from "../pages/auth/CompleteRegistration";
 import ForgotPassword from "../pages/auth/ForgotPassword";
 import ResetPassword from "../pages/auth/ResetPassword";
+import SetupAccount from "../pages/auth/SetupAccount";
+
 export default function AuthRoutes() {
   return (
     <Routes>
@@ -33,6 +35,7 @@ export default function AuthRoutes() {
       <Route path="login" element={<Login />} />
       <Route path="forgot-password" element={<ForgotPassword />} />
       <Route path="reset-password" element={<ResetPassword />} />
+      <Route path="setup-account/:token" element={<SetupAccount />} />
       <Route path="approval" element={<CounselorApprovalPage />} />
     </Routes>
   );

@@ -116,7 +116,7 @@ export default function VerifyOTP() {
       } else if (role === "student") {
         handleLoginSuccess(dispatch, res.data.access, role);
         navigate("/student/dashboard");
-      } else if (role === "admin") {
+      } else if (role === "platform_admin") {
         handleLoginSuccess(dispatch, res.data.access, role);
         navigate("/admin/dashboard");
       }

@@ -43,9 +43,9 @@ export default function Login() {
       const { access, role } = response.data;
       handleLoginSuccess(dispatch, access, role);
 
-      if (role === "student") navigate("/student");
+      if (role === "student") navigate("/student/dashboard");
       if (role === "counselor") navigate("/counselor/dashboard");
-      if (role === "admin") navigate("/admin");
+      if (role === "platform_admin") navigate("/admin/dashboard");
       toast.success("Logged in successfully");
     } catch (err) {
       const code = err.response?.data?.code;
@@ -172,7 +172,7 @@ export default function Login() {
                     mail
                   </span>
                   <input
-                    className="w-full rounded-xl border-none bg-[#F8FAFC] py-3 pr-4 pl-12 text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-primary/50"
+                    className="w-full rounded-xl border-none bg-page-bg py-3 pr-4 pl-12 text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-primary/50"
                     placeholder="name@company.com"
                     type="email"
                     required
@@ -200,7 +200,7 @@ export default function Login() {
                     lock
                   </span>
                   <input
-                    className="w-full rounded-xl border-none bg-[#F8FAFC] py-3 pr-12 pl-12 text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-primary/50"
+                    className="w-full rounded-xl border-none bg-page-bg py-3 pr-12 pl-12 text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-primary/50"
                     placeholder="••••••••"
                     type={showPassword ? "text" : "password"}
                     required

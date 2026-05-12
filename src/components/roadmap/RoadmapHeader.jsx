@@ -1,4 +1,4 @@
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Sparkles } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const RoadmapHeader = ({
@@ -9,10 +9,13 @@ const RoadmapHeader = ({
     customTitle,
     setCustomTitle,
     handleCustomGenerate,
+    requestCustomGenerate,
     isGenerating,
     walletBalance,
     handlePayment
 }) => {
+    const onGenerate = requestCustomGenerate || handleCustomGenerate;
+
     return (
         <header className="rounded-[34px] border border-slate-200/80 bg-white p-6 shadow-sm sm:p-8">
             <div className="flex items-center justify-between">
@@ -49,24 +52,44 @@ const RoadmapHeader = ({
                         {roadmap?.title || "Your Career Journey"}
                     </h1>
 
-                    {/* Custom Generation Input */}
-                    <div className="mt-6 flex max-w-md gap-2">
-                        <input
-                            type="text"
-                            placeholder="Try 'Data Scientist' or 'Pilot'..."
-                            className="flex-1 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                            value={customTitle}
-                            onChange={(e) => setCustomTitle(e.target.value)}
-                            onKeyPress={(e) => e.key === 'Enter' && handleCustomGenerate()}
-                            disabled={isGenerating}
-                        />
-                        <button
-                            onClick={handleCustomGenerate}
-                            disabled={isGenerating || !customTitle.trim()}
-                            className="rounded-2xl bg-slate-900 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-slate-800 disabled:opacity-50"
-                        >
-                            {isGenerating ? "Working..." : "Go"}
-                        </button>
+                    {/* AI Generation Input */}
+                    <div className="mt-6 rounded-2xl bg-gradient-to-r from-indigo-50 to-teal-50 p-4 border border-indigo-100/50">
+                        <div className="flex items-center gap-2 mb-3">
+                            <Sparkles className="size-4 text-indigo-600" />
+                            <p className="text-xs font-bold text-indigo-900">Explore a different path (Costs 1 Credit)</p>
+                        </div>
+                        <div className="flex flex-col sm:flex-row gap-2">
+                            <div className="relative flex-1">
+                                <input
+                                    type="text"
+                                    placeholder="e.g., Cloud Architect, Product Manager..."
+                                    className="w-full rounded-xl border border-white bg-white/80 px-4 py-2.5 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 backdrop-blur-sm"
+                                    value={customTitle}
+                                    onChange={(e) => setCustomTitle(e.target.value)}
+                                    onKeyDown={(e) => {
+                                        if (e.key === "Enter") {
+                                            e.preventDefault();
+                                            onGenerate();
+                                        }
+                                    }}
+                                    disabled={isGenerating}
+                                />
+                            </div>
+                            <button
+                                onClick={onGenerate}
+                                disabled={isGenerating || !customTitle.trim()}
+                                className="flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-6 py-2.5 text-sm font-bold text-white transition hover:bg-indigo-700 disabled:opacity-50 shadow-sm whitespace-nowrap"
+                            >
+                                {isGenerating ? (
+                                    <>
+                                        <div className="size-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                                        <span>Generating...</span>
+                                    </>
+                                ) : (
+                                    <span>Generate AI Roadmap</span>
+                                )}
+                            </button>
+                        </div>
                     </div>
 
                     <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-500">

@@ -68,7 +68,7 @@ export default function CounselorStudentDetail() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#F8FAFC] px-4 py-6 text-sm text-slate-500 sm:px-6 lg:px-8">
+      <div className="min-h-screen bg-page-bg px-4 py-6 text-sm text-slate-500 sm:px-6 lg:px-8">
         Loading student profile...
       </div>
     );
@@ -76,7 +76,7 @@ export default function CounselorStudentDetail() {
 
   if (error || !student) {
     return (
-      <div className="min-h-screen bg-[#F8FAFC] px-4 py-6 sm:px-6 lg:px-8">
+      <div className="min-h-screen bg-page-bg px-4 py-6 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-5xl rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm">
           <p className="text-sm text-red-600">{error || "Student not found."}</p>
           <Link
@@ -91,7 +91,7 @@ export default function CounselorStudentDetail() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] px-4 py-8 text-slate-900 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-page-bg px-4 py-8 text-slate-900 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-6xl">
         <Link
           to="/counselor/students"
